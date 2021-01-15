@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE geode SYSTEM "geode.dtd" >
+<geode>
+    <servers>
+        <server ip="127.0.0.1" port="50000">
+            <protocols>
+                <protocol name="TEST" class="com.geode.Server"/>
+            </protocols>
+        </server>
+    </servers>
+    <clients>
+        <client server-ip="127.0.0.1" server-port="50000">
+            <protocols>
+                <protocol name="TEST" class="com.geode.Client"/>
+            </protocols>
+        </client>
+    </clients>
+</geode>

@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+        <!ELEMENT geode (servers,clients)>
+        <!ELEMENT servers (server)*>
+        <!ELEMENT server (protocols)*>
+        <!ATTLIST server
+                ip CDATA "0.0.0.0"
+                port CDATA "4001">
+        <!ELEMENT protocols (protocol)*>
+        <!ELEMENT protocol (#PCDATA)>
+        <!ATTLIST protocol
+                class CDATA #REQUIRED
+                name CDATA #IMPLIED>
+        <!ELEMENT clients (client)*>
+        <!ELEMENT client (protocols)*>
+        <!ATTLIST client
+                server-ip CDATA "127.0.0.1"
+                server-port CDATA "4001">
