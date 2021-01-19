@@ -84,14 +84,21 @@ public class Q implements Serializable
         this.args = args;
     }
 
+    public Q pack(Serializable ... args)
+    {
+        this.args.addAll(Arrays.asList(args));
+        return this;
+    }
+
     public Category getCategory()
     {
         return category;
     }
 
-    public void setCategory(Category category)
+    public Q setCategory(Category category)
     {
         this.category = category;
+        return this;
     }
 
     @Override

@@ -7,12 +7,14 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server extends Thread implements Initializable
 {
     private static Logger logger = Logger.getLogger(Server.class);
     private ServerSocket serverSocket;
     private final ArrayList<Class<?>> protocolClasses;
+    private final CopyOnWriteArrayList<ProtocolHandler> handlers;
     private GState gState;
     private final ServerInfos serverInfos;
 
@@ -26,6 +28,7 @@ public class Server extends Thread implements Initializable
         this.serverInfos = serverInfos;
         gState = GState.DOWN;
         protocolClasses = new ArrayList<>();
+        handlers = new CopyOnWriteArrayList<>();
     }
 
     @Override
@@ -56,6 +59,9 @@ public class Server extends Thread implements Initializable
                 {
                     Socket socket = serverSocket.accept();
                     logger.info("client connection accepted: " + socket);
+                    ServerProtocolHandler handler = new ServerProtocolHandler(socket, protocolClasses);
+                    handler.start();
+                    handlers.add(handler);
                 } catch (IOException e)
                 {
                     logger.error("server accept error: " + e.getMessage());

@@ -14,11 +14,11 @@ import java.util.Queue;
 public abstract class ProtocolHandler extends Thread implements Initializable
 {
     private static final Logger logger = Logger.getLogger(ProtocolHandler.class);
-    private Object protocol;
-    private ArrayList<Method> controls;
-    private boolean running;
-    private Tunnel tunnel;
-    private GState gState;
+    protected Object protocol;
+    protected ArrayList<Method> controls;
+    protected boolean running;
+    protected Tunnel tunnel;
+    protected GState gState;
 
     public ProtocolHandler(Socket socket)
     {
@@ -35,6 +35,32 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         }
     }
 
+    public void send(Q query)
+    {
+        try
+        {
+            tunnel.send(query);
+        }
+        catch(Exception e)
+        {
+            
+        }
+    }
+
+    public Q recv()
+    {
+        Q query = null;
+        try
+        {
+            query = tunnel.recv();
+        }
+        catch(Exception e)
+        {
+
+        }
+        return query;
+    }
+
     protected abstract Object discovery();
 
     @Override
@@ -43,6 +69,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         if(gState == GState.DOWN)
         {
             protocol = discovery();
+            if(protocol == null) return;
             initControls();
             logger.info("handler initialized");
             gState = GState.READY;
@@ -68,6 +95,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     @Override
     public void run()
     {
+        init();
         if(gState == GState.READY)
         {
             logger.info("handler is running");
@@ -76,17 +104,21 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             {
                 try
                 {
+                    logger.info("wait for query...");
                     Q query = tunnel.recv();
                     Serializable result = manageQuery(query);
-                    manageQueryResult(result);
+                    manageQueryResult(query, result);
                 } catch (IOException e)
                 {
                     logger.error("receive IO error: " + e.getMessage());
+                    running = false;
                 } catch (ClassNotFoundException e)
                 {
                     logger.error("receive CLASS error: " + e.getMessage());
                 }
             }
+            logger.info("handler is turning off");
+            gState = GState.DOWN;
         }
         else
         {
@@ -94,11 +126,30 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         }
     }
 
-    private void manageQueryResult(Serializable result) throws IOException
+    private void manageQueryResult(Q query, Serializable result) throws IOException
     {
-        if(result instanceof Q)
+        if(result != null)
         {
-            tunnel.send(result);
+            if(result instanceof Q)
+            {
+                tunnel.send(result);
+            }
+            else if(result instanceof String)
+            {
+                tunnel.send(Q.simple((String)result));
+            }
+            else if(result == Q.SUCCESS)
+            {
+                tunnel.send(Q.success(query.getType()));
+            }
+            else if(result == Q.FAILED)
+            {
+                tunnel.send(Q.failed(query.getType()));
+            }
+            else
+            {
+                tunnel.send(Q.simple(query.getType()).pack(result));
+            }
         }
     }
 
