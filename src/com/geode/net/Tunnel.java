@@ -1,61 +1,42 @@
 package com.geode.net;
 
-import com.geode.log.Log;
+import org.apache.log4j.Logger;
 
-import javax.net.ssl.SSLSocket;
 import java.io.*;
 import java.net.Socket;
 
 public class Tunnel
 {
+    private static final Logger logger = Logger.getLogger(Tunnel.class);
     private final Socket socket;
-    private BufferedReader bufferedReader;
-    private BufferedWriter bufferedWriter;
-    private ObjectOutputStream objectOutputStream;
-    private ObjectInputStream objectInputStream;
+    private final ObjectOutputStream objectOutputStream;
+    private final ObjectInputStream objectInputStream;
 
-    public Tunnel(Socket socket)
+    public Tunnel(Socket socket) throws IOException
     {
-        try
-        {
-            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            objectInputStream = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException e)
-        {
-            Log.err("Tunnel", "unable to init object streams");
-        }
+        objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        objectInputStream = new ObjectInputStream(socket.getInputStream());
         this.socket = socket;
+        logger.info("tunnel initialize on " + socket);
+    }
+
+    public void send(Serializable serializable) throws IOException
+    {
+        logger.info("send " + serializable);
+        objectOutputStream.writeObject(serializable);
+        objectOutputStream.flush();
+    }
+
+    public <T extends Serializable> T recv() throws IOException, ClassNotFoundException
+    {
+        T obj = (T) objectInputStream.readObject();
+        logger.info("recv " + obj);
+        return obj;
     }
 
     public Socket getSocket()
     {
         return socket;
-    }
-
-    public void sendobj(Serializable serializable)
-    {
-        try
-        {
-            objectOutputStream.writeObject(serializable);
-            objectOutputStream.flush();
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            Log.err("Tunnel", "unable to send [" + serializable + "]");
-        }
-    }
-
-    public <T extends Serializable> T recvobj()
-    {
-        try
-        {
-            return (T) objectInputStream.readObject();
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            Log.err("Tunnel", "unable to recieve an object");
-        }
-        return null;
     }
 
     public ObjectOutputStream getObjectOutputStream()

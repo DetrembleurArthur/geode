@@ -20,51 +20,48 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="54a1a308-efaa-42ae-a7b1-2555480afc0c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/description.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/libs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/project-template.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/geode.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/libs/bcprov-ext-jdk15to18-168.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/libs/jaxp.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/geode.dtd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/geode.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/Client.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/Server.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/annotations/Control.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/annotations/Inject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/annotations/OnInit.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/annotations/Protocol.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/configurations/ClientConfigurations.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/configurations/ConfigurationBuilder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/configurations/Configurations.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/configurations/ProtocolConfigurations.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/configurations/ServerConfigurations.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/exceptions/GeodeException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/log/Log.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/Args.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/GeodeApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/GeodeClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/GeodeClientHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/GeodeClientManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/GeodeHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/GeodeIdentifiable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/GeodeManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/GeodeProtocol.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/GeodeServer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/GeodeServerHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/GeodeServerManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/Query.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/Tunnel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/xml/GeodeSAXHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/xml/GeodeSAXStarter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/geode/xml/XmlNode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs/log4j-1.2.17.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/geode/net/Client.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/geode/net/ClientInfos.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/geode/net/GState.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/geode/net/Geode.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/geode/net/Initializable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/geode/net/ProtocolHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/geode/net/Q.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/geode/net/Server.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/geode/net/ServerInfos.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/Client.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/Server.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/annotations/Control.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/geode/annotations/Control.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/annotations/Inject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/annotations/OnInit.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/annotations/Protocol.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/configurations/ClientConfigurations.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/configurations/ConfigurationBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/configurations/Configurations.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/configurations/ProtocolConfigurations.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/configurations/ServerConfigurations.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/exceptions/GeodeException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/log/Log.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/net/Args.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/net/GeodeApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/net/GeodeClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/net/GeodeClientHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/net/GeodeClientManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/net/GeodeHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/net/GeodeIdentifiable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/net/GeodeManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/net/GeodeProtocol.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/net/GeodeServer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/net/GeodeServerHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/net/GeodeServerManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/net/Query.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/net/Tunnel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/geode/net/Tunnel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/xml/GeodeSAXHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/xml/GeodeSAXStarter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/xml/XmlNode.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,8 +72,9 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Interface" />
-        <option value="Class" />
         <option value="AnnotationType" />
+        <option value="Enum" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -93,7 +91,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/com/geode/net" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/libs" />
     <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
@@ -105,8 +103,8 @@
       <recent name="com.geode.options" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\Users\mb624\Documents\GitHub\geode\geode\src\com\geode\net" />
       <recent name="D:\Users\mb624\Documents\GitHub\geode\geode\libs" />
+      <recent name="D:\Users\mb624\Documents\GitHub\geode\geode\src\com\geode\net" />
     </key>
   </component>
   <component name="RunManager">
@@ -146,6 +144,7 @@
       <option name="presentableId" value="Default" />
       <updated>1610712405435</updated>
       <workItem from="1610712406670" duration="17861000" />
+      <workItem from="1611071233368" duration="4349000" />
     </task>
     <servers />
   </component>
@@ -162,36 +161,37 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="2685" y="226" key="#com.intellij.ide.util.MemberChooser" timestamp="1610726550876">
+    <state x="2685" y="226" key="#com.intellij.ide.util.MemberChooser" timestamp="1611074865275">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state x="2685" y="226" key="#com.intellij.ide.util.MemberChooser/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1610726550876" />
-    <state x="2245" y="96" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1610716746328">
+    <state x="2685" y="226" key="#com.intellij.ide.util.MemberChooser/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1611074865275" />
+    <state x="2245" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1611072851966">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state x="2245" y="96" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1610716746328" />
+    <state x="2245" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1611072851966" />
     <state x="2586" y="261" key="FileChooserDialogImpl" timestamp="1610712536261">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
     <state x="2586" y="261" key="FileChooserDialogImpl/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1610712536261" />
-    <state width="1877" height="289" key="GridCell.Tab.0.bottom" timestamp="1610730147821">
+    <state width="1877" height="276" key="GridCell.Tab.0.bottom" timestamp="1610982332454">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="289" key="GridCell.Tab.0.bottom/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1610730147821" />
-    <state width="1877" height="289" key="GridCell.Tab.0.center" timestamp="1610730147821">
+    <state width="1877" height="276" key="GridCell.Tab.0.bottom/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1610982332454" />
+    <state width="1877" height="276" key="GridCell.Tab.0.center" timestamp="1610982332454">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="289" key="GridCell.Tab.0.center/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1610730147821" />
-    <state width="1877" height="289" key="GridCell.Tab.0.left" timestamp="1610730147821">
+    <state width="1877" height="276" key="GridCell.Tab.0.center/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1610982332454" />
+    <state width="1877" height="276" key="GridCell.Tab.0.left" timestamp="1610982332454">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="289" key="GridCell.Tab.0.left/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1610730147821" />
-    <state width="1877" height="289" key="GridCell.Tab.0.right" timestamp="1610730147821">
+    <state width="1877" height="276" key="GridCell.Tab.0.left/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1610982332454" />
+    <state width="1877" height="276" key="GridCell.Tab.0.right" timestamp="1610982332454">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="289" key="GridCell.Tab.0.right/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1610730147821" />
+    <state width="1877" height="276" key="GridCell.Tab.0.right/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1610982332454" />
     <state x="2360" y="94" key="SettingsEditor" timestamp="1610712539604">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
