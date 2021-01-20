@@ -58,7 +58,14 @@ public class ServerProtocolHandler extends ProtocolHandler
             logger.fatal("protocol discovery failed: " + e.getMessage());
             gState = GState.BROKEN;
         }
-        tunnel.send(Q.simple("protocol_err"));
+        try
+        {
+			tunnel.send(Q.simple("protocol_err"));
+		} catch (IOException e)
+        {
+			logger.fatal("fatal error: " + e.getMessage());
+            gState = GState.BROKEN;
+		}
         return null;
     }
 }

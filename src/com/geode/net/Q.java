@@ -76,7 +76,7 @@ public class Q implements Serializable
 
     public Serializable[] getArgsArray()
     {
-        return (Serializable[]) args.toArray();
+        return args.toArray(new Serializable[0]);
     }
 
     public void setArgs(ArrayList<Serializable> args)

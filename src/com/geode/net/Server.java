@@ -49,6 +49,7 @@ public class Server extends Thread implements Initializable
     @Override
     public void run()
     {
+    	init();
         if(gState == GState.READY)
         {
             logger.info("server is running");

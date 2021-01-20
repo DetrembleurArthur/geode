@@ -1,14 +1,19 @@
 package com.geode.net;
 
 import com.geode.annotations.Control;
+import com.geode.annotations.Inject;
+import com.geode.annotations.OnEvent;
+
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Queue;
 
 public abstract class ProtocolHandler extends Thread implements Initializable
@@ -19,10 +24,12 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     protected boolean running;
     protected Tunnel tunnel;
     protected GState gState;
+    protected HashMap<OnEvent.Event, Method> listeners;
 
     public ProtocolHandler(Socket socket)
     {
         controls = new ArrayList<>();
+        listeners = new HashMap<OnEvent.Event, Method>();
         running = false;
         gState = GState.DOWN;
         try
@@ -71,6 +78,9 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             protocol = discovery();
             if(protocol == null) return;
             initControls();
+            initInjections();
+            initListeners();
+            callListener(OnEvent.Event.INIT, new Object[0]);
             logger.info("handler initialized");
             gState = GState.READY;
         }
@@ -78,6 +88,60 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         {
             logger.fatal("handler " + gState + " can not be initialized");
         }
+    }
+    
+    protected void callListener(OnEvent.Event event, Object[] args)
+    {
+    	Method method = listeners.getOrDefault(event, null);
+    	if(method != null)
+    	{
+    		logger.info("invoke " + method + " % " + event);
+    		try
+    		{
+				method.invoke(protocol, args);
+			} catch (Exception e)
+    		{
+				logger.error("failed to invoke listener: " + method + " % " + event + " : " + e.getMessage());
+			}
+    	}
+    }
+    
+    private void initListeners()
+    {
+    	for(Method method : protocol.getClass().getDeclaredMethods())
+        {
+            if(method.isAnnotationPresent(OnEvent.class))
+            {
+            	OnEvent.Event event = method.getAnnotation(OnEvent.class).value();
+                listeners.put(event, method);
+                logger.info(method + " added has Listener : " + event);
+            }
+        }
+    }
+    
+    private void initInjections()
+    {
+    	for(Field field : protocol.getClass().getDeclaredFields())
+    	{
+    		try
+    		{
+    			if(field.isAnnotationPresent(Inject.class))
+        		{
+        			if(field.getType().equals(ProtocolHandler.class))
+        			{
+        				field.set(protocol, this);
+        			}
+        			else
+        			{
+        				field.set(protocol, field.getType().getConstructor().newInstance());
+        			}
+        		}
+    		}
+    		catch(Exception e)
+    		{
+    			logger.error("field injection failed: " + e.getMessage());
+    		}
+    	}
     }
 
     private void initControls()
@@ -115,6 +179,10 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                 } catch (ClassNotFoundException e)
                 {
                     logger.error("receive CLASS error: " + e.getMessage());
+                }
+                catch (Exception e)
+                {
+                    logger.error("unknown error: " + e.getMessage());
                 }
             }
             logger.info("handler is turning off");
@@ -170,7 +238,9 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         String type = query.getType();
         for(Method control : controls)
         {
-            if(type.equals(control.getName()))
+        	String controlType = control.getAnnotation(Control.class).value().isEmpty() ?
+        			control.getName() : control.getAnnotation(Control.class).value();
+            if(type.equals(controlType))
             {
                 Serializable[] args = query.getArgsArray();
                 if(args.length == control.getParameterCount())
@@ -200,4 +270,54 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         logger.error("no control found for " + query);
         return null;
     }
+
+	public Object getProtocol()
+	{
+		return protocol;
+	}
+
+	public void setProtocol(Object protocol)
+	{
+		this.protocol = protocol;
+	}
+
+	public ArrayList<Method> getControls()
+	{
+		return controls;
+	}
+
+	public void setControls(ArrayList<Method> controls)
+	{
+		this.controls = controls;
+	}
+
+	public synchronized boolean isRunning()
+	{
+		return running;
+	}
+
+	public void setRunning(boolean running)
+	{
+		this.running = running;
+	}
+
+	public Tunnel getTunnel()
+	{
+		return tunnel;
+	}
+
+	public void setTunnel(Tunnel tunnel)
+	{
+		this.tunnel = tunnel;
+	}
+
+	public GState getgState()
+	{
+		return gState;
+	}
+
+	public void setgState(GState gState)
+	{
+		this.gState = gState;
+	}
 }
