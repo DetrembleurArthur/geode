@@ -1,20 +1,26 @@
 import com.geode.net.Geode;
-import com.geode.net.ProtocolHandler;
 import com.geode.net.Q;
-import com.geode.net.Server;
 import com.geode.annotations.*;
+import com.geode.net.UdpStream;
 
-@Protocol(name = "Test")
+import javax.swing.*;
+
+@Protocol("Test")
 public class MainSRV
 {
 
 	public static void main(String[] args)
-	{
-		Geode geode = new Geode();
-		Server server = new Server("127.0.0.1", 50, 6666);
-		server.registerProtocolClass(MainSRV.class);
-		geode.buildServer(server);
-		server.start();
+	{/*
+		Geode geode = new Geode("resources/geode.xml");
+
+		geode.launchServer("MyServer");*/
+
+		String message = "Hello world!";
+
+		UdpStream stream = new UdpStream("127.0.0.1", 1500, false);
+		stream.send(message);
+		message = stream.recv();
+		JOptionPane.showMessageDialog(null, message);
 	}
 	
 	@Control

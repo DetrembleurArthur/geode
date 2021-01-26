@@ -2,17 +2,13 @@
 <!DOCTYPE geode SYSTEM "geode.dtd" >
 <geode>
     <servers>
-        <server ip="127.0.0.1" port="50000">
+        <server id="MyServer" ip="127.0.0.1" port="50000" backlog="50">
             <protocols>
-                <protocol name="TEST" class="com.geode.Server"/>
+                <protocol class="MainSRV"/>
             </protocols>
         </server>
     </servers>
     <clients>
-        <client server-ip="127.0.0.1" server-port="50000">
-            <protocols>
-                <protocol name="TEST" class="com.geode.Client"/>
-            </protocols>
-        </client>
+        <client id="MyClient" server-ip="127.0.0.1" server-port="50000" protocol="MainCLI"/>
     </clients>
 </geode>

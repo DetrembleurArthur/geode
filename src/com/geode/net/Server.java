@@ -11,23 +11,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server extends Thread implements Initializable
 {
-    private static Logger logger = Logger.getLogger(Server.class);
+    private static final Logger logger = Logger.getLogger(Server.class);
     private ServerSocket serverSocket;
-    private final ArrayList<Class<?>> protocolClasses;
     private final CopyOnWriteArrayList<ProtocolHandler> handlers;
     private GState gState;
     private final ServerInfos serverInfos;
-
-    public Server(String host, int backlog, int port)
-    {
-        this(new ServerInfos(host, backlog, port));
-    }
 
     public Server(ServerInfos serverInfos)
     {
         this.serverInfos = serverInfos;
         gState = GState.DOWN;
-        protocolClasses = new ArrayList<>();
         handlers = new CopyOnWriteArrayList<>();
     }
 
@@ -60,7 +53,7 @@ public class Server extends Thread implements Initializable
                 {
                     Socket socket = serverSocket.accept();
                     logger.info("client connection accepted: " + socket);
-                    ServerProtocolHandler handler = new ServerProtocolHandler(socket, protocolClasses);
+                    ServerProtocolHandler handler = new ServerProtocolHandler(socket, serverInfos.getProtocolClasses());
                     handler.start();
                     handlers.add(handler);
                 } catch (IOException e)
@@ -81,7 +74,7 @@ public class Server extends Thread implements Initializable
         {
             try
             {
-                protocolClasses.add(Class.forName(className));
+                serverInfos.getProtocolClasses().add(Class.forName(className));
                 logger.info("register protocolClass: " + className);
             } catch (ClassNotFoundException e)
             {
@@ -94,7 +87,7 @@ public class Server extends Thread implements Initializable
     {
         for(Class<?> pclass : classes)
         {
-            protocolClasses.add(pclass);
+            serverInfos.getProtocolClasses().add(pclass);
             logger.info("register protocolClass: " + pclass);
         }
     }
@@ -106,7 +99,7 @@ public class Server extends Thread implements Initializable
 
     public ArrayList<Class<?>> getProtocolClasses()
     {
-        return protocolClasses;
+        return serverInfos.getProtocolClasses();
     }
 
     public GState getGState()

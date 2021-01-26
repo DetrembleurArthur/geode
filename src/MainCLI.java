@@ -2,22 +2,26 @@ import com.geode.annotations.Control;
 import com.geode.annotations.Inject;
 import com.geode.annotations.OnEvent;
 import com.geode.annotations.Protocol;
-import com.geode.net.Client;
-import com.geode.net.Geode;
-import com.geode.net.ProtocolHandler;
-import com.geode.net.Q;
+import com.geode.net.*;
 
-@Protocol(name="Test")
+import javax.swing.*;
+
+@Protocol("Test")
 public class MainCLI
 {
 
 	public static void main(String[] args)
-	{
-		Geode geode = new Geode();
-		Client client = new Client("127.0.0.1", 6666);
-		client.setProtocolClass(MainCLI.class);
-		geode.buildClient(client);
-		client.run();
+	{/*
+		Geode geode = new Geode("resources/geode.xml");
+
+		geode.launchClient("MyClient");
+		geode.launchClient("MyClient");
+*/
+		UdpStream stream = new UdpStream("127.0.0.1", 1500, true);
+		String message = stream.recv();
+		JOptionPane.showMessageDialog(null, message);
+		stream.send("ACK");
+
 	}
 	
 	@Inject

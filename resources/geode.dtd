@@ -1,17 +1,20 @@
 <?xml version='1.0' encoding='UTF-8'?>
-        <!ELEMENT geode (servers,clients)>
+        <!ELEMENT geode (servers|clients)*>
         <!ELEMENT servers (server)*>
         <!ELEMENT server (protocols)*>
         <!ATTLIST server
+                id CDATA "default"
                 ip CDATA "0.0.0.0"
-                port CDATA "4001">
+                backlog CDATA "50"
+                port CDATA "5785">
         <!ELEMENT protocols (protocol)*>
         <!ELEMENT protocol (#PCDATA)>
         <!ATTLIST protocol
-                class CDATA #REQUIRED
-                name CDATA #IMPLIED>
+                class CDATA #REQUIRED>
         <!ELEMENT clients (client)*>
-        <!ELEMENT client (protocols)*>
+        <!ELEMENT client (#PCDATA)>
         <!ATTLIST client
-                server-ip CDATA "127.0.0.1"
-                server-port CDATA "4001">
+                id CDATA "default"
+                server-ip CDATA "0.0.0.0"
+                server-port CDATA "5785"
+                protocol CDATA #REQUIRED>

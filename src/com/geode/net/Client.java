@@ -9,15 +9,9 @@ public class Client implements Initializable, Runnable
 {
     private static final Logger logger = Logger.getLogger(Client.class);
     private Socket socket;
-    private Class<?> protocolClass;
     private final ClientInfos clientInfos;
     private ClientProtocolHandler handler;
     private GState gState;
-
-    public Client(String host, int port)
-    {
-        this(new ClientInfos(host, port));
-    }
 
     public Client(ClientInfos clientInfos)
     {
@@ -47,7 +41,7 @@ public class Client implements Initializable, Runnable
         if(gState == GState.READY)
         {
             gState = GState.RUNNING;
-            handler = new ClientProtocolHandler(socket, protocolClass);
+            handler = new ClientProtocolHandler(socket, clientInfos.getProtocolClass());
             handler.start();
             logger.info("client handler is running");
         }
@@ -69,12 +63,7 @@ public class Client implements Initializable, Runnable
 
 	public Class<?> getProtocolClass()
 	{
-		return protocolClass;
-	}
-
-	public void setProtocolClass(Class<?> protocolClass)
-	{
-		this.protocolClass = protocolClass;
+		return clientInfos.getProtocolClass();
 	}
 
 	public ClientProtocolHandler getHandler()

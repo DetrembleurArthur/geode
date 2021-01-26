@@ -26,7 +26,7 @@ public class ClientProtocolHandler extends ProtocolHandler
             if(query.getType().equalsIgnoreCase("protocol"))
             {
             	query.setType("protocol_send");
-            	query.pack(protocolClass.getAnnotation(Protocol.class).name());
+            	query.pack(protocolClass.getAnnotation(Protocol.class).value());
             	tunnel.send(query);
             	query = tunnel.recv();
             	if(query.getType().equalsIgnoreCase("protocol_ok"))

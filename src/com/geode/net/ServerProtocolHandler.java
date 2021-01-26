@@ -1,18 +1,13 @@
 package com.geode.net;
 
-import com.geode.annotations.Control;
 import com.geode.annotations.Protocol;
 import com.geode.net.Q.Category;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Queue;
 
 public class ServerProtocolHandler extends ProtocolHandler
 {
@@ -41,7 +36,7 @@ public class ServerProtocolHandler extends ProtocolHandler
                         String protocolName = (String)query.getArgs().get(0);
                         for(Class<?> protocolClass : protocolClasses)
                         {
-                            String name = protocolClass.getAnnotation(Protocol.class).name();
+                            String name = protocolClass.getAnnotation(Protocol.class).value();
                             if(name.equalsIgnoreCase(protocolName))
                             {
                                 tunnel.send(Q.simple("protocol_ok").setCategory(Q.Category.DISCOVERY));
