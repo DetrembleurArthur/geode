@@ -6,6 +6,7 @@ import com.geode.net.Q.Category;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,11 +16,13 @@ public class ServerProtocolHandler extends ProtocolHandler
     private static final Logger logger = Logger.getLogger(ServerProtocolHandler.class);
     private static AtomicInteger counter = new AtomicInteger(0);
     private ArrayList<Class<?>> protocolClasses;
+    private Server server;
     
-    public ServerProtocolHandler(Socket socket, ArrayList<Class<?>> protocolClasses)
+    public ServerProtocolHandler(Socket socket, Server server)
     {
         super(socket);
-        this.protocolClasses = protocolClasses;
+        this.protocolClasses = server.getServerInfos().getProtocolClasses();
+        this.server = server;
     }
 
     @Override
@@ -66,4 +69,33 @@ public class ServerProtocolHandler extends ProtocolHandler
 		}
         return null;
     }
+    
+    @Override
+    protected Serializable manageQuery(Q query)
+    {
+        switch (query.getCategory())
+        {
+            case NORMAL:
+                return manageNormalQuery(query);
+            case TOPIC_SUBSCRIBE:
+            	return manageTopicSubscribeQuery(query);
+            case TOPIC_NOTIFY:
+            	return manageTopicNotifyQuery(query);
+            default:
+                logger.warn(query.getCategory() + " are not allowed here");
+        }
+        return null;
+    }
+
+	private Serializable manageTopicNotifyQuery(Q query)
+	{
+		server.notifySubscribers(query);
+		return null;
+	}
+
+	private Serializable manageTopicSubscribeQuery(Q query)
+	{
+		server.subscribe(query.getType(), this);
+		return null;
+	}
 }

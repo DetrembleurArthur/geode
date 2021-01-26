@@ -12,14 +12,4 @@ public class MainSRV
 
 		geode.launchServer("MyServer");
 	}
-	
-	@Control
-	public Q ping(Integer n) throws InterruptedException
-	{
-		System.out.println("ping: " + n);
-		n++;
-		Thread.sleep(500);
-		return Q.simple("pong").pack(n);
-	}
-
 }

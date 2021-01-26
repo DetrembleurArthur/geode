@@ -50,7 +50,7 @@ public class Client implements Initializable, Runnable
             logger.fatal("client " + gState + " can not run");
         }
     }
-
+    
 	public Socket getSocket()
 	{
 		return socket;

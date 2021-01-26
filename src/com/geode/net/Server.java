@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server extends Thread implements Initializable
@@ -16,12 +17,14 @@ public class Server extends Thread implements Initializable
     private final CopyOnWriteArrayList<ProtocolHandler> handlers;
     private GState gState;
     private final ServerInfos serverInfos;
+    private final HashMap<String, ArrayList<ProtocolHandler>> topicsMap;
 
     public Server(ServerInfos serverInfos)
     {
         this.serverInfos = serverInfos;
         gState = GState.DOWN;
         handlers = new CopyOnWriteArrayList<>();
+        topicsMap = new HashMap<>();
     }
 
     @Override
@@ -53,7 +56,7 @@ public class Server extends Thread implements Initializable
                 {
                     Socket socket = serverSocket.accept();
                     logger.info("client connection accepted: " + socket);
-                    ServerProtocolHandler handler = new ServerProtocolHandler(socket, serverInfos.getProtocolClasses());
+                    ServerProtocolHandler handler = new ServerProtocolHandler(socket, this);
                     handler.start();
                     handlers.add(handler);
                 } catch (IOException e)
@@ -110,5 +113,33 @@ public class Server extends Thread implements Initializable
     public ServerInfos getServerInfos()
     {
         return serverInfos;
+    }
+    
+    public synchronized void subscribe(String topic, ProtocolHandler handler)
+    {
+    	ArrayList<ProtocolHandler> handlers;
+    	if(!topicsMap.containsKey(topic))
+    	{
+    		handlers = new ArrayList<>();
+    		topicsMap.put(topic, handlers);
+    	}
+    	else
+    	{
+    		handlers = topicsMap.get(topic);
+    	}
+    	if(!handlers.contains(handler))
+    	{
+    		handlers.add(handler);
+    	}
+    }
+    
+    public synchronized void notifySubscribers(Q query)
+    {
+    	String topic = query.getType();
+    	ArrayList<ProtocolHandler> handlers = topicsMap.get(topic);
+    	for(ProtocolHandler handler : handlers)
+    	{
+    		handler.send(query);
+    	}
     }
 }

@@ -43,7 +43,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         }
     }
 
-    public void send(Q query)
+    public synchronized void send(Q query)
     {
         try
         {
@@ -102,6 +102,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
 				method.invoke(protocol, args);
 			} catch (Exception e)
     		{
+				e.printStackTrace();
 				logger.error("failed to invoke listener: " + method + " % " + event + " : " + e.getMessage());
 			}
     	}
@@ -128,7 +129,9 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     		{
     			if(field.isAnnotationPresent(Inject.class))
         		{
-        			if(field.getType().equals(ProtocolHandler.class))
+        			if(field.getType().equals(ProtocolHandler.class)
+					|| field.getType().equals(ClientProtocolHandler.class)
+					|| field.getType().equals(ServerProtocolHandler.class))
         			{
         				field.set(protocol, this);
         			}
@@ -222,7 +225,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         }
     }
 
-    private Serializable manageQuery(Q query)
+    protected Serializable manageQuery(Q query)
     {
         switch (query.getCategory())
         {
@@ -234,7 +237,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         return null;
     }
 
-    private Serializable manageNormalQuery(Q query)
+    protected Serializable manageNormalQuery(Q query)
     {
         String type = query.getType();
         for(Method control : controls)

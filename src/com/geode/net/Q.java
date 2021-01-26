@@ -14,7 +14,9 @@ public class Q implements Serializable
     public enum Category
     {
         NORMAL,
-        DISCOVERY
+        DISCOVERY,
+        TOPIC_SUBSCRIBE,
+        TOPIC_NOTIFY
     }
 
     public static final Object SUCCESS = new Object();
@@ -104,6 +106,6 @@ public class Q implements Serializable
     @Override
     public String toString()
     {
-        return "Q [" + type + "::" + args + "]";
+        return "Q [" + type + "::" + category + "::" + args + "]";
     }
 }

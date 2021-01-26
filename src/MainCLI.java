@@ -1,8 +1,11 @@
+import javax.swing.JOptionPane;
+
 import com.geode.annotations.Control;
 import com.geode.annotations.Inject;
 import com.geode.annotations.OnEvent;
 import com.geode.annotations.Protocol;
 import com.geode.net.*;
+import com.geode.net.Q.Category;
 
 @Protocol("Test")
 public class MainCLI
@@ -12,26 +15,25 @@ public class MainCLI
 	{
 		Geode geode = new Geode("resources/geode.xml");
 
-		geode.launchClient("MyClient");
+		Client client = geode.launchClient("MyClient");
+		
+		while(true)
+		{
+			client.getHandlerSafe().send(Q.simple("mytopic").setCategory(Category.TOPIC_NOTIFY)
+					.pack(JOptionPane.showInputDialog("Message: ")));
+		}
 
 
 	}
 	
 	@Inject
-	public ProtocolHandler handler;
+	public ClientProtocolHandler handler;
 	
 	@OnEvent
 	public void init()
 	{
-		handler.send(Q.simple("ping").pack(1));
-	}
-	
-	@Control
-	public Q pong(Integer n) throws InterruptedException
-	{
-		System.out.println("pong : " + n);
-		n++;
-		Thread.sleep(500);
-		return Q.simple("ping").pack(n);
+		handler.subscribe("mytopic", (a) -> {
+			JOptionPane.showMessageDialog(null, a.get(0));
+		});
 	}
 }
