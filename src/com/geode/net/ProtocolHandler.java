@@ -25,6 +25,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     protected Tunnel tunnel;
     protected GState gState;
     protected HashMap<OnEvent.Event, Method> listeners;
+    protected int identifier;
 
     public ProtocolHandler(Socket socket)
     {
@@ -320,4 +321,9 @@ public abstract class ProtocolHandler extends Thread implements Initializable
 	{
 		this.gState = gState;
 	}
+
+    public int getIdentifier()
+    {
+        return identifier;
+    }
 }

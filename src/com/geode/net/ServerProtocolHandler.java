@@ -8,11 +8,13 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ServerProtocolHandler extends ProtocolHandler
 {
     private static final Logger logger = Logger.getLogger(ServerProtocolHandler.class);
-    private ArrayList<Class<?>> protocolClasses = new ArrayList<>();
+    private static AtomicInteger counter = new AtomicInteger(0);
+    private ArrayList<Class<?>> protocolClasses;
     
     public ServerProtocolHandler(Socket socket, ArrayList<Class<?>> protocolClasses)
     {
@@ -39,7 +41,8 @@ public class ServerProtocolHandler extends ProtocolHandler
                             String name = protocolClass.getAnnotation(Protocol.class).value();
                             if(name.equalsIgnoreCase(protocolName))
                             {
-                                tunnel.send(Q.simple("protocol_ok").setCategory(Q.Category.DISCOVERY));
+                                identifier = counter.incrementAndGet();
+                                tunnel.send(Q.simple("protocol_ok").setCategory(Q.Category.DISCOVERY).pack(identifier));
                                 protocolClasses = null;
                                 return protocolClass.getDeclaredConstructor().newInstance();
                             }

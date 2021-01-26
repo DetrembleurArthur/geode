@@ -32,6 +32,7 @@ public class ClientProtocolHandler extends ProtocolHandler
             	if(query.getType().equalsIgnoreCase("protocol_ok"))
             	{
             		logger.info("protocol discovery success");
+            		identifier = (int) query.getArgs().get(0);
             		return protocolClass.getConstructor().newInstance();
             	}
             }
