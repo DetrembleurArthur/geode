@@ -42,7 +42,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         }
     }
 
-    public synchronized void send(Q query)
+    public synchronized void send(Query query)
     {
         try
         {
@@ -54,9 +54,9 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         }
     }
 
-    public Q recv()
+    public Query recv()
     {
-        Q query = null;
+        Query query = null;
         try
         {
             query = tunnel.recv();
@@ -158,6 +158,17 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             {
                 if(testControl(method.getAnnotation(Control.class)))
                 {
+                    if(method.getAnnotation(Control.class).type() == Control.Type.DIRECT)
+                    {
+                        if(method.getParameterTypes().length >= 1)
+                        {
+                            if(!method.getParameterTypes()[0].equals(Integer.class))
+                            {
+                                logger.warn(method + " DIRECT control must have an Integer as first parameter");
+                                continue;
+                            }
+                        }
+                    }
                     controls.add(method);
                     logger.info(method + " added has Control");
                 }
@@ -168,6 +179,8 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             }
         }
     }
+
+    protected abstract void end();
 
     @Override
     public void run()
@@ -182,7 +195,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                 try
                 {
                     logger.info("wait for query...");
-                    Q query = tunnel.recv();
+                    Query query = tunnel.recv();
                     Serializable result = manageQuery(query);
                     manageQueryResult(query, result);
                 } catch (IOException e)
@@ -205,41 +218,42 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         {
             logger.fatal("handler " + gState + " can not run");
         }
+        end();
     }
 
-    private void manageQueryResult(Q query, Serializable result) throws IOException
+    private void manageQueryResult(Query query, Serializable result) throws IOException
     {
         if(result != null)
         {
-            if(result instanceof Q)
+            if(result instanceof Query)
             {
                 tunnel.send(result);
             }
             else if(result instanceof String)
             {
-                tunnel.send(Q.simple((String)result));
+                tunnel.send(Query.simple((String)result));
             }
-            else if(result == Q.SUCCESS)
+            else if(result == Query.SUCCESS)
             {
-                tunnel.send(Q.success(query.getType()));
+                tunnel.send(Query.success(query.getType()));
             }
-            else if(result == Q.FAILED)
+            else if(result == Query.FAILED)
             {
-                tunnel.send(Q.failed(query.getType()));
+                tunnel.send(Query.failed(query.getType()));
             }
             else
             {
-                tunnel.send(Q.simple(query.getType()).pack(result));
+                tunnel.send(Query.simple(query.getType()).pack(result));
             }
         }
     }
 
-    protected Serializable manageQuery(Q query)
+    protected Serializable manageQuery(Query query)
     {
         switch (query.getCategory())
         {
             case NORMAL:
-                return manageControlQuery(query, Control.Type.SERVER_CLIENT);
+                return manageControlQuery(query, Control.Type.CLASSIC);
             case TOPIC_SUBSCRIBE:
                 return (Serializable) manageTopicSubscribeQuery(query);
             case TOPIC_UNSUBSCRIBE:
@@ -248,6 +262,16 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                 return (Serializable) manageTopicNotifyOthersQuery(query);
             case TOPIC_NOTIFY:
                 return (Serializable) manageTopicNotifyQuery(query);
+            case NOTIFY:
+                return (Serializable) manageNotifyQuery(query);
+            case QUEUE_SUBSCRIBE:
+                return (Serializable) manageQueueSubscribeQuery(query);
+            case QUEUE_UNSUBSCRIBE:
+                return (Serializable) manageQueueUnsubscribeQuery(query);
+            case QUEUE_CONSUME:
+                return (Serializable) manageQueueConsumeQuery(query);
+            case QUEUE_PRODUCE:
+                return (Serializable) manageQueueProduceQuery(query);
             default:
                 logger.warn(query.getCategory() + " are not allowed here");
         }
@@ -256,7 +280,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
 
 
 
-    protected Serializable manageControlQuery(Q query, Control.Type ctype)
+    protected Serializable manageControlQuery(Query query, Control.Type ctype)
     {
         String type = query.getType();
         for(Method control : controls)
@@ -297,25 +321,55 @@ public abstract class ProtocolHandler extends Thread implements Initializable
 
     protected abstract Object discovery();
 
-    protected Object manageTopicSubscribeQuery(Q query)
+    protected Object manageTopicSubscribeQuery(Query query)
     {
         logger.warn(query.getCategory() + " are not allowed here");
         return null;
     }
 
-    protected Object manageTopicUnsubscribeQuery(Q query)
+    protected Object manageTopicUnsubscribeQuery(Query query)
     {
         logger.warn(query.getCategory() + " are not allowed here");
         return null;
     }
 
-    protected Object manageTopicNotifyQuery(Q query)
+    protected Object manageTopicNotifyQuery(Query query)
     {
         logger.warn(query.getCategory() + " are not allowed here");
         return null;
     }
 
-    protected Object manageTopicNotifyOthersQuery(Q query)
+    protected Object manageTopicNotifyOthersQuery(Query query)
+    {
+        logger.warn(query.getCategory() + " are not allowed here");
+        return null;
+    }
+
+    protected Object manageNotifyQuery(Query query)
+    {
+        logger.warn(query.getCategory() + " are not allowed here");
+        return null;
+    }
+
+    protected Object manageQueueSubscribeQuery(Query query)
+    {
+        logger.warn(query.getCategory() + " are not allowed here");
+        return null;
+    }
+
+    protected Object manageQueueUnsubscribeQuery(Query query)
+    {
+        logger.warn(query.getCategory() + " are not allowed here");
+        return null;
+    }
+
+    protected Object manageQueueConsumeQuery(Query query)
+    {
+        logger.warn(query.getCategory() + " are not allowed here");
+        return null;
+    }
+
+    protected Object manageQueueProduceQuery(Query query)
     {
         logger.warn(query.getCategory() + " are not allowed here");
         return null;

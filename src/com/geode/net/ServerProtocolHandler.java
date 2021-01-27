@@ -2,7 +2,7 @@ package com.geode.net;
 
 import com.geode.annotations.Control;
 import com.geode.annotations.Protocol;
-import com.geode.net.Q.Category;
+import com.geode.net.Query.Category;
 
 import org.apache.log4j.Logger;
 
@@ -17,13 +17,18 @@ public class ServerProtocolHandler extends ProtocolHandler
     private static final Logger logger = Logger.getLogger(ServerProtocolHandler.class);
     private static AtomicInteger counter = new AtomicInteger(0);
     private ArrayList<Class<?>> protocolClasses;
-    private Server server;
+    private final Server server;
+    private final ArrayList<Queue> subscribedQueues;
+    private final Thread queueConsumerDameon;
     
     public ServerProtocolHandler(Socket socket, Server server)
     {
         super(socket);
         this.protocolClasses = server.getServerInfos().getProtocolClasses();
         this.server = server;
+        subscribedQueues = new ArrayList<>();
+        queueConsumerDameon = new Thread(this::consumeDaemon);
+        queueConsumerDameon.setDaemon(true);
     }
 
     @Override
@@ -31,8 +36,8 @@ public class ServerProtocolHandler extends ProtocolHandler
     {
         try
         {
-            tunnel.send(Q.simple("protocol").setCategory(Q.Category.DISCOVERY));
-            Q query = tunnel.recv();
+            tunnel.send(Query.simple("protocol").setCategory(Query.Category.DISCOVERY));
+            Query query = tunnel.recv();
             if(query.getType().equals("protocol_send"))
             {
                 if(query.getCategory() == Category.DISCOVERY)
@@ -46,7 +51,7 @@ public class ServerProtocolHandler extends ProtocolHandler
                             if(name.equalsIgnoreCase(protocolName))
                             {
                                 identifier = counter.incrementAndGet();
-                                tunnel.send(Q.simple("protocol_ok").setCategory(Q.Category.DISCOVERY).pack(identifier));
+                                tunnel.send(Query.simple("protocol_ok").setCategory(Query.Category.DISCOVERY).pack(identifier));
                                 protocolClasses = null;
                                 return protocolClass.getDeclaredConstructor().newInstance();
                             }
@@ -62,7 +67,7 @@ public class ServerProtocolHandler extends ProtocolHandler
         }
         try
         {
-			tunnel.send(Q.simple("protocol_err"));
+			tunnel.send(Query.simple("protocol_err"));
 		} catch (IOException e)
         {
 			logger.fatal("fatal error: " + e.getMessage());
@@ -74,34 +79,139 @@ public class ServerProtocolHandler extends ProtocolHandler
     @Override
     protected boolean testControl(Control control)
     {
-        return control.type() == Control.Type.SERVER_CLIENT;
+        return control.type() == Control.Type.CLASSIC;
     }
 
     @Override
-	protected Serializable manageTopicNotifyQuery(Q query)
+	protected Serializable manageTopicNotifyQuery(Query query)
 	{
 		server.notifySubscribers(query);
 		return null;
 	}
 
     @Override
-    protected Serializable manageTopicNotifyOthersQuery(Q query)
+    protected Serializable manageTopicNotifyOthersQuery(Query query)
     {
         server.notifyOtherSubscribers(query, this);
         return null;
     }
 
 	@Override
-    protected Serializable manageTopicSubscribeQuery(Q query)
+    protected Serializable manageTopicSubscribeQuery(Query query)
 	{
-		server.subscribe(query.getType(), this);
+		server.subscribeTopic(query.getType(), this);
 		return null;
 	}
 
     @Override
-    protected Serializable manageTopicUnsubscribeQuery(Q query)
+    protected Serializable manageTopicUnsubscribeQuery(Query query)
     {
-        server.unsubscribe(query.getType(), this);
+        server.unsubscribeTopic(query.getType(), this);
         return null;
+    }
+
+    @Override
+    protected Serializable manageNotifyQuery(Query query)
+    {
+        server.notifyOther(query, this);
+        return null;
+    }
+
+    @Override
+    protected Object manageQueueSubscribeQuery(Query query)
+    {
+        server.subscribeQueue(query.getType(), this);
+        return null;
+    }
+
+    @Override
+    protected Object manageQueueUnsubscribeQuery(Query query)
+    {
+        server.unsubscribeQueue(query.getType(), this);
+        return null;
+    }
+
+    @Override
+    protected Object manageQueueProduceQuery(Query query)
+    {
+        server.produceQueue(query, this);
+        return null;
+    }
+
+    public synchronized void subscribeQueue(Queue queue)
+    {
+        subscribedQueues.add(queue);
+        if(!queueConsumerDameon.isAlive())
+        {
+            queueConsumerDameon.start();
+        }
+    }
+
+    public synchronized void unsubscribeQueue(Queue queue)
+    {
+        subscribedQueues.remove(queue);
+        if(queueConsumerDameon.isAlive())
+        {
+            queueConsumerDameon.interrupt();
+        }
+    }
+
+    public synchronized void queueProduce(Queue queue, Query query)
+    {
+        synchronized (queue)
+        {
+            queue.produce(query);
+        }
+    }
+
+    private void consumeDaemon()
+    {
+        logger.info("start consumer daemon");
+        try
+        {
+            while(true)
+            {
+                if(queueConsumerDameon.isInterrupted())
+                {
+                    logger.warn("consume dameon interrupted...");
+                    return;
+                }
+                synchronized (this)
+                {
+                    for(Queue queue : subscribedQueues)
+                    {
+                        synchronized (queue)
+                        {
+                            Query query = queue.consume();
+                            if(query != null)
+                            {
+                                send(query);
+                            }
+                        }
+                    }
+                }
+                Thread.sleep(10);
+            }
+        }
+        catch (Exception e)
+        {
+            logger.error("consume daemon error: " + e.getMessage());
+            logger.warn("consume dameon interrupted...");
+        }
+    }
+
+    @Override
+    protected void end()
+    {
+        try
+        {
+            server.remove(this);
+            tunnel.getSocket().close();
+            queueConsumerDameon.interrupt();
+            logger.warn("Protocol server handler is closed...");
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

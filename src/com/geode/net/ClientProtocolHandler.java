@@ -1,5 +1,6 @@
 package com.geode.net;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;
 
@@ -7,7 +8,7 @@ import com.geode.annotations.Control;
 import org.apache.log4j.Logger;
 
 import com.geode.annotations.Protocol;
-import com.geode.net.Q.Category;
+import com.geode.net.Query.Category;
 
 public class ClientProtocolHandler extends ProtocolHandler
 {
@@ -25,7 +26,7 @@ public class ClientProtocolHandler extends ProtocolHandler
     {
         try
         {
-            Q query = tunnel.recv();
+            Query query = tunnel.recv();
             if(query.getType().equalsIgnoreCase("protocol"))
             {
             	query.setType("protocol_send");
@@ -50,23 +51,56 @@ public class ClientProtocolHandler extends ProtocolHandler
     }
 
     @Override
-	protected Serializable manageTopicNotifyQuery(Q query)
+	protected Serializable manageTopicNotifyQuery(Query query)
 	{
-		return manageControlQuery(query, Control.Type.CLIENT_CLIENTS);
+		return manageControlQuery(query, Control.Type.TOPIC);
 	}
 
     @Override
-    protected Serializable manageTopicNotifyOthersQuery(Q query)
+    protected Serializable manageTopicNotifyOthersQuery(Query query)
     {
         return manageTopicNotifyQuery(query);
     }
-	
-	public void subscribe(String topic)
-	{
-		send(new Q(topic).setCategory(Category.TOPIC_SUBSCRIBE));
-	}
-    public void unsubscribe(String topic)
+
+    @Override
+    protected Serializable manageNotifyQuery(Query query)
     {
-        send(new Q(topic).setCategory(Category.TOPIC_UNSUBSCRIBE));
+        return manageControlQuery(query, Control.Type.DIRECT);
+    }
+
+    @Override
+    protected Object manageQueueConsumeQuery(Query query)
+    {
+        return manageControlQuery(query, Control.Type.QUEUE);
+    }
+
+    public void subscribeTopic(String topic)
+	{
+		send(new Query(topic).setCategory(Category.TOPIC_SUBSCRIBE));
+	}
+    public void unsubscribeTopic(String topic)
+    {
+        send(new Query(topic).setCategory(Category.TOPIC_UNSUBSCRIBE));
+    }
+
+    public void subscribeQueue(String queue)
+    {
+        send(new Query(queue).setCategory(Category.QUEUE_SUBSCRIBE));
+    }
+    public void unsubscribeQueue(String queue)
+    {
+        send(new Query(queue).setCategory(Category.QUEUE_UNSUBSCRIBE));
+    }
+
+    @Override
+    protected void end()
+    {
+        try
+        {
+            tunnel.getSocket().close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

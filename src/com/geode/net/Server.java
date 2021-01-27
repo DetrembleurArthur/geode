@@ -1,6 +1,5 @@
 package com.geode.net;
 
-import com.geode.annotations.Control;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -19,6 +18,7 @@ public class Server extends Thread implements Initializable
     private GState gState;
     private final ServerInfos serverInfos;
     private final HashMap<String, ArrayList<ProtocolHandler>> topicsMap;
+    private final HashMap<String, Queue> queuesMap;
 
     public Server(ServerInfos serverInfos)
     {
@@ -26,6 +26,7 @@ public class Server extends Thread implements Initializable
         gState = GState.DOWN;
         handlers = new CopyOnWriteArrayList<>();
         topicsMap = new HashMap<>();
+        queuesMap = new HashMap<>();
     }
 
     @Override
@@ -116,7 +117,7 @@ public class Server extends Thread implements Initializable
         return serverInfos;
     }
     
-    public synchronized void subscribe(String topic, ProtocolHandler handler)
+    public synchronized void subscribeTopic(String topic, ProtocolHandler handler)
     {
     	ArrayList<ProtocolHandler> handlers;
     	if(!topicsMap.containsKey(topic))
@@ -134,15 +135,23 @@ public class Server extends Thread implements Initializable
     	}
     }
 
-    public synchronized void unsubscribe(String topic, ProtocolHandler handler)
+    public synchronized void unsubscribeTopic(String topic, ProtocolHandler handler)
     {
         if(topicsMap.containsKey(topic))
         {
             topicsMap.get(topic).remove(handler);
         }
     }
+
+    private void unsubscribeTopic(ServerProtocolHandler serverProtocolHandler)
+    {
+        for(String key : topicsMap.keySet())
+        {
+            topicsMap.get(key).remove(serverProtocolHandler);
+        }
+    }
     
-    public synchronized void notifySubscribers(Q query)
+    public synchronized void notifySubscribers(Query query)
     {
     	String topic = query.getType();
     	ArrayList<ProtocolHandler> handlers = topicsMap.get(topic);
@@ -152,7 +161,7 @@ public class Server extends Thread implements Initializable
     	}
     }
 
-    public synchronized void notifyOtherSubscribers(Q query, ServerProtocolHandler serverProtocolHandler)
+    public synchronized void notifyOtherSubscribers(Query query, ServerProtocolHandler serverProtocolHandler)
     {
         String topic = query.getType();
         ArrayList<ProtocolHandler> handlers = topicsMap.get(topic);
@@ -160,6 +169,54 @@ public class Server extends Thread implements Initializable
         {
             if(handler != serverProtocolHandler)
                 handler.send(query);
+        }
+    }
+
+    public synchronized void notifyOther(Query query, ServerProtocolHandler serverProtocolHandler)
+    {
+        ArrayList<Integer> ids = (ArrayList<Integer>) query.getArgs().get(0);
+        query.getArgs().set(0, serverProtocolHandler.getIdentifier());
+        for(ProtocolHandler handler : handlers)
+        {
+            if(ids.contains(handler.getIdentifier()))
+            {
+                handler.send(query);
+            }
+        }
+    }
+
+    public synchronized void remove(ServerProtocolHandler serverProtocolHandler)
+    {
+        handlers.remove(serverProtocolHandler);
+        unsubscribeTopic(serverProtocolHandler);
+    }
+
+    public void subscribeQueue(String type, ServerProtocolHandler serverProtocolHandler)
+    {
+        Queue queue = queuesMap.getOrDefault(type, null);
+        if(queue == null)
+        {
+            queue = new Queue();
+            queuesMap.put(type, queue);
+        }
+        serverProtocolHandler.subscribeQueue(queue);
+    }
+
+    public void unsubscribeQueue(String type, ServerProtocolHandler serverProtocolHandler)
+    {
+        Queue queue = queuesMap.getOrDefault(type, null);
+        if(queue != null)
+        {
+            serverProtocolHandler.unsubscribeQueue(queue);
+        }
+    }
+
+    public void produceQueue(Query query, ServerProtocolHandler serverProtocolHandler)
+    {
+        Queue queue = queuesMap.getOrDefault(query.getType(), null);
+        if(queue != null)
+        {
+            serverProtocolHandler.queueProduce(queue, query.setCategory(Query.Category.QUEUE_CONSUME));
         }
     }
 }

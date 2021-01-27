@@ -1,5 +1,4 @@
 import com.geode.net.Geode;
-import com.geode.net.Q;
 import com.geode.annotations.*;
 
 @Protocol("Test")

@@ -11,10 +11,11 @@ public @interface Control
 {
     enum Type
     {
-        SERVER_CLIENT,
-        CLIENT_CLIENTS,
-        CLIENT_CLIENT
+        CLASSIC, //client->server | server->client
+        TOPIC, //client->clients by topic
+        DIRECT, //client->client | client->clients by id
+        QUEUE //client->client?
     }
     String value() default "";
-    Type type() default Type.SERVER_CLIENT;
+    Type type() default Type.CLASSIC;
 }

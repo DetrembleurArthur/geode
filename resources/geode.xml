@@ -10,5 +10,6 @@
     </servers>
     <clients>
         <client id="MyClient" server-ip="127.0.0.1" server-port="50000" protocol="MainCLI"/>
+        <client id="Producer" server-ip="127.0.0.1" server-port="50000" protocol="Producer"/>
     </clients>
 </geode>
