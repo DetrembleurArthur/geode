@@ -16,7 +16,9 @@ public class Q implements Serializable
         NORMAL,
         DISCOVERY,
         TOPIC_SUBSCRIBE,
-        TOPIC_NOTIFY
+        TOPIC_UNSUBSCRIBE,
+        TOPIC_NOTIFY,
+        TOPIC_NOTIFY_OTHERS
     }
 
     public static final Object SUCCESS = new Object();
@@ -25,6 +27,16 @@ public class Q implements Serializable
     public static Q simple(String type)
     {
         return new Q(type);
+    }
+
+    public static Q notify(String type)
+    {
+        return new Q(type).setCategory(Category.TOPIC_NOTIFY);
+    }
+
+    public static Q notifyOthers(String type)
+    {
+        return new Q(type).setCategory(Category.TOPIC_NOTIFY_OTHERS);
     }
 
     public static Q success(String type)

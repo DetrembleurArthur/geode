@@ -1,5 +1,6 @@
 package com.geode.net;
 
+import com.geode.annotations.Control;
 import com.geode.annotations.Protocol;
 import com.geode.net.Q.Category;
 
@@ -69,33 +70,38 @@ public class ServerProtocolHandler extends ProtocolHandler
 		}
         return null;
     }
-    
+
     @Override
-    protected Serializable manageQuery(Q query)
+    protected boolean testControl(Control control)
     {
-        switch (query.getCategory())
-        {
-            case NORMAL:
-                return manageNormalQuery(query);
-            case TOPIC_SUBSCRIBE:
-            	return manageTopicSubscribeQuery(query);
-            case TOPIC_NOTIFY:
-            	return manageTopicNotifyQuery(query);
-            default:
-                logger.warn(query.getCategory() + " are not allowed here");
-        }
-        return null;
+        return control.type() == Control.Type.SERVER_CLIENT;
     }
 
-	private Serializable manageTopicNotifyQuery(Q query)
+    @Override
+	protected Serializable manageTopicNotifyQuery(Q query)
 	{
 		server.notifySubscribers(query);
 		return null;
 	}
 
-	private Serializable manageTopicSubscribeQuery(Q query)
+    @Override
+    protected Serializable manageTopicNotifyOthersQuery(Q query)
+    {
+        server.notifyOtherSubscribers(query, this);
+        return null;
+    }
+
+	@Override
+    protected Serializable manageTopicSubscribeQuery(Q query)
 	{
 		server.subscribe(query.getType(), this);
 		return null;
 	}
+
+    @Override
+    protected Serializable manageTopicUnsubscribeQuery(Q query)
+    {
+        server.unsubscribe(query.getType(), this);
+        return null;
+    }
 }

@@ -9,5 +9,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Control
 {
+    enum Type
+    {
+        SERVER_CLIENT,
+        CLIENT_CLIENTS,
+        CLIENT_CLIENT
+    }
     String value() default "";
+    Type type() default Type.SERVER_CLIENT;
 }

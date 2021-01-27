@@ -2,8 +2,8 @@ package com.geode.net;
 
 import java.io.Serializable;
 import java.net.Socket;
-import java.util.HashMap;
 
+import com.geode.annotations.Control;
 import org.apache.log4j.Logger;
 
 import com.geode.annotations.Protocol;
@@ -13,13 +13,11 @@ public class ClientProtocolHandler extends ProtocolHandler
 {
     private static final Logger logger = Logger.getLogger(ClientProtocolHandler.class);
     private Class<?> protocolClass;
-    private final HashMap<String, TopicListener> topicListeners;
     
     public ClientProtocolHandler(Socket socket, Class<?> protocolClass)
     {
         super(socket);
         this.protocolClass = protocolClass;
-        topicListeners = new HashMap<>();
     }
 
     @Override
@@ -50,33 +48,25 @@ public class ClientProtocolHandler extends ProtocolHandler
         logger.fatal("protocol discovery failed");
         return null;
     }
-    
-    @Override
-    protected Serializable manageQuery(Q query)
-    {
-        switch (query.getCategory())
-        {
-            case NORMAL:
-                return manageNormalQuery(query);
-            case TOPIC_NOTIFY:
-            	return manageTopicNotifyQuery(query);
-            default:
-                logger.warn(query.getCategory() + " are not allowed here");
-        }
-        return null;
-    }
 
-	private Serializable manageTopicNotifyQuery(Q query)
+    @Override
+	protected Serializable manageTopicNotifyQuery(Q query)
 	{
-		TopicListener runnable = topicListeners.getOrDefault(query.getType(), null);
-		if(runnable != null)
-			runnable.trigger(query.getArgs());
-		return null;
+		return manageControlQuery(query, Control.Type.CLIENT_CLIENTS);
 	}
+
+    @Override
+    protected Serializable manageTopicNotifyOthersQuery(Q query)
+    {
+        return manageTopicNotifyQuery(query);
+    }
 	
-	public void subscribe(String topic, TopicListener listener)
+	public void subscribe(String topic)
 	{
-		topicListeners.put(topic, listener);
 		send(new Q(topic).setCategory(Category.TOPIC_SUBSCRIBE));
 	}
+    public void unsubscribe(String topic)
+    {
+        send(new Q(topic).setCategory(Category.TOPIC_UNSUBSCRIBE));
+    }
 }

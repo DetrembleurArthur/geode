@@ -14,7 +14,6 @@ import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Queue;
 
 public abstract class ProtocolHandler extends Thread implements Initializable
 {
@@ -68,8 +67,6 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         }
         return query;
     }
-
-    protected abstract Object discovery();
 
     @Override
     public void init()
@@ -148,14 +145,26 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     	}
     }
 
+    protected boolean testControl(Control control)
+    {
+        return true;
+    }
+
     private void initControls()
     {
         for(Method method : protocol.getClass().getDeclaredMethods())
         {
             if(method.isAnnotationPresent(Control.class))
             {
-                controls.add(method);
-                logger.info(method + " added has Control");
+                if(testControl(method.getAnnotation(Control.class)))
+                {
+                    controls.add(method);
+                    logger.info(method + " added has Control");
+                }
+                else
+                {
+                    logger.warn(method + " control ignored");
+                }
             }
         }
     }
@@ -230,18 +239,29 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         switch (query.getCategory())
         {
             case NORMAL:
-                return manageNormalQuery(query);
+                return manageControlQuery(query, Control.Type.SERVER_CLIENT);
+            case TOPIC_SUBSCRIBE:
+                return (Serializable) manageTopicSubscribeQuery(query);
+            case TOPIC_UNSUBSCRIBE:
+                return (Serializable) manageTopicUnsubscribeQuery(query);
+            case TOPIC_NOTIFY_OTHERS:
+                return (Serializable) manageTopicNotifyOthersQuery(query);
+            case TOPIC_NOTIFY:
+                return (Serializable) manageTopicNotifyQuery(query);
             default:
                 logger.warn(query.getCategory() + " are not allowed here");
         }
         return null;
     }
 
-    protected Serializable manageNormalQuery(Q query)
+
+
+    protected Serializable manageControlQuery(Q query, Control.Type ctype)
     {
         String type = query.getType();
         for(Method control : controls)
         {
+            if(control.getAnnotation(Control.class).type() != ctype) continue;
         	String controlType = control.getAnnotation(Control.class).value().isEmpty() ?
         			control.getName() : control.getAnnotation(Control.class).value();
             if(type.equals(controlType))
@@ -272,6 +292,32 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             }
         }
         logger.error("no control found for " + query);
+        return null;
+    }
+
+    protected abstract Object discovery();
+
+    protected Object manageTopicSubscribeQuery(Q query)
+    {
+        logger.warn(query.getCategory() + " are not allowed here");
+        return null;
+    }
+
+    protected Object manageTopicUnsubscribeQuery(Q query)
+    {
+        logger.warn(query.getCategory() + " are not allowed here");
+        return null;
+    }
+
+    protected Object manageTopicNotifyQuery(Q query)
+    {
+        logger.warn(query.getCategory() + " are not allowed here");
+        return null;
+    }
+
+    protected Object manageTopicNotifyOthersQuery(Q query)
+    {
+        logger.warn(query.getCategory() + " are not allowed here");
         return null;
     }
 

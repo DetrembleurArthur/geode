@@ -1,5 +1,6 @@
 package com.geode.net;
 
+import com.geode.annotations.Control;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -132,6 +133,14 @@ public class Server extends Thread implements Initializable
     		handlers.add(handler);
     	}
     }
+
+    public synchronized void unsubscribe(String topic, ProtocolHandler handler)
+    {
+        if(topicsMap.containsKey(topic))
+        {
+            topicsMap.get(topic).remove(handler);
+        }
+    }
     
     public synchronized void notifySubscribers(Q query)
     {
@@ -141,5 +150,16 @@ public class Server extends Thread implements Initializable
     	{
     		handler.send(query);
     	}
+    }
+
+    public synchronized void notifyOtherSubscribers(Q query, ServerProtocolHandler serverProtocolHandler)
+    {
+        String topic = query.getType();
+        ArrayList<ProtocolHandler> handlers = topicsMap.get(topic);
+        for(ProtocolHandler handler : handlers)
+        {
+            if(handler != serverProtocolHandler)
+                handler.send(query);
+        }
     }
 }

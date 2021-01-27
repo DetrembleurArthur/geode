@@ -7,11 +7,13 @@ import com.geode.annotations.Protocol;
 import com.geode.net.*;
 import com.geode.net.Q.Category;
 
+import java.util.Scanner;
+
 @Protocol("Test")
 public class MainCLI
 {
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws InterruptedException
 	{
 		Geode geode = new Geode("resources/geode.xml");
 
@@ -19,11 +21,10 @@ public class MainCLI
 		
 		while(true)
 		{
-			client.getHandlerSafe().send(Q.simple("mytopic").setCategory(Category.TOPIC_NOTIFY)
-					.pack(JOptionPane.showInputDialog("Message: ")));
+			String message = new Scanner(System.in).next();
+			if(message.equalsIgnoreCase("end")) client.getHandlerSafe().unsubscribe("message");
+			else client.getHandlerSafe().send(Q.notifyOthers("message").pack(message));
 		}
-
-
 	}
 	
 	@Inject
@@ -32,8 +33,12 @@ public class MainCLI
 	@OnEvent
 	public void init()
 	{
-		handler.subscribe("mytopic", (a) -> {
-			JOptionPane.showMessageDialog(null, a.get(0));
-		});
+		handler.subscribe("message");
+	}
+
+	@Control(type = Control.Type.CLIENT_CLIENTS)
+	public void message(String message)
+	{
+		System.out.println("Message receive: " + message);
 	}
 }
