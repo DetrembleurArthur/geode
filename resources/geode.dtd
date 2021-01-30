@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-        <!ELEMENT geode (servers|clients)*>
+        <!ELEMENT geode (servers|clients|udp-handlers)*>
         <!ELEMENT servers (server)*>
         <!ELEMENT server (protocols)*>
         <!ATTLIST server
@@ -18,3 +18,10 @@
                 server-ip CDATA "0.0.0.0"
                 server-port CDATA "5785"
                 protocol CDATA #REQUIRED>
+        <!ELEMENT udp-handlers (udp-handler)*>
+        <!ELEMENT udp-handler (#PCDATA)>
+        <!ATTLIST udp-handler
+                id CDATA "default"
+                host CDATA "127.0.0.1"
+                port CDATA "5786"
+                bind CDATA "false">

@@ -1,5 +1,6 @@
 package com.geode.net;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;

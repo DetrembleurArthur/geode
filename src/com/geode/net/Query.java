@@ -4,11 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Query implements Serializable
+public class Query extends SimpleQuery
 {
-    private String type;
     private Category category;
-    private ArrayList<Serializable> args;
 
     public enum Category
     {
@@ -95,41 +93,14 @@ public class Query implements Serializable
 
     public Query(String type, Serializable ... args)
     {
-        this.args = (ArrayList<Serializable>) Arrays.asList(args);
-        setType(type);
+        super(type, args);
         category = Category.NORMAL;
     }
 
     public Query(String type, ArrayList<Serializable> args)
     {
-        this.args = args;
-        setType(type);
+        super(type, args);
         category = Category.NORMAL;
-    }
-
-    public String getType()
-    {
-        return type;
-    }
-
-    public void setType(String type)
-    {
-        this.type = type.toLowerCase();
-    }
-
-    public ArrayList<Serializable> getArgs()
-    {
-        return args;
-    }
-
-    public Serializable[] getArgsArray()
-    {
-        return args.toArray(new Serializable[0]);
-    }
-
-    public void setArgs(ArrayList<Serializable> args)
-    {
-        this.args = args;
     }
 
     public Query pack(Serializable ... args)

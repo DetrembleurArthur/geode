@@ -12,4 +12,8 @@
         <client id="MyClient" server-ip="127.0.0.1" server-port="50000" protocol="MainCLI"/>
         <client id="Producer" server-ip="127.0.0.1" server-port="50000" protocol="Producer"/>
     </clients>
+    <udp-handlers>
+        <udp-handler id="MyUdpServer" host="127.0.0.1" port="3000" bind="true"/>
+        <udp-handler id="MyUdpClient" host="127.0.0.1" port="3000" bind="false"/>
+    </udp-handlers>
 </geode>

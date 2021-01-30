@@ -4,8 +4,6 @@
 
 package com.geode.admin;
 
-import com.geode.net.Client;
-
 import java.awt.*;
 import javax.swing.*;
 

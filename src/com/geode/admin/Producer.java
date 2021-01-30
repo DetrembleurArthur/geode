@@ -16,14 +16,14 @@ import javax.swing.*;
  */
 public class Producer extends JFrame {
 
-    private Client client;
-    public Producer(Client client) {
-        this.client = client;
+    private Client tcpClient;
+    public Producer(Client tcpClient) {
+        this.tcpClient = tcpClient;
         initComponents();
     }
 
     private void button1ActionPerformed(ActionEvent e) {
-        client.getHandlerSafe().send(Query.topicNotify("message").pack(textArea1.getText()));
+        tcpClient.getHandlerSafe().send(Query.topicNotify("message").pack(textArea1.getText()));
         textArea1.setText("");
     }
 

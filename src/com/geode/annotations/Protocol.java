@@ -9,4 +9,11 @@ import java.lang.annotation.Target;
 public @interface Protocol
 {
     String value();
+    Scope scope() default Scope.CONNECTION;
+
+    enum Scope
+    {
+        CONNECTION,
+        QUERY
+    }
 }

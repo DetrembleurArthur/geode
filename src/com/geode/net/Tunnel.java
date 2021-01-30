@@ -1,51 +1,39 @@
 package com.geode.net;
 
-import org.apache.log4j.Logger;
-
-import java.io.*;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.DatagramSocket;
 import java.net.Socket;
 
-public class Tunnel
+public abstract class Tunnel<T extends Closeable>
 {
-    private static final Logger logger = Logger.getLogger(Tunnel.class);
-    private final Socket socket;
-    private final ObjectOutputStream objectOutputStream;
-    private final ObjectInputStream objectInputStream;
+    protected final T socket;
 
-    public Tunnel(Socket socket) throws IOException
+    public Tunnel(T socket)
     {
-        objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-        objectInputStream = new ObjectInputStream(socket.getInputStream());
         this.socket = socket;
-        logger.info("tunnel initialize on " + socket);
     }
 
-    public void send(Serializable serializable) throws IOException
-    {
-        logger.info("send " + serializable);
-        objectOutputStream.writeObject(serializable);
-        objectOutputStream.flush();
-    }
-
-    public <T extends Serializable> T recv() throws IOException, ClassNotFoundException
-    {
-        T obj = (T) objectInputStream.readObject();
-        logger.info("recv " + obj);
-        return obj;
-    }
-
-    public Socket getSocket()
+    public T getSocket()
     {
         return socket;
     }
 
-    public ObjectOutputStream getObjectOutputStream()
-    {
-        return objectOutputStream;
-    }
+    public abstract void send(Serializable serializable) throws IOException;
 
-    public ObjectInputStream getObjectInputStream()
+    public abstract  <T extends Serializable> T recv() throws IOException, ClassNotFoundException;
+
+    public static Tunnel<?> build(Closeable socket) throws IOException
     {
-        return objectInputStream;
+        if(socket instanceof Socket)
+        {
+            return new TcpTunnel((Socket) socket);
+        }
+        else if(socket instanceof DatagramSocket)
+        {
+            return new UdpTunnel((DatagramSocket) socket);
+            }
+        return null;
     }
 }

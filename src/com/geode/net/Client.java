@@ -8,10 +8,9 @@ import java.net.Socket;
 public class Client implements Initializable, Runnable
 {
     private static final Logger logger = Logger.getLogger(Client.class);
-    private Socket socket;
-    private final ClientInfos clientInfos;
-    private ClientProtocolHandler handler;
-    private GState gState;
+    protected final ClientInfos clientInfos;
+    protected ClientProtocolHandler handler;
+    protected GState gState;
 
     public Client(ClientInfos clientInfos)
     {
@@ -19,20 +18,21 @@ public class Client implements Initializable, Runnable
         gState = GState.DOWN;
     }
 
-    @Override
-    public void init()
-    {
-        try
-        {
-            socket = new Socket(clientInfos.getHost(), clientInfos.getPort());
-            logger.info("client connected : " + socket);
-            gState = GState.READY;
-        } catch (IOException e)
-        {
-            logger.fatal("client connection error: " + e.getMessage());
-            gState = GState.BROKEN;
-        }
-    }
+	@Override
+	public void init()
+	{
+		try
+		{
+			Socket socket = new Socket(getClientInfos().getHost(), getClientInfos().getPort());
+			logger.info("client connected : " + socket);
+			handler = new ClientProtocolHandler(socket, clientInfos.getProtocolClass());
+			gState = GState.READY;
+		} catch (IOException e)
+		{
+			logger.fatal("client connection error: " + e.getMessage());
+			gState = GState.BROKEN;
+		}
+	}
 
     @Override
     public void run()
@@ -41,7 +41,6 @@ public class Client implements Initializable, Runnable
         if(gState == GState.READY)
         {
             gState = GState.RUNNING;
-            handler = new ClientProtocolHandler(socket, clientInfos.getProtocolClass());
             handler.start();
             logger.info("client handler is running");
         }
@@ -50,16 +49,6 @@ public class Client implements Initializable, Runnable
             logger.fatal("client " + gState + " can not run");
         }
     }
-    
-	public Socket getSocket()
-	{
-		return socket;
-	}
-
-	public void setSocket(Socket socket)
-	{
-		this.socket = socket;
-	}
 
 	public Class<?> getProtocolClass()
 	{

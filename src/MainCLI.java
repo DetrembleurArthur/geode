@@ -1,15 +1,10 @@
-import com.geode.admin.ConsumerFrame;
 import com.geode.annotations.Control;
 import com.geode.annotations.Inject;
 import com.geode.annotations.OnEvent;
 import com.geode.annotations.Protocol;
 import com.geode.net.*;
 
-import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Scanner;
-
-@Protocol("Test")
+@Protocol(value = "Test", scope = Protocol.Scope.QUERY)
 public class MainCLI
 {
 
@@ -17,34 +12,22 @@ public class MainCLI
 	{
 		Geode geode = new Geode("resources/geode.xml");
 
-		Client client = geode.launchClient("MyClient");
-
-		ConsumerFrame frame = new ConsumerFrame();
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		frame.setVisible(true);
-
-		((MainCLI)client.getHandlerSafe().getProtocol()).frame = frame;
-		System.err.println(frame);
+		UdpHandler handler = geode.launchUdpHandler("MyUdpClient");
+		handler.send("Hi bro!!!");
 	}
-
-
-	private ConsumerFrame frame;
 
 	@Inject
 	public ClientProtocolHandler handler;
 	
-	@OnEvent
+	@OnEvent(OnEvent.Event.INIT_OR_REBOOT)
 	public void init()
 	{
-		handler.subscribeTopic("message");
+		handler.send(Query.simple("ping"));
 	}
 
-	@Control(type = Control.Type.TOPIC)
-	public void message(String message)
+	@Control
+	public void pong()
 	{
-		System.out.println("Message receive: " + message);
-		SwingUtilities.invokeLater(() -> {
-			frame.textArea1.append(message + "\n");
-		});
+		System.out.println("> pong");
 	}
 }

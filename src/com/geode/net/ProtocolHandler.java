@@ -4,8 +4,10 @@ import com.geode.annotations.Control;
 import com.geode.annotations.Inject;
 import com.geode.annotations.OnEvent;
 
+import com.geode.annotations.Protocol;
 import org.apache.log4j.Logger;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -21,7 +23,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     protected Object protocol;
     protected ArrayList<Method> controls;
     protected boolean running;
-    protected Tunnel tunnel;
+    protected TcpTunnel tunnel;
     protected GState gState;
     protected HashMap<OnEvent.Event, Method> listeners;
     protected int identifier;
@@ -29,12 +31,12 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     public ProtocolHandler(Socket socket)
     {
         controls = new ArrayList<>();
-        listeners = new HashMap<OnEvent.Event, Method>();
+        listeners = new HashMap<>();
         running = false;
         gState = GState.DOWN;
         try
         {
-            tunnel = new Tunnel(socket);
+            tunnel = new TcpTunnel(socket);
         } catch (IOException e)
         {
             gState = GState.BROKEN;
@@ -79,6 +81,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             initInjections();
             initListeners();
             callListener(OnEvent.Event.INIT, new Object[0]);
+            callListener(OnEvent.Event.INIT_OR_REBOOT, new Object[0]);
             logger.info("handler initialized");
             gState = GState.READY;
         }
@@ -145,6 +148,21 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     	}
     }
 
+    private void rebootProtocol()
+    {
+        try
+        {
+            protocol = protocol.getClass().getConstructor().newInstance();
+            initInjections();
+            logger.info("protocol " + protocol.getClass() + " reboot");
+            callListener(OnEvent.Event.REBOOT, new Object[0]);
+            callListener(OnEvent.Event.INIT_OR_REBOOT, new Object[0]);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     protected boolean testControl(Control control)
     {
         return true;
@@ -209,6 +227,10 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                 catch (Exception e)
                 {
                     logger.error("unknown error: " + e.getMessage());
+                }
+                if(protocol.getClass().getAnnotation(Protocol.class).scope() == Protocol.Scope.QUERY)
+                {
+                    rebootProtocol();
                 }
             }
             logger.info("handler is turning off");
@@ -405,14 +427,14 @@ public abstract class ProtocolHandler extends Thread implements Initializable
 		this.running = running;
 	}
 
-	public Tunnel getTunnel()
+	public TcpTunnel getTunnel()
 	{
 		return tunnel;
 	}
 
-	public void setTunnel(Tunnel tunnel)
+	public void setTunnel(TcpTunnel tcpTunnel)
 	{
-		this.tunnel = tunnel;
+		this.tunnel = tcpTunnel;
 	}
 
 	public GState getgState()

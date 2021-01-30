@@ -3,7 +3,7 @@ package com.geode.net;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public interface TopicListener
+public interface SimpleUdpListener
 {
-	void trigger(ArrayList<Serializable> args);
+    void listen(Serializable args);
 }

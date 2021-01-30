@@ -12,7 +12,9 @@ public @interface OnEvent
 {
 	public enum Event
 	{
-		INIT
+		INIT,
+		REBOOT,
+		INIT_OR_REBOOT
 	}
 	
 	Event value() default Event.INIT;
