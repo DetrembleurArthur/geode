@@ -52,19 +52,19 @@ public class ClientProtocolHandler extends ProtocolHandler
     }
 
     @Override
-	protected Serializable manageTopicNotifyQuery(Query query)
+	protected Object manageTopicNotifyQuery(Query query)
 	{
 		return manageControlQuery(query, Control.Type.TOPIC);
 	}
 
     @Override
-    protected Serializable manageTopicNotifyOthersQuery(Query query)
+    protected Object manageTopicNotifyOthersQuery(Query query)
     {
         return manageTopicNotifyQuery(query);
     }
 
     @Override
-    protected Serializable manageNotifyQuery(Query query)
+    protected Object manageNotifyQuery(Query query)
     {
         return manageControlQuery(query, Control.Type.DIRECT);
     }

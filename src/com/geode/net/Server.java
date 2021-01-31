@@ -3,6 +3,7 @@ package com.geode.net;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -149,20 +150,28 @@ public class Server extends Thread implements Initializable
         }
     }
     
-    public synchronized void notifySubscribers(Query query)
+    public synchronized void topicNotifySubscribers(Query query, ServerProtocolHandler serverProtocolHandler)
     {
     	String topic = query.getType();
     	ArrayList<ProtocolHandler> handlers = topicsMap.get(topic);
+    	ArrayList<Serializable> newArgs = new ArrayList<>();
+    	newArgs.add(serverProtocolHandler.getIdentifier());
+    	newArgs.addAll(query.getArgs());
+    	query.setArgs(newArgs);
     	for(ProtocolHandler handler : handlers)
     	{
     		handler.send(query);
     	}
     }
 
-    public synchronized void notifyOtherSubscribers(Query query, ServerProtocolHandler serverProtocolHandler)
+    public synchronized void topicNotifyOtherSubscribers(Query query, ServerProtocolHandler serverProtocolHandler)
     {
         String topic = query.getType();
         ArrayList<ProtocolHandler> handlers = topicsMap.get(topic);
+        ArrayList<Serializable> newArgs = new ArrayList<>();
+        newArgs.add(serverProtocolHandler.getIdentifier());
+        newArgs.addAll(query.getArgs());
+        query.setArgs(newArgs);
         for(ProtocolHandler handler : handlers)
         {
             if(handler != serverProtocolHandler)

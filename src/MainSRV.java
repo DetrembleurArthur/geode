@@ -1,7 +1,5 @@
-import com.geode.net.Geode;
+import com.geode.net.*;
 import com.geode.annotations.*;
-import com.geode.net.UdpHandler;
-import com.geode.net.UdpInfos;
 
 @Protocol("Test")
 public class MainSRV
@@ -11,14 +9,7 @@ public class MainSRV
 	{
 		Geode geode = new Geode("resources/geode.xml");
 
-		UdpHandler handler = geode.launchUdpHandler("MyUdpServer");
-		handler.setDefaultListener(args1 -> System.out.println(">>> " + args1));
+		geode.launchServer("MyServer");
 
-	}
-
-	@Control
-	public String ping()
-	{
-		return "pong";
 	}
 }

@@ -10,11 +10,13 @@ import java.lang.annotation.Target;
 @Target(METHOD)
 public @interface OnEvent
 {
-	public enum Event
+	enum Event
 	{
 		INIT,
 		REBOOT,
-		INIT_OR_REBOOT
+		INIT_OR_REBOOT,
+		DOWN,
+		QUERY_IN
 	}
 	
 	Event value() default Event.INIT;

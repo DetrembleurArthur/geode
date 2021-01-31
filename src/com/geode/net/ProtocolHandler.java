@@ -22,6 +22,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     private static final Logger logger = Logger.getLogger(ProtocolHandler.class);
     protected Object protocol;
     protected ArrayList<Method> controls;
+    protected HashMap<String, QueryListener> dynamicConstrols;
     protected boolean running;
     protected TcpTunnel tunnel;
     protected GState gState;
@@ -30,6 +31,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
 
     public ProtocolHandler(Socket socket)
     {
+        dynamicConstrols = new HashMap<>();
         controls = new ArrayList<>();
         listeners = new HashMap<>();
         running = false;
@@ -176,7 +178,8 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             {
                 if(testControl(method.getAnnotation(Control.class)))
                 {
-                    if(method.getAnnotation(Control.class).type() == Control.Type.DIRECT)
+                    Control.Type type = method.getAnnotation(Control.class).type();
+                    if(type == Control.Type.DIRECT || type == Control.Type.TOPIC)
                     {
                         if(method.getParameterTypes().length >= 1)
                         {
@@ -214,7 +217,8 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                 {
                     logger.info("wait for query...");
                     Query query = tunnel.recv();
-                    Serializable result = manageQuery(query);
+                    callListener(OnEvent.Event.QUERY_IN, new Object[]{query});
+                    Object result = manageQuery(query);
                     manageQueryResult(query, result);
                 } catch (IOException e)
                 {
@@ -235,6 +239,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             }
             logger.info("handler is turning off");
             gState = GState.DOWN;
+            callListener(OnEvent.Event.DOWN, new Object[0]);
         }
         else
         {
@@ -243,13 +248,13 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         end();
     }
 
-    private void manageQueryResult(Query query, Serializable result) throws IOException
+    private void manageQueryResult(Query query, Object result) throws IOException
     {
         if(result != null)
         {
             if(result instanceof Query)
             {
-                tunnel.send(result);
+                tunnel.send((Query)result);
             }
             else if(result instanceof String)
             {
@@ -263,37 +268,37 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             {
                 tunnel.send(Query.failed(query.getType()));
             }
-            else
+            else if(result instanceof Serializable)
             {
-                tunnel.send(Query.simple(query.getType()).pack(result));
+                tunnel.send(Query.simple(query.getType()).pack((Serializable)result));
             }
         }
     }
 
-    protected Serializable manageQuery(Query query)
+    protected Object manageQuery(Query query)
     {
         switch (query.getCategory())
         {
             case NORMAL:
                 return manageControlQuery(query, Control.Type.CLASSIC);
             case TOPIC_SUBSCRIBE:
-                return (Serializable) manageTopicSubscribeQuery(query);
+                return manageTopicSubscribeQuery(query);
             case TOPIC_UNSUBSCRIBE:
-                return (Serializable) manageTopicUnsubscribeQuery(query);
+                return manageTopicUnsubscribeQuery(query);
             case TOPIC_NOTIFY_OTHERS:
-                return (Serializable) manageTopicNotifyOthersQuery(query);
+                return manageTopicNotifyOthersQuery(query);
             case TOPIC_NOTIFY:
-                return (Serializable) manageTopicNotifyQuery(query);
+                return manageTopicNotifyQuery(query);
             case NOTIFY:
-                return (Serializable) manageNotifyQuery(query);
+                return manageNotifyQuery(query);
             case QUEUE_SUBSCRIBE:
-                return (Serializable) manageQueueSubscribeQuery(query);
+                return manageQueueSubscribeQuery(query);
             case QUEUE_UNSUBSCRIBE:
-                return (Serializable) manageQueueUnsubscribeQuery(query);
+                return manageQueueUnsubscribeQuery(query);
             case QUEUE_CONSUME:
-                return (Serializable) manageQueueConsumeQuery(query);
+                return manageQueueConsumeQuery(query);
             case QUEUE_PRODUCE:
-                return (Serializable) manageQueueProduceQuery(query);
+                return manageQueueProduceQuery(query);
             default:
                 logger.warn(query.getCategory() + " are not allowed here");
         }
@@ -302,7 +307,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
 
 
 
-    protected Serializable manageControlQuery(Query query, Control.Type ctype)
+    protected Object manageControlQuery(Query query, Control.Type ctype)
     {
         String type = query.getType();
         for(Method control : controls)
@@ -328,7 +333,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                     {
                         try
                         {
-                            return (Serializable) control.invoke(protocol, args);
+                            return control.invoke(protocol, args);
                         } catch (IllegalAccessException | InvocationTargetException e)
                         {
                             logger.error("error at control invokation: " + e.getMessage());
@@ -337,6 +342,15 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                 }
             }
         }
+        return manageDynamicControlQuery(query);
+    }
+
+    private Object manageDynamicControlQuery(Query query)
+    {
+        String type = query.getType();
+        QueryListener listener = dynamicConstrols.getOrDefault(type, null);
+        if(listener != null)
+            return listener.listen(query.getArgs());
         logger.error("no control found for " + query);
         return null;
     }
@@ -397,7 +411,27 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         return null;
     }
 
-	public Object getProtocol()
+    public HashMap<String, QueryListener> getDynamicConstrols()
+    {
+        return dynamicConstrols;
+    }
+
+    public void setDynamicConstrols(HashMap<String, QueryListener> dynamicConstrols)
+    {
+        this.dynamicConstrols = dynamicConstrols;
+    }
+
+    public HashMap<OnEvent.Event, Method> getListeners()
+    {
+        return listeners;
+    }
+
+    public void setListeners(HashMap<OnEvent.Event, Method> listeners)
+    {
+        this.listeners = listeners;
+    }
+
+    public Object getProtocol()
 	{
 		return protocol;
 	}

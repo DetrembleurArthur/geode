@@ -85,14 +85,14 @@ public class ServerProtocolHandler extends ProtocolHandler
     @Override
 	protected Serializable manageTopicNotifyQuery(Query query)
 	{
-		server.notifySubscribers(query);
+		server.topicNotifySubscribers(query, this);
 		return null;
 	}
 
     @Override
     protected Serializable manageTopicNotifyOthersQuery(Query query)
     {
-        server.notifyOtherSubscribers(query, this);
+        server.topicNotifyOtherSubscribers(query, this);
         return null;
     }
 
