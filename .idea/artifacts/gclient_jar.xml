@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="geode:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/geode_jar</output-path>
+  <artifact type="jar" name="gclient:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/gclient_jar</output-path>
     <root id="archive" name="geode.jar">
       <element id="module-output" name="geode" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/jaxp.jar" path-in-jar="/" />

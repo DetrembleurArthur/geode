@@ -7,7 +7,7 @@ public class MainSRV
 
 	public static void main(String[] args)
 	{
-		Geode geode = new Geode("resources/geode.xml");
+		Geode geode = new Geode("resources/server.xml");
 
 		geode.launchServer("MyServer");
 

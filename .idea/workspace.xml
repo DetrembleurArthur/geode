@@ -27,16 +27,18 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="54a1a308-efaa-42ae-a7b1-2555480afc0c" name="Default Changelist" comment="simple udp system">
-      <change afterPath="$PROJECT_DIR$/src/com/geode/net/QueryListener.java" afterDir="false" />
+    <list default="true" id="54a1a308-efaa-42ae-a7b1-2555480afc0c" name="Default Changelist" comment="Add simple tcp listeners">
+      <change afterPath="$PROJECT_DIR$/resources/server.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/geode_jar.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/geode.xml" beforeDir="false" afterPath="$PROJECT_DIR$/resources/client.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/MainCLI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MainCLI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/MainSRV.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MainSRV.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/geode/annotations/OnEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/geode/annotations/OnEvent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/geode/net/ClientProtocolHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/geode/net/ClientProtocolHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/geode/net/ProtocolHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/geode/net/ProtocolHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/geode/net/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/geode/net/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/geode/net/ServerProtocolHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/geode/net/ServerProtocolHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Producer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/admin/ConsumerFrame.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/admin/ConsumerFrame.jfd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/admin/Producer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/geode/admin/Producer.jfd" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,25 +69,26 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../JavaGameEngine/JGameEngine" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/resources" />
     <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15039062" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\Users\mb624\Documents\GitHub\geode\geode\libs" />
-      <recent name="D:\Users\mb624\Documents\GitHub\geode\geode\src\com\geode\net" />
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.geode.net" />
+      <recent name="com.geode.xml" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.geode.net" />
       <recent name="com.geode.annotations" />
       <recent name="com.geode.options" />
     </key>
-    <key name="CreateClassDialog.RecentsKey">
-      <recent name="com.geode.net" />
-      <recent name="com.geode.xml" />
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Users\mb624\Documents\GitHub\geode\geode\resources" />
+      <recent name="D:\Users\mb624\Documents\GitHub\geode\geode\libs" />
+      <recent name="D:\Users\mb624\Documents\GitHub\geode\geode\src\com\geode\net" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Server">
@@ -144,13 +147,15 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="class" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -183,7 +188,8 @@
       <workItem from="1611749245544" duration="8238000" />
       <workItem from="1611843040565" duration="405000" />
       <workItem from="1612009385223" duration="10362000" />
-      <workItem from="1612087619963" duration="2643000" />
+      <workItem from="1612087619963" duration="2928000" />
+      <workItem from="1612097015325" duration="1558000" />
     </task>
     <task id="LOCAL-00001" summary="restart">
       <created>1611075726146</created>
@@ -227,7 +233,14 @@
       <option name="project" value="LOCAL" />
       <updated>1612018375560</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Add simple tcp listeners">
+      <created>1612090398643</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1612090398643</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -251,7 +264,8 @@
     <MESSAGE value="topic upgrade" />
     <MESSAGE value="Messaging politics implemented" />
     <MESSAGE value="simple udp system" />
-    <option name="LAST_COMMIT_MESSAGE" value="simple udp system" />
+    <MESSAGE value="Add simple tcp listeners" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add simple tcp listeners" />
   </component>
   <component name="WindowStateProjectService">
     <state x="2334" y="174" width="1092" height="739" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1612090119746">
@@ -262,10 +276,10 @@
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
     <state x="2685" y="226" key="#com.intellij.ide.util.MemberChooser/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1612088860020" />
-    <state x="2609" y="321" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1611754495048">
+    <state x="2609" y="321" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1612098571516">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state x="2609" y="321" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1611754495048" />
+    <state x="2609" y="321" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1612098571516" />
     <state x="2245" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1612015632676">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
@@ -282,34 +296,34 @@
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
     <state x="2586" y="261" key="FileChooserDialogImpl/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1611668895808" />
-    <state width="1877" height="260" key="GridCell.Tab.0.bottom" timestamp="1612090200009">
+    <state width="1877" height="260" key="GridCell.Tab.0.bottom" timestamp="1612098420581">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="260" key="GridCell.Tab.0.bottom/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1612090200009" />
-    <state width="1877" height="260" key="GridCell.Tab.0.center" timestamp="1612090200009">
+    <state width="1877" height="260" key="GridCell.Tab.0.bottom/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1612098420581" />
+    <state width="1877" height="260" key="GridCell.Tab.0.center" timestamp="1612098420581">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="260" key="GridCell.Tab.0.center/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1612090200009" />
-    <state width="1877" height="260" key="GridCell.Tab.0.left" timestamp="1612090200009">
+    <state width="1877" height="260" key="GridCell.Tab.0.center/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1612098420581" />
+    <state width="1877" height="260" key="GridCell.Tab.0.left" timestamp="1612098420581">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="260" key="GridCell.Tab.0.left/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1612090200009" />
-    <state width="1877" height="260" key="GridCell.Tab.0.right" timestamp="1612090200009">
+    <state width="1877" height="260" key="GridCell.Tab.0.left/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1612098420581" />
+    <state width="1877" height="260" key="GridCell.Tab.0.right" timestamp="1612098420581">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="260" key="GridCell.Tab.0.right/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1612090200009" />
+    <state width="1877" height="260" key="GridCell.Tab.0.right/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1612098420581" />
     <state x="2460" y="254" key="IDE.errors.dialog" timestamp="1611741618983">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
     <state x="2460" y="254" key="IDE.errors.dialog/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1611741618983" />
-    <state x="2360" y="94" key="SettingsEditor" timestamp="1611740081133">
+    <state x="2360" y="94" key="SettingsEditor" timestamp="1612098580830">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state x="2360" y="94" key="SettingsEditor/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1611740081133" />
-    <state x="2472" y="252" key="Vcs.Push.Dialog.v2" timestamp="1612018375962">
+    <state x="2360" y="94" key="SettingsEditor/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1612098580830" />
+    <state x="2472" y="252" key="Vcs.Push.Dialog.v2" timestamp="1612090400127">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>
-    <state x="2472" y="252" key="Vcs.Push.Dialog.v2/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1612018375962" />
+    <state x="2472" y="252" key="Vcs.Push.Dialog.v2/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1612090400127" />
     <state x="2697" y="433" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1611741508237">
       <screen x="1920" y="0" width="1920" height="1040" />
     </state>

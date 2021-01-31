@@ -14,13 +14,13 @@ public class MainCLI
 
 	public static void main(String[] args) throws InterruptedException
 	{
-		Geode geode = new Geode("resources/geode.xml");
+		Geode geode = new Geode("resources/client.xml");
 
 		Scanner scanner = new Scanner(System.in);
 		ClientProtocolHandler handler = geode.launchClient("MyClient").getHandlerSafe();
 		while (true)
 		{
-			System.out.print("Message:" + group + "> ");
+			System.out.print("@@@@@@ -> Message:" + group + "> ");
 			String msg = scanner.nextLine();
 			handler.send(Query.topicNotifyOthers(group).pack(msg));
 		}
@@ -32,10 +32,12 @@ public class MainCLI
 	@OnEvent
 	public void init()
 	{
-		group = JOptionPane.showInputDialog("Subscribe to a group:");
+		Scanner scanner = new Scanner(System.in);
+		System.out.print("Join group: ");
+		group = scanner.nextLine().toLowerCase();
 		handler.subscribeTopic(group);
 		handler.getDynamicConstrols().put(group, args -> {
-			System.out.println("Message : " + args);
+			System.out.println("Message from " + args.get(0) + " :" + args.get(1));
 			return null;
 		});
 	}
