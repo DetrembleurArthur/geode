@@ -2,6 +2,6 @@
 <!DOCTYPE geode SYSTEM "geode.dtd" >
 <geode>
     <clients>
-        <client id="MyClient" server-ip="87.67.186.235" server-port="50000" protocol="MainCLI"/>
+        <client id="MyClient" server-ip="********" server-port="50000" protocol="MainCLI"/>
     </clients>
 </geode>
