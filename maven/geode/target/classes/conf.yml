@@ -1,0 +1,12 @@
+servers:
+  pingServer:
+    host: 127.0.0.1
+    port: 50000
+    backlog: 5
+    protocols:
+      - com.geode.test.Pong
+clients:
+  pingClient:
+    host: 127.0.0.1
+    port: 50000
+    protocol: com.geode.test.Ping

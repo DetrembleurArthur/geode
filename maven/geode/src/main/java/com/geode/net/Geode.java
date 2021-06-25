@@ -2,9 +2,16 @@ package com.geode.net;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * The type Geode.
@@ -36,6 +43,60 @@ public final class Geode
         servers = new ArrayList<>();
         tcpClients = new ArrayList<>();
         udpHandlers = new ArrayList<>();
+    }
+
+    public void init(String yamlFilename) throws Exception
+    {
+        InputStream stream = new FileInputStream(new File(yamlFilename));
+        Yaml yaml = new Yaml();
+        Map<String, Object> data = yaml.load(stream);
+        Map<String, Object> servers = (Map<String, Object>) data.get("servers");
+        Map<String, Object> clients = (Map<String, Object>) data.get("clients");
+        Map<String, Object> udpHandlers = (Map<String, Object>) data.get("udpHandlers");
+        if(servers != null)
+        for(String key : servers.keySet())
+        {
+            String serverId = key;
+            Map<String, Object> serverData = (Map<String, Object>) servers.get(serverId);
+            ServerInfos serverInfos = new ServerInfos();
+            serverInfos.setHost((String) serverData.getOrDefault("host", "127.0.0.1"));
+            serverInfos.setPort((Integer) serverData.getOrDefault("port", 50000));
+            serverInfos.setBacklog((Integer) serverData.getOrDefault("backlog", 10));
+            ArrayList<String> protocolNames = (ArrayList<String>) serverData.get("protocols");
+            if(protocolNames != null)
+            {
+                serverInfos.setProtocolClasses(new ArrayList<>());
+                for(String pName : protocolNames)
+                {
+                    serverInfos.getProtocolClasses().add(Class.forName(pName));
+                }
+            }
+            registerServer(serverId, serverInfos);
+        }
+        if(clients != null)
+        for(String key : clients.keySet())
+        {
+            String clientId = key;
+            Map<String, Object> clientData = (Map<String, Object>) clients.get(clientId);
+            ClientInfos clientInfos = new ClientInfos();
+            clientInfos.setHost((String) clientData.getOrDefault("host", "127.0.0.1"));
+            clientInfos.setPort((Integer) clientData.getOrDefault("port", 50000));
+            clientInfos.setProtocolClass(Class.forName((String) clientData.get("protocol")));
+            if(clientInfos.getProtocolClass() == null)
+                throw new Exception("no protocols for '" + key + "' server...");
+            registerClient(clientId, clientInfos);
+        }
+        if(udpHandlers != null)
+        for(String key : udpHandlers.keySet())
+        {
+            String udpId = key;
+            Map<String, Object> udpData = (Map<String, Object>) udpHandlers.get(udpId);
+            UdpInfos udpInfos = new UdpInfos();
+            udpInfos.setBind((Boolean) udpData.getOrDefault("bind", false));
+            udpInfos.setHost((String) udpData.getOrDefault("host", "127.0.0.1"));
+            udpInfos.setPort((Integer) udpData.getOrDefault("port", 50000));
+            registerUdpHandler(udpId, udpInfos);
+        }
     }
 
     /**

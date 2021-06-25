@@ -16,6 +16,7 @@ public class Ping
     public void pong()
     {
         System.out.println("pong");
+        handler.setProtocolState("OK");
         handler.send(Query.simple("yes"));
     }
 
