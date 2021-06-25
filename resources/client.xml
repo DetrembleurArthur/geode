@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE geode SYSTEM "geode.dtd" >
-<geode>
-    <clients>
-        <client id="MyClient" server-ip="********" server-port="50000" protocol="MainCLI"/>
-    </clients>
-</geode>
