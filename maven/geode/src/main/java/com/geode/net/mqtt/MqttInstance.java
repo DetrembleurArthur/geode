@@ -10,12 +10,16 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
+
+import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.*;
@@ -105,64 +109,44 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
         return ks;
     }
 
-    SSLSocketFactory getSocketFactory (final String caCrtFile) throws Exception
-    {/*
-        // load CA certificate
-        X509Certificate caCert = readCert(caCrtFile);
-        X509Certificate cliCert = readCert(mqttInfos.getCertfile());
-        // CA certificate is used to authenticate server
-        KeyStore caKs = KeyStore.getInstance(KeyStore.getDefaultType());
-        caKs.load(null, null);
-        caKs.setCertificateEntry("ca-certificate", caCert);
-        caKs.setCertificateEntry("cli-certificate", cliCert);
+    
+    public PrivateKey getPrivateKey(String filename) throws Exception {
 
-
-        byte[] keyBytes = Files.readAllBytes(Paths.get(mqttInfos.getKeyfile()));
-
+        File f = new File(filename);
+        FileInputStream fis = new FileInputStream(f);
+        DataInputStream dis = new DataInputStream(fis);
+        byte[] keyBytes = new byte[(int) f.length()];
+        dis.readFully(keyBytes);
+        dis.close();
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-        KeyFactory kf = KeyFactory.getInstance("RSA");
+        KeyFactory kf =
+                KeyFactory.getInstance("RSA");
+        return kf.generatePrivate(spec);
+    }
 
-        caKs.setKeyEntry("geode-cli-key", kf.generatePrivate(spec), "password".toCharArray(), new Certificate[]{caCert, cliCert});*/
-
+    SSLSocketFactory getSocketFactory (final String caCrtFile) throws Exception
+    {
         KeyStore caKs = KeyStore.getInstance("JKS");
-        caKs.load(new FileInputStream("src/main/resources/geode-keystore.jks"), "password".toCharArray());
+        caKs.load(null, null);
 
+        X509Certificate caCert = readCert(caCrtFile);
+        
+        caKs.setCertificateEntry("CA", caCert);
+        System.err.println(caCert);
+
+        X509Certificate cliCert = readCert(mqttInfos.getCertfile());
+        caKs.setCertificateEntry("CLIcert", cliCert);
+
+        PrivateKey key = getPrivateKey(mqttInfos.getKeyfile());
+        caKs.setKeyEntry("CLIkey", key, "".toCharArray(), new Certificate[]{cliCert});
+        
         TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
 
 
         tmf.init(caKs);
         KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-        kmf.init(caKs, "password".toCharArray());
+        kmf.init(caKs, "".toCharArray());
 
-        // finally, create SSL socket factory
-        SSLContext context = SSLContext.getInstance("TLSv1.2");
-        context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-
-        //caKs.store(new FileOutputStream("src/main/resources/test.jks"), "password".toCharArray());
-        System.err.println("socket factory created");
-        return context.getSocketFactory();
-    }
-
-    static SSLSocketFactory getSocketFactory (final String caCrtFile,
-                                              final String keystoreFile,
-                                              final String keystorePassword) throws Exception
-    {
-        // load CA certificate
-        X509Certificate caCert = readCert(caCrtFile);
-        // CA certificate is used to authenticate server
-        KeyStore caKs = KeyStore.getInstance(KeyStore.getDefaultType());
-        caKs.load(null, null);
-        caKs.setCertificateEntry("mosquitto-ca", caCert);
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        tmf.init(caKs);
-
-        // client key and certificates are sent to server so it can authenticate us
-        KeyStore ks = loadKeystore(keystoreFile, keystorePassword);
-
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        kmf.init(ks, keystorePassword.toCharArray());
-
-        // finally, create SSL socket factory
         SSLContext context = SSLContext.getInstance("TLSv1.2");
         context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 

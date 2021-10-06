@@ -12,11 +12,14 @@ clients:
     protocol: com.geode.test.Ping
 mqtt:
   test:
-    broker-ip: test.mosquitto.org
-    broker-port: 8884
+    broker-ip: mac-arthur
+    broker-port: 8883
     client-id: arthur
     default-qos: 0
     topic-handler: com.geode.test.TopicMan
-    tls-cafile: src/main/resources/mosquitto.org.crt
-    tls-certfile: src/main/resources/geode-cli.crt
-    tls-keyfile: src/main/resources/geode-cli.key
+    tls-cafile: /Users/ArthurDetrembleur/desktop/mqtt/ca/ca.crt
+    tls-certfile: /Users/ArthurDetrembleur/desktop/mqtt/ca/client.crt
+    tls-keyfile: /Users/ArthurDetrembleur/desktop/mqtt/ca/client.der
+#    tls-cafile: src/main/resources/mosquitto.org.crt
+#    tls-certfile: src/main/resources/geode-cli.crt
+#    tls-keyfile: src/main/resources/geode-cli.der
