@@ -13,7 +13,10 @@ clients:
 mqtt:
   test:
     broker-ip: test.mosquitto.org
-    broker-port: 1883
+    broker-port: 8884
     client-id: arthur
     default-qos: 0
     topic-handler: com.geode.test.TopicMan
+    tls-cafile: src/main/resources/mosquitto.org.crt
+    tls-certfile: src/main/resources/geode-cli.crt
+    tls-keyfile: src/main/resources/geode-cli.key

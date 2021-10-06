@@ -4,12 +4,14 @@ import com.geode.net.mqtt.MqttInfos;
 import com.geode.net.mqtt.MqttInstance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +22,11 @@ import java.util.function.Function;
  */
 public final class Geode
 {
+    static
+    {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
     private final static Logger logger = LogManager.getLogger(Geode.class);
     private final HashMap<String, ServerInfos> serversInfos;
     private final HashMap<String, ClientInfos> clientsInfos;
@@ -115,6 +122,9 @@ public final class Geode
             infos.setClientId((String) mqttData.getOrDefault("client-id", "geode-mqtt"));
             infos.setDefaultQos((int) mqttData.getOrDefault("default-qos", 0));
             infos.setTopicsClass(Class.forName((String) mqttData.get("topic-handler")));
+            infos.setCafile((String) mqttData.getOrDefault("tls-cafile", null));
+            infos.setCertfile((String) mqttData.getOrDefault("tls-certfile", null));
+            infos.setKeyfile((String) mqttData.getOrDefault("tls-keyfile", null));
             registerMqtt(mqttId, infos);
         }
     }

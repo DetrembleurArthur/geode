@@ -7,17 +7,54 @@ public class MqttInfos
     private int defaultQos;
     private String clientId;
     private Class<?> topicsClass;
+    private String cafile;
+    private String certfile;
+    private String keyfile;
 
 
     public MqttInfos() {
     }
 
-    public MqttInfos(String brokerIp, int brokerPort, int defaultQos, String clientId, Class<?> topicsClass) {
+    public MqttInfos(String brokerIp, int brokerPort, int defaultQos, String clientId, Class<?> topicsClass, String cafile, String certfile, String keyfile)
+    {
         this.brokerIp = brokerIp;
         this.brokerPort = brokerPort;
         this.defaultQos = defaultQos;
         this.clientId = clientId;
         this.topicsClass = topicsClass;
+        this.cafile = cafile;
+        this.certfile = certfile;
+        this.keyfile = keyfile;
+    }
+
+    public String getCafile()
+    {
+        return cafile;
+    }
+
+    public void setCafile(String cafile)
+    {
+        this.cafile = cafile;
+    }
+
+    public String getCertfile()
+    {
+        return certfile;
+    }
+
+    public void setCertfile(String certfile)
+    {
+        this.certfile = certfile;
+    }
+
+    public String getKeyfile()
+    {
+        return keyfile;
+    }
+
+    public void setKeyfile(String keyfile)
+    {
+        this.keyfile = keyfile;
     }
 
     public Class<?> getTopicsClass()
