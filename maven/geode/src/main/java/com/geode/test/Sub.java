@@ -1,8 +1,11 @@
 package com.geode.test;
 
-import com.geode.annotations.mqtt.MqttTopic;
-import com.geode.net.mqtt.MqttSubscriber;
-import com.geode.net.mqtt.MqttSubscriberInfos;
+import com.geode.net.mqtt.MqttInfos;
+import com.geode.net.mqtt.MqttInstance;
+import com.geode.net.mqtt_proto.MqttSubscriber;
+import com.geode.net.mqtt_proto.MqttSubscriberInfos;
+
+import java.util.Scanner;
 
 
 public class Sub {
@@ -10,16 +13,15 @@ public class Sub {
     
 
     public static void main(String[] args) throws Exception {
-        
-        MqttSubscriber subscriber = new MqttSubscriber(
-            new MqttSubscriberInfos("192.168.1.48", 1883, (byte)0, "Arthur")
-        );
 
-        subscriber.getSubscriberInfos().setTopicCluster(TopicMan.class);
+        MqttInstance instance = new MqttInstance(new MqttInfos("test.mosquitto.org", 1883, 0, "pub1", TopicMan.class));
+        instance.init();
 
-        subscriber.init();
-        subscriber.subscribe();
-        System.in.read();
-        subscriber.close();
+        instance.subscribe();
+        instance.loop();
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
+
+        instance.close();
     }
 }

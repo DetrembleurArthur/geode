@@ -1,28 +1,19 @@
 package com.geode.test;
 
-import java.util.Scanner;
-
-import com.geode.net.mqtt.MqttInfos;
-import com.geode.net.mqtt.MqttPublisher;
+import com.geode.net.Geode;
+import com.geode.net.mqtt.MqttInstance;
 
 public class Pub {
     public static void main(String[] args) throws Exception {
-        MqttPublisher publisher = new MqttPublisher(
-            new MqttInfos("192.168.1.48", 1883, (byte)0, "ArthurS")
-        );
+        Geode geode = new Geode();
+        geode.init("src/main/resources/conf.yml");
 
-        publisher.init();
-        
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("topic: ");
-        String topic = scanner.nextLine();
+        MqttInstance mqttInstance = geode.launchMqtt("test");
 
-        System.out.println("message: ");
-        String message = scanner.nextLine();
-
-        publisher.publish(topic, message);
-
-        publisher.close();
-        scanner.close();
+        for(int i = 0; i < 10; i++){
+            mqttInstance.publish("test/arthur", "Hello world from geode!");
+            Thread.sleep(500);
+        }
+        mqttInstance.close();
     }
 }

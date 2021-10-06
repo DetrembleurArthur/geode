@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 public @interface MqttTopic
 {
     String value();
+    int qos() default 0;
 }

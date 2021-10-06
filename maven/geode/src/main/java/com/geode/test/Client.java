@@ -1,6 +1,5 @@
 package com.geode.test;
 
-import com.geode.net.ClientInfos;
 import com.geode.net.Geode;
 import com.geode.net.Query;
 

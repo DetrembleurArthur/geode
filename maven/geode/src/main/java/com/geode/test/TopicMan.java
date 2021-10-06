@@ -8,6 +8,6 @@ public class TopicMan {
         @MqttTopic("test/arthur")
         public void test(MqttMessage message)
         {
-            System.out.println("Receive: " + new String(message.getPayload()));
+            System.out.println("Receive in object: " + new String(message.getPayload()));
         }
 }

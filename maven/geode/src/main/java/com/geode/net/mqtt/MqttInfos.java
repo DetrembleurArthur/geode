@@ -4,19 +4,30 @@ public class MqttInfos
 {
     private String brokerIp;
     private int brokerPort;
-    private byte qos;
+    private int defaultQos;
     private String clientId;
+    private Class<?> topicsClass;
 
-    
 
     public MqttInfos() {
     }
 
-    public MqttInfos(String brokerIp, int brokerPort, byte qos, String clientId) {
+    public MqttInfos(String brokerIp, int brokerPort, int defaultQos, String clientId, Class<?> topicsClass) {
         this.brokerIp = brokerIp;
         this.brokerPort = brokerPort;
-        this.qos = qos;
+        this.defaultQos = defaultQos;
         this.clientId = clientId;
+        this.topicsClass = topicsClass;
+    }
+
+    public Class<?> getTopicsClass()
+    {
+        return topicsClass;
+    }
+
+    public void setTopicsClass(Class<?> topicsClass)
+    {
+        this.topicsClass = topicsClass;
     }
 
     public String getBrokerIp() {
@@ -35,13 +46,13 @@ public class MqttInfos
         this.brokerPort = brokerPort;
     }
 
-    public byte getQos() {
-        return qos;
+    public int getDefaultQos() {
+        return defaultQos;
     }
-    
-    public void setQos(byte qos) throws Exception {
-        if(qos < 0 || qos > 2) throw new Exception("QoS must be between 0 and 2, not " + Integer.toString(qos));
-        this.qos = qos;
+
+    public void setDefaultQos(int defaultQos) throws Exception {
+        if(defaultQos < 0 || defaultQos > 2) throw new Exception("QoS must be between 0 and 2, not " + Integer.toString(defaultQos));
+        this.defaultQos = defaultQos;
     }
 
     public String getClientId() {

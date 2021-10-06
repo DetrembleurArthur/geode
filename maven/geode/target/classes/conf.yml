@@ -10,3 +10,10 @@ clients:
     host: 127.0.0.1
     port: 50000
     protocol: com.geode.test.Ping
+mqtt:
+  test:
+    broker-ip: test.mosquitto.org
+    broker-port: 1883
+    client-id: arthur
+    default-qos: 0
+    topic-handler: com.geode.test.TopicMan
