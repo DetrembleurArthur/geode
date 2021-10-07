@@ -1,21 +1,21 @@
 package com.geode.net;
 
-import com.geode.net.mqtt.MqttInfos;
-import com.geode.net.mqtt.MqttInstance;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
+
+import com.geode.net.mqtt.MqttInfos;
+import com.geode.net.mqtt.MqttInstance;
+import com.geode.net.tls.TLSInfos;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * The type Geode.
@@ -58,6 +58,17 @@ public final class Geode
         mqttInfos = new HashMap<>();
     }
 
+    private void tlsInit(TLSInfos infos, Map<String, Object> data)
+    {
+        if(data.containsKey("tls"))
+        {
+            data = (Map<String, Object>) data.get("tls");
+            infos.setCafile((String)data.getOrDefault("cafile", null));
+            infos.setCertfile((String)data.getOrDefault("certfile", null));
+            infos.setKeyfile((String)data.getOrDefault("keyfile", null));
+        }
+    }
+
     public void init(String yamlFilename) throws Exception
     {
         InputStream stream = new FileInputStream(new File(yamlFilename));
@@ -73,6 +84,7 @@ public final class Geode
             String serverId = key;
             Map<String, Object> serverData = (Map<String, Object>) servers.get(serverId);
             ServerInfos serverInfos = new ServerInfos();
+            tlsInit(serverInfos, serverData);
             serverInfos.setHost((String) serverData.getOrDefault("host", "127.0.0.1"));
             serverInfos.setPort((Integer) serverData.getOrDefault("port", 50000));
             serverInfos.setBacklog((Integer) serverData.getOrDefault("backlog", 10));
@@ -93,6 +105,7 @@ public final class Geode
             String clientId = key;
             Map<String, Object> clientData = (Map<String, Object>) clients.get(clientId);
             ClientInfos clientInfos = new ClientInfos();
+            tlsInit(clientInfos, clientData);
             clientInfos.setHost((String) clientData.getOrDefault("host", "127.0.0.1"));
             clientInfos.setPort((Integer) clientData.getOrDefault("port", 50000));
             clientInfos.setProtocolClass(Class.forName((String) clientData.get("protocol")));
@@ -117,14 +130,12 @@ public final class Geode
             String mqttId = key;
             Map<String, Object> mqttData = (Map<String, Object>) mqtt.get(mqttId);
             MqttInfos infos = new MqttInfos();
+            tlsInit(infos, mqttData);
             infos.setBrokerIp((String) mqttData.getOrDefault("broker-ip", null));
             infos.setBrokerPort((int) mqttData.getOrDefault("broker-port", 1883));
             infos.setClientId((String) mqttData.getOrDefault("client-id", "geode-mqtt"));
             infos.setDefaultQos((int) mqttData.getOrDefault("default-qos", 0));
             infos.setTopicsClass(Class.forName((String) mqttData.get("topic-handler")));
-            infos.setCafile((String) mqttData.getOrDefault("tls-cafile", null));
-            infos.setCertfile((String) mqttData.getOrDefault("tls-certfile", null));
-            infos.setKeyfile((String) mqttData.getOrDefault("tls-keyfile", null));
             registerMqtt(mqttId, infos);
         }
     }

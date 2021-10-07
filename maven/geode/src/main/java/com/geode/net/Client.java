@@ -4,7 +4,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
+
+import javax.net.SocketFactory;
+
+import com.geode.net.tls.TLSUtils;
 
 /**
  * The type Client.
@@ -36,16 +41,34 @@ public class Client implements Initializable, Runnable
         gState = GState.DOWN;
     }
 
+    public Socket initSocket() throws Exception
+    {
+        System.err.println(clientInfos.isTLSEnable());
+        if(clientInfos.isTLSEnable())
+        {
+            SocketFactory factory = TLSUtils.getSocketFactory(
+                clientInfos.getCafile(),
+                clientInfos.getCertfile(),
+                clientInfos.getKeyfile()
+            );
+            return factory.createSocket(
+                InetAddress.getByName(clientInfos.getHost()),
+                clientInfos.getPort()
+            );
+        }
+        return new Socket(getClientInfos().getHost(), getClientInfos().getPort());
+    }
+
     @Override
     public void init()
     {
         try
         {
-            Socket socket = new Socket(getClientInfos().getHost(), getClientInfos().getPort());
+            Socket socket = initSocket();
             logger.info("client connected : " + socket);
             handler = new ClientProtocolHandler(socket, clientInfos.getProtocolClass());
             gState = GState.READY;
-        } catch (IOException e)
+        } catch (Exception e)
         {
             logger.fatal("client connection error: " + e.getMessage());
             gState = GState.BROKEN;

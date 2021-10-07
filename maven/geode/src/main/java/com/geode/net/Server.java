@@ -13,6 +13,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.net.ServerSocketFactory;
+import javax.net.SocketFactory;
+
+import com.geode.net.tls.TLSUtils;
+
 /**
  * The type Server.
  */
@@ -40,14 +45,32 @@ public class Server extends Thread implements Initializable
         queuesMap = new HashMap<>();
     }
 
+    public ServerSocket initServerSocket() throws Exception
+    {
+        if(serverInfos.isTLSEnable())
+        {
+            ServerSocketFactory factory = TLSUtils.getServerSocketFactory(
+                serverInfos.getCafile(),
+                serverInfos.getCertfile(),
+                serverInfos.getKeyfile()
+            );
+            return factory.createServerSocket(
+                serverInfos.getPort(),
+                serverInfos.getBacklog(),
+                InetAddress.getByName(serverInfos.getHost())
+            );
+        }
+        return new ServerSocket(serverInfos.getPort(), serverInfos.getBacklog(), InetAddress.getByName(serverInfos.getHost()));
+    }
+
     @Override
     public void init()
     {
         try
         {
-            serverSocket = new ServerSocket(serverInfos.getPort(), serverInfos.getBacklog(), InetAddress.getByName(serverInfos.getHost()));
+            serverSocket = initServerSocket();
             gState = GState.READY;
-        } catch (IOException e)
+        } catch (Exception e)
         {
             logger.fatal("unable to initialise the server: " + serverInfos + " -> " + e.getMessage());
             gState = GState.BROKEN;

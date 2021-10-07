@@ -1,0 +1,16 @@
+#avec keystore
+
+
+openssl genrsa -des3 -out geode-cli.key 2048
+openssl rsa -in geode-cli.key -out geode-cli-np.key
+openssl req -new -out geode-cli.csr -key geode-cli-np.key 
+keytool -import -trustcacerts -alias geode-cli-cert -file geode-cli-cert.crt  -keystore geode-keystore.jks
+
+openssl pkcs12 -export -in geode-cli.crt -inkey geode-cli.key -name mac-arthur -out geode-cli.p12
+keytool -importkeystore -deststorepass password -destkeystore geode.jks -srckeystore geode-cli.p12 -srcstoretype PKCS12
+keytool -import -alias bundle -trustcacerts -file mosquitto.org.crt -keystore geode.jks 
+
+
+
+#sans keystore (convertion de la clé PEM en DER)
+openssl pkcs8 -topk8 -inform PEM -outform DER -in geode-cli.key -out geode-cli.der -nocrypt

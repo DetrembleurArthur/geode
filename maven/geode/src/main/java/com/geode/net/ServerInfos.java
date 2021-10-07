@@ -3,10 +3,12 @@ package com.geode.net;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.geode.net.tls.TLSInfos;
+
 /**
  * The type Server infos.
  */
-public class ServerInfos
+public class ServerInfos extends TLSInfos
 {
     private String host;
     private int backlog;

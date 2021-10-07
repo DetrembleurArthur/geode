@@ -1,9 +1,11 @@
 package com.geode.net;
 
+import com.geode.net.tls.TLSInfos;
+
 /**
  * The type Client infos.
  */
-public class ClientInfos
+public class ClientInfos extends TLSInfos
 {
     private String host;
     private int port;

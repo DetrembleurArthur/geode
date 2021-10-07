@@ -1,37 +1,24 @@
 package com.geode.net.mqtt;
 
-import com.geode.annotations.mqtt.MqttTopic;
-import com.geode.net.Initializable;
-import org.eclipse.paho.client.mqttv3.*;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-
-import javax.net.SocketFactory;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
-
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.*;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
+
+import javax.net.SocketFactory;
+
+import com.geode.annotations.mqtt.MqttTopic;
+import com.geode.net.Initializable;
+import com.geode.net.tls.TLSUtils;
+
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
 {
@@ -58,7 +45,7 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
         try
         {
             mqttClient = new MqttClient(
-                    "ssl://" + mqttInfos.getBrokerIp() + ":" + mqttInfos.getBrokerPort(),
+                    (mqttInfos.isTLSEnable() ? "ssl" : "tcp") + "://" + mqttInfos.getBrokerIp() + ":" + mqttInfos.getBrokerPort(),
                     mqttInfos.getClientId(),
                     new MemoryPersistence()
             );
@@ -87,7 +74,8 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
     {
         try
         {
-            SocketFactory socketFactory = getSocketFactory(mqttInfos.getCafile());
+            SocketFactory socketFactory = TLSUtils.getSocketFactory(
+                mqttInfos.getCafile(), mqttInfos.getCertfile(), mqttInfos.getKeyfile());
             connectOptions.setSocketFactory(socketFactory);
         } catch (Exception e)
         {
@@ -95,63 +83,7 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
         }
     }
 
-    static X509Certificate readCert(final String fname) throws CertificateException, FileNotFoundException
-    {
-        return (X509Certificate) CertificateFactory
-                .getInstance("X.509")
-                .generateCertificate(new FileInputStream(fname));
-    }
-
-    static KeyStore loadKeystore(final String keystoreFile, final String password) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException
-    {
-        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-        ks.load(new FileInputStream(keystoreFile), password.toCharArray());
-        return ks;
-    }
-
     
-    public PrivateKey getPrivateKey(String filename) throws Exception {
-
-        File f = new File(filename);
-        FileInputStream fis = new FileInputStream(f);
-        DataInputStream dis = new DataInputStream(fis);
-        byte[] keyBytes = new byte[(int) f.length()];
-        dis.readFully(keyBytes);
-        dis.close();
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-        KeyFactory kf =
-                KeyFactory.getInstance("RSA");
-        return kf.generatePrivate(spec);
-    }
-
-    SSLSocketFactory getSocketFactory (final String caCrtFile) throws Exception
-    {
-        KeyStore caKs = KeyStore.getInstance("JKS");
-        caKs.load(null, null);
-
-        X509Certificate caCert = readCert(caCrtFile);
-        
-        caKs.setCertificateEntry("CA", caCert);
-        System.err.println(caCert);
-
-        X509Certificate cliCert = readCert(mqttInfos.getCertfile());
-        caKs.setCertificateEntry("CLIcert", cliCert);
-
-        PrivateKey key = getPrivateKey(mqttInfos.getKeyfile());
-        caKs.setKeyEntry("CLIkey", key, "".toCharArray(), new Certificate[]{cliCert});
-        
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-
-
-        tmf.init(caKs);
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-        kmf.init(caKs, "".toCharArray());
-
-        SSLContext context = SSLContext.getInstance("TLSv1.2");
-        context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-
-        return context.getSocketFactory();
-    }
 
     public boolean publish(String topic, String content, int qos)
     {
