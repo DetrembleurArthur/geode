@@ -15,6 +15,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
+import javax.net.ssl.SSLServerSocketFactory;
 
 import com.geode.net.tls.TLSUtils;
 
@@ -49,11 +50,7 @@ public class Server extends Thread implements Initializable
     {
         if(serverInfos.isTLSEnable())
         {
-            ServerSocketFactory factory = TLSUtils.getServerSocketFactory(
-                serverInfos.getCafile(),
-                serverInfos.getCertfile(),
-                serverInfos.getKeyfile()
-            );
+            SSLServerSocketFactory factory = TLSUtils.getServerSocketFactory(serverInfos);
             return factory.createServerSocket(
                 serverInfos.getPort(),
                 serverInfos.getBacklog(),

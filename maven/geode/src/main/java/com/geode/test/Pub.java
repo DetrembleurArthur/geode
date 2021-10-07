@@ -10,7 +10,7 @@ public class Pub {
         Geode geode = new Geode();
         geode.init("src/main/resources/conf.yml");
 
-        MqttInstance mqttInstance = geode.launchMqtt("test");
+        MqttInstance mqttInstance = geode.launchMqtt("auto");
 
         for(int i = 0; i < 3; i++){
             mqttInstance.publish("test/arthur", "Hello world from geode!");

@@ -52,7 +52,7 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
             MqttConnectOptions connectOptions = new MqttConnectOptions();
             connectOptions.setAutomaticReconnect(true);
             connectOptions.setCleanSession(true);
-            if(mqttInfos.getCafile() != null)
+            if(mqttInfos.isTLSEnable())
             {
                 configTLS(connectOptions);
             }
@@ -74,8 +74,7 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
     {
         try
         {
-            SocketFactory socketFactory = TLSUtils.getSocketFactory(
-                mqttInfos.getCafile(), mqttInfos.getCertfile(), mqttInfos.getKeyfile());
+            SocketFactory socketFactory = TLSUtils.getSocketFactory(mqttInfos);
             connectOptions.setSocketFactory(socketFactory);
         } catch (Exception e)
         {

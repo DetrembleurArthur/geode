@@ -62,10 +62,18 @@ public final class Geode
     {
         if(data.containsKey("tls"))
         {
+            infos.setEnable(true);
             data = (Map<String, Object>) data.get("tls");
-            infos.setCafile((String)data.getOrDefault("cafile", null));
-            infos.setCertfile((String)data.getOrDefault("certfile", null));
-            infos.setKeyfile((String)data.getOrDefault("keyfile", null));
+            if(data.containsKey("ksfile"))
+            {
+                infos.setKeystore((String)data.getOrDefault("ksfile", null));
+            }
+            else
+            {
+                infos.setCafile((String)data.getOrDefault("cafile", null));
+                infos.setCertfile((String)data.getOrDefault("certfile", null));
+                infos.setKeyfile((String)data.getOrDefault("keyfile", null));
+            }
         }
     }
 

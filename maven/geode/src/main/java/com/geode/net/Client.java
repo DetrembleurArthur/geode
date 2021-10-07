@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 
 import com.geode.net.tls.TLSUtils;
 
@@ -43,14 +44,9 @@ public class Client implements Initializable, Runnable
 
     public Socket initSocket() throws Exception
     {
-        System.err.println(clientInfos.isTLSEnable());
         if(clientInfos.isTLSEnable())
         {
-            SocketFactory factory = TLSUtils.getSocketFactory(
-                clientInfos.getCafile(),
-                clientInfos.getCertfile(),
-                clientInfos.getKeyfile()
-            );
+            SSLSocketFactory factory = TLSUtils.getSocketFactory(clientInfos);
             return factory.createSocket(
                 InetAddress.getByName(clientInfos.getHost()),
                 clientInfos.getPort()

@@ -15,6 +15,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Scanner;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -53,6 +54,39 @@ public class TLSUtils
         return kf.generatePrivate(spec);
     }
 
+    public static SSLContext getSSLContext(final String keystoreFile) throws Exception
+    {
+        String password;
+        Scanner scanner = new Scanner(System.in);
+        System.err.print("keystore password: ");
+        password = scanner.nextLine();
+        KeyStore keyStore = loadKeystore(keystoreFile, password);
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+
+        tmf.init(keyStore);
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+
+        System.err.print("private key password: ");
+        password = scanner.nextLine();
+        scanner.close();
+        kmf.init(keyStore, password.toCharArray());
+
+        SSLContext context = SSLContext.getInstance("TLSv1.2");
+        context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+
+        return context;
+    }
+
+    public static SSLSocketFactory getSocketFactory (final String keystore) throws Exception
+    {
+        return getSSLContext(keystore).getSocketFactory();
+    }
+
+    public static SSLServerSocketFactory getServerSocketFactory (final String keystore) throws Exception
+    {
+        return getSSLContext(keystore).getServerSocketFactory();
+    }
+
     public static SSLContext getSSLContext (final String caCrtFile, final String certFile, final String keyFile) throws Exception
     {
         KeyStore caKs = KeyStore.getInstance("JKS");
@@ -61,7 +95,6 @@ public class TLSUtils
         X509Certificate caCert = readCert(caCrtFile);
         
         caKs.setCertificateEntry("CA", caCert);
-        System.err.println(caCert);
 
         X509Certificate cliCert = readCert(certFile);
         caKs.setCertificateEntry("CLIcert", cliCert);
@@ -90,5 +123,21 @@ public class TLSUtils
     public static SSLServerSocketFactory getServerSocketFactory (final String caCrtFile, final String certFile, final String keyFile) throws Exception
     {
         return getSSLContext(caCrtFile, certFile, keyFile).getServerSocketFactory();
+    }
+
+    public static SSLSocketFactory getSocketFactory(TLSInfos infos) throws Exception
+    {
+        if(infos.getKeystore() != null)
+            return getSocketFactory(infos.getKeystore());
+        else
+            return getSocketFactory(infos.getCafile(), infos.getCertfile(), infos.getKeyfile());
+    }
+
+    public static SSLServerSocketFactory getServerSocketFactory(TLSInfos infos) throws Exception
+    {
+        if(infos.getKeystore() != null)
+            return getServerSocketFactory(infos.getKeystore());
+        else
+            return getServerSocketFactory(infos.getCafile(), infos.getCertfile(), infos.getKeyfile());
     }
 }

@@ -6,30 +6,40 @@ servers:
     protocols:
       - com.geode.test.Pong
     tls:
-      cafile: /Users/ArthurDetrembleur/desktop/mqtt/ca/ca.crt
-      certfile: /Users/ArthurDetrembleur/desktop/mqtt/ca/client.crt
-      keyfile: /Users/ArthurDetrembleur/desktop/mqtt/ca/client.der
+      ksfile: src/main/resources/auto/self/cli.jks
 clients:
   pingClient:
     host: 127.0.0.1
     port: 50000
     protocol: com.geode.test.Ping
     tls:
-      cafile: /Users/ArthurDetrembleur/desktop/mqtt/ca/ca.crt
-      certfile: /Users/ArthurDetrembleur/desktop/mqtt/ca/client.crt
-      keyfile: /Users/ArthurDetrembleur/desktop/mqtt/ca/client.der
+      cafile: src/main/resources/auto/self/ca.crt
+      certfile: src/main/resources/auto/self/cli.crt
+      keyfile: src/main/resources/auto/self/cli.der
 mqtt:
-  test:
+  auto-ks:
+    broker-ip: mac-arthur
+    broker-port: 8883
+    client-id: arthur
+    default-qos: 0
+    topic-handler: com.geode.test.TopicMan
+    tls:
+      ksfile: src/main/resources/auto/self/cli.jks
+  auto:
+    broker-ip: mac-arthur
+    broker-port: 8883
+    client-id: arthur
+    default-qos: 0
+    topic-handler: com.geode.test.TopicMan
+    tls:
+      cafile: src/main/resources/auto/self/ca.crt
+      certfile: src/main/resources/auto/self/cli.crt
+      keyfile: src/main/resources/auto/self/cli.der
+  mosquitto:
     broker-ip: test.mosquitto.org
     broker-port: 8884
     client-id: arthur
     default-qos: 0
     topic-handler: com.geode.test.TopicMan
     tls:
-      cafile: src/main/resources/mosquitto.org.crt
-      certfile: src/main/resources/geode-cli.crt
-      keyfile: src/main/resources/geode-cli.der
-
-#    tls-cafile: /Users/ArthurDetrembleur/desktop/mqtt/ca/ca.crt
-#    tls-certfile: /Users/ArthurDetrembleur/desktop/mqtt/ca/client.crt
-#    tls-keyfile: /Users/ArthurDetrembleur/desktop/mqtt/ca/client.der
+      ksfile: src/main/resources/auto/geode.jks
