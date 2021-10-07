@@ -4,7 +4,8 @@ import com.geode.annotations.mqtt.MqttTopic;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-public class TopicMan {
+public class TopicMan
+{
         @MqttTopic("test/arthur")
         public void test(MqttMessage message)
         {
