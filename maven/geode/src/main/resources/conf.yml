@@ -37,7 +37,9 @@ mqtt:
       keyfile: src/main/resources/auto/self/cli.der
   mosquitto:
     broker-ip: test.mosquitto.org
-    broker-port: 1883
+    broker-port: 8884
     client-id: arthur
     default-qos: 0
     topic-handler: com.geode.test.TopicMan
+    tls:
+      ksfile: src/main/resources/auto/mosquitto/geode.jks

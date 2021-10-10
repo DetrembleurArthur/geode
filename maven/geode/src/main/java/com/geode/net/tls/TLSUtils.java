@@ -52,7 +52,7 @@ public class TLSUtils
         String password;
         Scanner scanner = new Scanner(System.in);
         System.err.print("keystore password: ");
-        password = new String(System.console().readPassword());
+        password = new Scanner(System.in).nextLine();
         KeyStore keyStore = loadKeystore(keystoreFile, password);
         TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
 
@@ -60,7 +60,7 @@ public class TLSUtils
         KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
 
         System.err.print("private key password: ");
-        password = new String(System.console().readPassword());
+        password = new Scanner(System.in).nextLine();
         scanner.close();
         kmf.init(keyStore, password.toCharArray());
 
