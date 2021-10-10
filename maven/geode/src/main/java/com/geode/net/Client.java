@@ -1,23 +1,18 @@
 package com.geode.net;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.geode.logging.Logger;
+import com.geode.net.tls.TLSUtils;
 
-import java.io.IOException;
+import javax.net.ssl.SSLSocketFactory;
 import java.net.InetAddress;
 import java.net.Socket;
-
-import javax.net.SocketFactory;
-import javax.net.ssl.SSLSocketFactory;
-
-import com.geode.net.tls.TLSUtils;
 
 /**
  * The type Client.
  */
 public class Client implements Initializable, Runnable
 {
-    private static final Logger logger = LogManager.getLogger(Client.class);
+    private static final Logger logger = new Logger(Client.class);
     /**
      * The Client infos.
      */
@@ -46,6 +41,7 @@ public class Client implements Initializable, Runnable
     {
         if(clientInfos.isTLSEnable())
         {
+            logger.info("enabling TLS...");
             SSLSocketFactory factory = TLSUtils.getSocketFactory(clientInfos);
             return factory.createSocket(
                 InetAddress.getByName(clientInfos.getHost()),
@@ -58,6 +54,7 @@ public class Client implements Initializable, Runnable
     @Override
     public void init()
     {
+        logger.info("initialisation");
         try
         {
             Socket socket = initSocket();

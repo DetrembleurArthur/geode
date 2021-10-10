@@ -65,4 +65,16 @@ public class MqttInfos extends TLSInfos
     public void setClientId(String clientId) {
         this.clientId = clientId;
     }
+
+    @Override
+    public String toString()
+    {
+        return "MqttInfos{" +
+                "brokerIp='" + brokerIp + '\'' +
+                ", brokerPort=" + brokerPort +
+                ", defaultQos=" + defaultQos +
+                ", clientId='" + clientId + '\'' +
+                ", topicsClass=" + topicsClass +
+                '}';
+    }
 }

@@ -1,8 +1,7 @@
 package com.geode.net;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.geode.logging.Logger;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -15,7 +14,7 @@ import java.net.Socket;
  */
 public class TcpTunnel extends Tunnel<Socket>
 {
-    private static final Logger logger = LogManager.getLogger(TcpTunnel.class);
+    private static final Logger logger = new Logger(TcpTunnel.class);
     private final ObjectOutputStream objectOutputStream;
     private final ObjectInputStream objectInputStream;
 
@@ -30,7 +29,7 @@ public class TcpTunnel extends Tunnel<Socket>
         super(socket);
         objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         objectInputStream = new ObjectInputStream(socket.getInputStream());
-        logger.info("tunnel initialize on " + socket);
+        logger.info("tunnel initialized on " + socket);
     }
 
     @Override

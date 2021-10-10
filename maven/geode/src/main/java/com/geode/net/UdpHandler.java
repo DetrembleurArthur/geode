@@ -1,5 +1,7 @@
 package com.geode.net;
 
+import com.geode.logging.Logger;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.DatagramSocket;
@@ -13,6 +15,8 @@ import java.util.HashMap;
  */
 public class UdpHandler extends Thread implements Initializable
 {
+    private static final Logger logger = new Logger(UdpHandler.class);
+
     private UdpTunnel tunnel;
     private UdpInfos infos;
     private SimpleUdpListener defaultListener;
@@ -33,6 +37,7 @@ public class UdpHandler extends Thread implements Initializable
     @Override
     public void init()
     {
+        logger.info("initialisation");
         if (infos.isBind())
         {
             try
@@ -89,7 +94,6 @@ public class UdpHandler extends Thread implements Initializable
     {
         try
         {
-            System.out.println("send " + serializable);
             tunnel.send(serializable);
         } catch (IOException e)
         {
@@ -108,7 +112,6 @@ public class UdpHandler extends Thread implements Initializable
         try
         {
             Serializable serializable = tunnel.recv();
-            System.out.println("recv " + serializable);
             return (T) serializable;
         } catch (IOException | ClassNotFoundException e)
         {

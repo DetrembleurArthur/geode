@@ -1,9 +1,10 @@
 package com.geode.net;
 
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.geode.logging.Logger;
+import com.geode.net.tls.TLSUtils;
 
+import javax.net.ssl.SSLServerSocketFactory;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -13,18 +14,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.net.ServerSocketFactory;
-import javax.net.SocketFactory;
-import javax.net.ssl.SSLServerSocketFactory;
-
-import com.geode.net.tls.TLSUtils;
-
 /**
  * The type Server.
  */
 public class Server extends Thread implements Initializable
 {
-    private static final Logger logger = LogManager.getLogger(Server.class);
+    private static final Logger logger = new Logger(Server.class);
     private final CopyOnWriteArrayList<ProtocolHandler> handlers;
     private final ServerInfos serverInfos;
     private final HashMap<String, ArrayList<ProtocolHandler>> topicsMap;
@@ -50,6 +45,7 @@ public class Server extends Thread implements Initializable
     {
         if(serverInfos.isTLSEnable())
         {
+            logger.info("enabling TLS...");
             SSLServerSocketFactory factory = TLSUtils.getServerSocketFactory(serverInfos);
             return factory.createServerSocket(
                 serverInfos.getPort(),
@@ -63,6 +59,7 @@ public class Server extends Thread implements Initializable
     @Override
     public void init()
     {
+        logger.info("initialisation");
         try
         {
             serverSocket = initServerSocket();
@@ -185,6 +182,7 @@ public class Server extends Thread implements Initializable
      */
     public synchronized void subscribeTopic(String topic, ProtocolHandler handler)
     {
+        logger.info("subscribe to topic : " + topic);
         ArrayList<ProtocolHandler> handlers;
         if (!topicsMap.containsKey(topic))
         {
@@ -208,6 +206,7 @@ public class Server extends Thread implements Initializable
      */
     public synchronized void unsubscribeTopic(String topic, ProtocolHandler handler)
     {
+        logger.info("unsubscribe to topic : " + topic);
         if (topicsMap.containsKey(topic))
         {
             topicsMap.get(topic).remove(handler);
@@ -218,6 +217,7 @@ public class Server extends Thread implements Initializable
     {
         for (String key : topicsMap.keySet())
         {
+            logger.info("unsubscribe to topic : " + key);
             topicsMap.get(key).remove(serverProtocolHandler);
         }
     }

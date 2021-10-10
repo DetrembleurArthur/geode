@@ -2,9 +2,8 @@ package com.geode.net;
 
 import com.geode.annotations.Control;
 import com.geode.annotations.Protocol;
+import com.geode.logging.Logger;
 import com.geode.net.Query.Category;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -17,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ServerProtocolHandler extends ProtocolHandler
 {
-    private static final Logger logger = LogManager.getLogger(ServerProtocolHandler.class);
+    private static final Logger logger = new Logger(ServerProtocolHandler.class);
     private static final AtomicInteger counter = new AtomicInteger(0);
     private final Server server;
     private final ArrayList<Queue> subscribedQueues;
@@ -43,6 +42,7 @@ public class ServerProtocolHandler extends ProtocolHandler
     @Override
     protected Object discovery()
     {
+        logger.info("start discovery protocol");
         try
         {
             tunnel.send(Query.simple("protocol").setCategory(Query.Category.DISCOVERY));
@@ -198,7 +198,7 @@ public class ServerProtocolHandler extends ProtocolHandler
             {
                 if (queueConsumerDameon.isInterrupted())
                 {
-                    logger.warn("consume dameon interrupted...");
+                    logger.warning("consume dameon interrupted...");
                     return;
                 }
                 synchronized (this)
@@ -220,7 +220,7 @@ public class ServerProtocolHandler extends ProtocolHandler
         } catch (Exception e)
         {
             logger.error("consume daemon error: " + e.getMessage());
-            logger.warn("consume dameon interrupted...");
+            logger.warning("consume dameon interrupted...");
         }
     }
 
@@ -232,10 +232,11 @@ public class ServerProtocolHandler extends ProtocolHandler
             server.remove(this);
             tunnel.getSocket().close();
             queueConsumerDameon.interrupt();
-            logger.warn("Protocol server handler is closed...");
+            logger.warning("Protocol server handler is closed...");
         } catch (IOException e)
         {
             e.printStackTrace();
+            logger.error("end handler : " + e.getMessage());
         }
     }
 }

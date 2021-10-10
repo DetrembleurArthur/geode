@@ -2,9 +2,8 @@ package com.geode.net;
 
 import com.geode.annotations.Control;
 import com.geode.annotations.Protocol;
+import com.geode.logging.Logger;
 import com.geode.net.Query.Category;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -14,7 +13,7 @@ import java.net.Socket;
  */
 public class ClientProtocolHandler extends ProtocolHandler
 {
-    private static final Logger logger = LogManager.getLogger(ClientProtocolHandler.class);
+    private static final Logger logger = new Logger(ClientProtocolHandler.class);
     private final Class<?> protocolClass;
 
     /**
@@ -32,6 +31,7 @@ public class ClientProtocolHandler extends ProtocolHandler
     @Override
     protected Object discovery()
     {
+        logger.info("start discovery protocol");
         try
         {
             Query query = tunnel.recv();
@@ -126,10 +126,12 @@ public class ClientProtocolHandler extends ProtocolHandler
     {
         try
         {
+            logger.info("closing socket...");
             tunnel.getSocket().close();
         } catch (IOException e)
         {
             e.printStackTrace();
+            logger.warning("unable to close socket : " + e.getMessage());
         }
     }
 }

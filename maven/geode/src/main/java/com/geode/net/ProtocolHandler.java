@@ -4,8 +4,7 @@ import com.geode.annotations.Control;
 import com.geode.annotations.Inject;
 import com.geode.annotations.OnEvent;
 import com.geode.annotations.Protocol;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Logger;
+import com.geode.logging.Logger;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -21,7 +20,7 @@ import java.util.HashMap;
  */
 public abstract class ProtocolHandler extends Thread implements Initializable
 {
-    private static final Logger logger = (Logger) LogManager.getLogger(ProtocolHandler.class);
+    private static final Logger logger = new Logger(ProtocolHandler.class);
     /**
      * The Protocol.
      */
@@ -75,7 +74,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         } catch (IOException e)
         {
             gState = GState.BROKEN;
-            logger.fatal("handler error: " + e.getMessage());
+            logger.fatal("handle error: " + e.getMessage());
         }
     }
 
@@ -116,6 +115,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     @Override
     public void init()
     {
+        logger.info("initialisation");
         if (gState == GState.DOWN)
         {
             protocol = discovery();
@@ -158,6 +158,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
 
     private void initListeners()
     {
+        logger.info("listeners initialisation");
         for (Method method : protocol.getClass().getDeclaredMethods())
         {
             if (method.isAnnotationPresent(OnEvent.class))
@@ -171,6 +172,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
 
     private void initInjections()
     {
+        logger.info("injection initialisation");
         for (Field field : protocol.getClass().getDeclaredFields())
         {
             try
@@ -235,7 +237,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                         {
                             if (!method.getParameterTypes()[0].equals(Integer.class))
                             {
-                                logger.warn(method + " DIRECT control must have an Integer as first parameter");
+                                logger.warning(method + " DIRECT control must have an Integer as first parameter");
                                 continue;
                             }
                         }
@@ -244,7 +246,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                     logger.info(method + " added has Control");
                 } else
                 {
-                    logger.warn(method + " control ignored");
+                    logger.warning(method + " control ignored");
                 }
             }
         }
@@ -352,7 +354,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             case QUEUE_PRODUCE:
                 return manageQueueProduceQuery(query);
             default:
-                logger.warn(query.getCategory() + " are not allowed here");
+                logger.warning(query.getCategory() + " are not allowed here");
         }
         return null;
     }
@@ -431,7 +433,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      */
     protected Object manageTopicSubscribeQuery(Query query)
     {
-        logger.warn(query.getCategory() + " are not allowed here");
+        logger.warning(query.getCategory() + " are not allowed here");
         return null;
     }
 
@@ -443,7 +445,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      */
     protected Object manageTopicUnsubscribeQuery(Query query)
     {
-        logger.warn(query.getCategory() + " are not allowed here");
+        logger.warning(query.getCategory() + " are not allowed here");
         return null;
     }
 
@@ -455,7 +457,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      */
     protected Object manageTopicNotifyQuery(Query query)
     {
-        logger.warn(query.getCategory() + " are not allowed here");
+        logger.warning(query.getCategory() + " are not allowed here");
         return null;
     }
 
@@ -467,7 +469,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      */
     protected Object manageTopicNotifyOthersQuery(Query query)
     {
-        logger.warn(query.getCategory() + " are not allowed here");
+        logger.warning(query.getCategory() + " are not allowed here");
         return null;
     }
 
@@ -479,7 +481,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      */
     protected Object manageNotifyQuery(Query query)
     {
-        logger.warn(query.getCategory() + " are not allowed here");
+        logger.warning(query.getCategory() + " are not allowed here");
         return null;
     }
 
@@ -491,7 +493,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      */
     protected Object manageQueueSubscribeQuery(Query query)
     {
-        logger.warn(query.getCategory() + " are not allowed here");
+        logger.warning(query.getCategory() + " are not allowed here");
         return null;
     }
 
@@ -503,7 +505,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      */
     protected Object manageQueueUnsubscribeQuery(Query query)
     {
-        logger.warn(query.getCategory() + " are not allowed here");
+        logger.warning(query.getCategory() + " are not allowed here");
         return null;
     }
 
@@ -515,7 +517,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      */
     protected Object manageQueueConsumeQuery(Query query)
     {
-        logger.warn(query.getCategory() + " are not allowed here");
+        logger.warning(query.getCategory() + " are not allowed here");
         return null;
     }
 
@@ -527,7 +529,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      */
     protected Object manageQueueProduceQuery(Query query)
     {
-        logger.warn(query.getCategory() + " are not allowed here");
+        logger.warning(query.getCategory() + " are not allowed here");
         return null;
     }
 

@@ -62,5 +62,15 @@ public class TLSInfos
         this.keyfile = keyfile;
     }
 
-    
+    @Override
+    public String toString()
+    {
+        return "TLSInfos{" +
+                "enable=" + enable +
+                ", cafile='" + cafile + '\'' +
+                ", certfile='" + certfile + '\'' +
+                ", keyfile='" + keyfile + '\'' +
+                ", keystore='" + keystore + '\'' +
+                '}';
+    }
 }

@@ -8,12 +8,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.geode.logging.Logger;
 import com.geode.net.mqtt.MqttInfos;
 import com.geode.net.mqtt.MqttInstance;
 import com.geode.net.tls.TLSInfos;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.yaml.snakeyaml.Yaml;
 
@@ -27,7 +26,8 @@ public final class Geode
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    private final static Logger logger = LogManager.getLogger(Geode.class);
+    private static final Logger logger = new Logger(Geode.class);
+
     private final HashMap<String, ServerInfos> serversInfos;
     private final HashMap<String, ClientInfos> clientsInfos;
     private final HashMap<String, UdpInfos> udpsInfos;
@@ -79,9 +79,11 @@ public final class Geode
 
     public void init(String yamlFilename) throws Exception
     {
+        logger.info("load configuration file : " + yamlFilename);
         InputStream stream = new FileInputStream(new File(yamlFilename));
         Yaml yaml = new Yaml();
         Map<String, Object> data = yaml.load(stream);
+        logger.info("data loaded : " + data);
         Map<String, Object> servers = (Map<String, Object>) data.get("servers");
         Map<String, Object> clients = (Map<String, Object>) data.get("clients");
         Map<String, Object> udpHandlers = (Map<String, Object>) data.get("udpHandlers");
@@ -146,6 +148,7 @@ public final class Geode
             infos.setTopicsClass(Class.forName((String) mqttData.get("topic-handler")));
             registerMqtt(mqttId, infos);
         }
+        logger.info("configuration file process end");
     }
 
     /**
