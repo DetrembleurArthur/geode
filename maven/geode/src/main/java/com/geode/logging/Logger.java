@@ -1,6 +1,8 @@
 package com.geode.logging;
 
 import java.io.*;
+import java.time.Instant;
+import java.util.Date;
 
 public class Logger
 {
@@ -20,7 +22,14 @@ public class Logger
         if(level.getId() >= Logger.level.getId())
         {
             StringBuilder builder = new StringBuilder();
-            builder.append("[").append(level.getBanner()).append("] : ").append(loggingClassScope.getCanonicalName()).append(" : ").append(message);
+            builder.append("[")
+                    .append(level.getBanner())
+                    .append("] : ")
+                    .append(loggingClassScope.getCanonicalName())
+                    .append(" : ")
+                    .append(Date.from(Instant.now()))
+                    .append(" : ")
+                    .append(message);
             if(cmdOut) System.err.println(builder);
             if(fileWriter != null)
             {
