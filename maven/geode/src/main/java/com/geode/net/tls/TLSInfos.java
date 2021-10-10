@@ -7,6 +7,8 @@ public class TLSInfos
     private String certfile;
     private String keyfile;
     private String keystore;
+    private String keystorePassword;
+    private String keystoreKeyPassword;
 
     public TLSInfos()
     {
@@ -23,6 +25,31 @@ public class TLSInfos
 
     public void setEnable(boolean enable) {
         this.enable = enable;
+    }
+
+
+    
+
+    public String getKeystorePassword() {
+        return keystorePassword;
+    }
+
+
+
+    public void setKeystorePassword(String keystorePassword) {
+        this.keystorePassword = keystorePassword;
+    }
+
+
+
+    public String getKeystoreKeyPassword() {
+        return keystoreKeyPassword;
+    }
+
+
+
+    public void setKeystoreKeyPassword(String keystoreKeyPassword) {
+        this.keystoreKeyPassword = keystoreKeyPassword;
     }
 
 

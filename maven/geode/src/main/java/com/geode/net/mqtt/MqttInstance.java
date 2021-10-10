@@ -63,17 +63,21 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
             logger.info("connect...");
             mqttClient.connect(connectOptions);
             logger.info("connected");
-            if (mqttInfos.getTopicsClass() != null)
+            if (mqttInfos.isSubscriber())
             {
-                logger.info("init message handlers");
-                topicsHandler = getMqttInfos().getTopicsClass().getDeclaredConstructor().newInstance();
-                subscribe();
+                logger.info("init subscription");
+                if(mqttInfos.getTopicsClass() != null)
+                {
+                    topicsHandler = getMqttInfos().getTopicsClass().getDeclaredConstructor().newInstance();
+                    subscribe();
+                }
                 loop();
             }
             connected = true;
         } catch (MqttException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e)
         {
             e.printStackTrace();
+            logger.fatal("initialisation error : " + e);
         }
     }
 
@@ -96,16 +100,17 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
 
     public boolean publish(String topic, String content, int qos)
     {
-        MqttMessage message = new MqttMessage(content.getBytes());
-        message.setQos(qos);
         try
         {
+            if(!mqttInfos.isPublisher()) throw new Exception("mqtt client is not publisher");
+            MqttMessage message = new MqttMessage(content.getBytes());
+            message.setQos(qos);
             logger.info("publish " + content + " on " + topic + " topic");
             mqttClient.publish(topic, message);
-        } catch (MqttException e)
+        } catch (Exception e)
         {
             e.printStackTrace();
-            logger.error("publication failed");
+            logger.error("publication failed : " + e);
             return false;
         }
         return true;
@@ -137,16 +142,17 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
     {
         try
         {
+            if(!mqttInfos.isSubscriber()) throw new Exception("mqtt client is not subscriber");
             int[] qos = extractTopics();
             logger.info("subscribe to " + Arrays.toString(topicsMap.keySet().toArray(new String[0])));
             mqttClient.subscribe(
                     topicsMap.keySet().toArray(new String[0]),
                     qos
             );
-        } catch (MqttException e)
+        } catch (Exception e)
         {
             e.printStackTrace();
-            logger.error("unable to subscribe");
+            logger.error("unable to subscribe : " + e);
         }
     }
 
@@ -154,12 +160,13 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
     {
         try
         {
+            if(!mqttInfos.isSubscriber()) throw new Exception("mqtt client is not subscriber");
             logger.info("subscribe to " + topic);
             mqttClient.subscribe(topic, qos);
-        } catch (MqttException e)
+        } catch (Exception e)
         {
             e.printStackTrace();
-            logger.error("unable to subscribe");
+            logger.error("unable to subscribe : " + e);
         }
     }
 
@@ -167,12 +174,13 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
     {
         try
         {
+            if(!mqttInfos.isSubscriber()) throw new Exception("mqtt client is not subscriber");
             logger.error("unsubscribe of " + topic);
             mqttClient.unsubscribe(topic);
-        } catch (MqttException e)
+        } catch (Exception e)
         {
             e.printStackTrace();
-            logger.error("unable to unsubscribe");
+            logger.error("unable to unsubscribe : " + e);
         }
     }
 
@@ -194,12 +202,14 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
             latch = new CountDownLatch(1);
             try
             {
+                if(!mqttInfos.isSubscriber()) throw new Exception("mqtt client is not subscriber");
                 logger.info("listening start");
                 latch.await();
                 logger.info("listening end");
-            } catch (InterruptedException e)
+            } catch (Exception e)
             {
                 e.printStackTrace();
+                logger.warning("mqtt thread interrupted : " + e);
             }
         });
         subscriberThread.setDaemon(true);
@@ -212,11 +222,13 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
         if (mqttClient.isConnected())
         {
             mqttClient.disconnect();
+            connected = false;
+            logger.info("mqtt client disconnected");
         }
         if (latch != null)
             latch.countDown();
-        connected = false;
-        logger.info("mqtt client disconnected");
+        subscriberThread.join();
+        logger.info("mqtt client down");
     }
 
     public void setMqttLostConnexionHandler(MqttLostConnexion mqttLostConnexionHandler)
@@ -241,7 +253,7 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
     public void messageArrived(String s, MqttMessage mqttMessage) throws Exception
     {
         logger.info("capture mqtt message : " + mqttMessage);
-        if (topicsMap.containsKey(s))
+        if (topicsHandler != null && topicsMap.containsKey(s))
         {
             topicsMap.get(s).invoke(topicsHandler, mqttMessage);
         }
@@ -262,7 +274,7 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
         } catch (MqttException e)
         {
             e.printStackTrace();
-            logger.error("mqtt error : " + e.getMessage());
+            logger.error("mqtt error : " + e);
         }
     }
 }

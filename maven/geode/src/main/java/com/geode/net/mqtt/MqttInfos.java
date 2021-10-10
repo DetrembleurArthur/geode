@@ -9,6 +9,7 @@ public class MqttInfos extends TLSInfos
     private int defaultQos;
     private String clientId;
     private Class<?> topicsClass;
+    private String profile;
 
 
     public MqttInfos() {
@@ -21,6 +22,24 @@ public class MqttInfos extends TLSInfos
         this.defaultQos = defaultQos;
         this.clientId = clientId;
         this.topicsClass = topicsClass;
+    }
+
+    
+
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        profile = profile.toLowerCase();
+        switch(profile)
+        {
+            case "pub":
+            case "sub":
+            case "pub-sub":break;
+            default: throw new RuntimeException(profile + " is not a valid profile...");
+        }
+        this.profile = profile;
     }
 
     public Class<?> getTopicsClass()
@@ -64,6 +83,16 @@ public class MqttInfos extends TLSInfos
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
+    }
+
+    public boolean isSubscriber()
+    {
+        return profile.contains("sub");
+    }
+
+    public boolean isPublisher()
+    {
+        return profile.contains("pub");
     }
 
     @Override

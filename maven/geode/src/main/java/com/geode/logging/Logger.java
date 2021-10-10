@@ -24,10 +24,12 @@ public class Logger
             StringBuilder builder = new StringBuilder();
             builder.append("[")
                     .append(level.getBanner())
-                    .append("] : ")
-                    .append(loggingClassScope.getCanonicalName())
-                    .append(" : ")
+                    .append("] : th(")
+                    .append(Thread.currentThread().getId())
+                    .append(") : ")
                     .append(Date.from(Instant.now()))
+                    .append(" : ")
+                    .append(loggingClassScope.getCanonicalName())
                     .append(" : ")
                     .append(message);
             if(cmdOut) System.err.println(builder);
@@ -85,14 +87,19 @@ public class Logger
         Logger.cmdOut = cmdOut;
     }
 
-    public static void setFile(String pathFile)
+    public static void setFile(String pathFile, boolean append)
     {
         try
         {
-            Logger.fileWriter = new FileWriter(new File(pathFile));
+            Logger.fileWriter = new FileWriter(new File(pathFile), append);
         } catch (IOException e)
         {
             e.printStackTrace();
         }
+    }
+
+    public static void setFile(String pathFile)
+    {
+        Logger.setFile(pathFile, false);
     }
 }

@@ -1,0 +1,140 @@
+[INFO] : th(1) : Sun Oct 10 23:50:32 CEST 2021 : com.geode.net.Geode : load configuration file : src/main/resources/conf.yml
+[INFO] : th(1) : Sun Oct 10 23:50:32 CEST 2021 : com.geode.net.Geode : data loaded : {servers={pingServer={host=127.0.0.1, port=50000, backlog=5, protocols=[com.geode.test.Pong], tls={ksfile=src/main/resources/auto/self/cli.jks}}}, clients={pingClient={host=127.0.0.1, port=50000, protocol=com.geode.test.Ping, tls={cafile=src/main/resources/auto/self/ca.crt, certfile=src/main/resources/auto/self/cli.crt, keyfile=src/main/resources/auto/self/cli.der}}}, mqtt={auto-ks={broker-ip=mac-arthur, broker-port=8883, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={ksfile=src/main/resources/auto/self/cli.jks}}, auto={broker-ip=mac-arthur, broker-port=8883, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={cafile=src/main/resources/auto/self/ca.crt, certfile=src/main/resources/auto/self/cli.crt, keyfile=src/main/resources/auto/self/cli.der}}, mosquitto={profile=pub-sub, broker-ip=test.mosquitto.org, broker-port=8884, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={ksfile=src/main/resources/auto/mosquitto/geode.jks, kspswd=password, kskeypswd=password}}}}
+[INFO] : th(1) : Sun Oct 10 23:50:32 CEST 2021 : com.geode.net.Geode : pingServer server registered: ServerInfos{host='127.0.0.1', backlog=5, port=50000, protocolClasses=[class com.geode.test.Pong]}
+[INFO] : th(1) : Sun Oct 10 23:50:32 CEST 2021 : com.geode.net.Geode : pingClient client registered: ClientInfos{host='127.0.0.1', port=50000, protocolClass=class com.geode.test.Ping, connectedMode=false}
+[INFO] : th(1) : Sun Oct 10 23:50:32 CEST 2021 : com.geode.net.Geode : auto-ks mqtt registered: MqttInfos{brokerIp='mac-arthur', brokerPort=8883, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:50:32 CEST 2021 : com.geode.net.Geode : auto mqtt registered: MqttInfos{brokerIp='mac-arthur', brokerPort=8883, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:50:32 CEST 2021 : com.geode.net.Geode : mosquitto mqtt registered: MqttInfos{brokerIp='test.mosquitto.org', brokerPort=8884, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:50:32 CEST 2021 : com.geode.net.Geode : configuration file process end
+[INFO] : th(1) : Sun Oct 10 23:50:32 CEST 2021 : com.geode.net.mqtt.MqttInstance : initialisation
+[INFO] : th(1) : Sun Oct 10 23:50:32 CEST 2021 : com.geode.net.mqtt.MqttInstance : mqtt client created at : ssl://test.mosquitto.org:8884 as arthur
+[INFO] : th(1) : Sun Oct 10 23:50:32 CEST 2021 : com.geode.net.tls.TLSUtils : load keystore : src/main/resources/auto/mosquitto/geode.jks
+[INFO] : th(1) : Sun Oct 10 23:50:33 CEST 2021 : com.geode.net.mqtt.MqttInstance : connect...
+[INFO] : th(1) : Sun Oct 10 23:50:40 CEST 2021 : com.geode.net.mqtt.MqttInstance : connected
+[INFO] : th(1) : Sun Oct 10 23:50:40 CEST 2021 : com.geode.net.mqtt.MqttInstance : init subscription
+[INFO] : th(1) : Sun Oct 10 23:50:40 CEST 2021 : com.geode.net.mqtt.MqttInstance : subscribe to [test/arthur]
+[INFO] : th(1) : Sun Oct 10 23:50:41 CEST 2021 : com.geode.net.mqtt.MqttInstance : subscribe to test/arthur
+[INFO] : th(17) : Sun Oct 10 23:50:41 CEST 2021 : com.geode.net.mqtt.MqttInstance : listening start
+[INFO] : th(1) : Sun Oct 10 23:50:41 CEST 2021 : com.geode.net.mqtt.MqttInstance : add dynamic handler for test/arthur topic
+[INFO] : th(1) : Sun Oct 10 23:50:41 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[INFO] : th(15) : Sun Oct 10 23:50:41 CEST 2021 : com.geode.net.mqtt.MqttInstance : message delivered: Hello world from geode!
+[INFO] : th(15) : Sun Oct 10 23:50:42 CEST 2021 : com.geode.net.mqtt.MqttInstance : capture mqtt message : Hello world from geode!
+[INFO] : th(1) : Sun Oct 10 23:50:42 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[INFO] : th(15) : Sun Oct 10 23:50:42 CEST 2021 : com.geode.net.mqtt.MqttInstance : message delivered: Hello world from geode!
+[INFO] : th(1) : Sun Oct 10 23:50:42 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[INFO] : th(15) : Sun Oct 10 23:50:42 CEST 2021 : com.geode.net.mqtt.MqttInstance : message delivered: Hello world from geode!
+[INFO] : th(1) : Sun Oct 10 23:50:43 CEST 2021 : com.geode.net.mqtt.MqttInstance : mqtt client disconnected
+[INFO] : th(17) : Sun Oct 10 23:50:43 CEST 2021 : com.geode.net.mqtt.MqttInstance : listening end
+[INFO] : th(1) : Sun Oct 10 23:50:43 CEST 2021 : com.geode.net.mqtt.MqttInstance : mqtt client down
+[INFO] : th(1) : Sun Oct 10 23:53:00 CEST 2021 : com.geode.net.Geode : load configuration file : src/main/resources/conf.yml
+[INFO] : th(1) : Sun Oct 10 23:53:01 CEST 2021 : com.geode.net.Geode : data loaded : {servers={pingServer={host=127.0.0.1, port=50000, backlog=5, protocols=[com.geode.test.Pong], tls={ksfile=src/main/resources/auto/self/cli.jks}}}, clients={pingClient={host=127.0.0.1, port=50000, protocol=com.geode.test.Ping, tls={cafile=src/main/resources/auto/self/ca.crt, certfile=src/main/resources/auto/self/cli.crt, keyfile=src/main/resources/auto/self/cli.der}}}, mqtt={auto-ks={broker-ip=mac-arthur, broker-port=8883, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={ksfile=src/main/resources/auto/self/cli.jks}}, auto={broker-ip=mac-arthur, broker-port=8883, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={cafile=src/main/resources/auto/self/ca.crt, certfile=src/main/resources/auto/self/cli.crt, keyfile=src/main/resources/auto/self/cli.der}}, mosquitto={profile=pub-sub, broker-ip=test.mosquitto.org, broker-port=8884, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={ksfile=src/main/resources/auto/mosquitto/geode.jks, kspswd=password, kskeypswd=password}}}}
+[INFO] : th(1) : Sun Oct 10 23:53:01 CEST 2021 : com.geode.net.Geode : pingServer server registered: ServerInfos{host='127.0.0.1', backlog=5, port=50000, protocolClasses=[class com.geode.test.Pong]}
+[INFO] : th(1) : Sun Oct 10 23:53:01 CEST 2021 : com.geode.net.Geode : pingClient client registered: ClientInfos{host='127.0.0.1', port=50000, protocolClass=class com.geode.test.Ping, connectedMode=false}
+[INFO] : th(1) : Sun Oct 10 23:53:01 CEST 2021 : com.geode.net.Geode : auto-ks mqtt registered: MqttInfos{brokerIp='mac-arthur', brokerPort=8883, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:53:01 CEST 2021 : com.geode.net.Geode : auto mqtt registered: MqttInfos{brokerIp='mac-arthur', brokerPort=8883, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:53:01 CEST 2021 : com.geode.net.Geode : mosquitto mqtt registered: MqttInfos{brokerIp='test.mosquitto.org', brokerPort=8884, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:53:01 CEST 2021 : com.geode.net.Geode : configuration file process end
+[INFO] : th(1) : Sun Oct 10 23:53:01 CEST 2021 : com.geode.net.mqtt.MqttInstance : initialisation
+[INFO] : th(1) : Sun Oct 10 23:53:01 CEST 2021 : com.geode.net.mqtt.MqttInstance : mqtt client created at : ssl://test.mosquitto.org:8884 as arthur
+[INFO] : th(1) : Sun Oct 10 23:53:01 CEST 2021 : com.geode.net.tls.TLSUtils : load keystore : src/main/resources/auto/mosquitto/geode.jks
+[INFO] : th(1) : Sun Oct 10 23:53:01 CEST 2021 : com.geode.net.mqtt.MqttInstance : connect...
+[INFO] : th(1) : Sun Oct 10 23:53:02 CEST 2021 : com.geode.net.mqtt.MqttInstance : connected
+[INFO] : th(1) : Sun Oct 10 23:53:02 CEST 2021 : com.geode.net.mqtt.MqttInstance : init subscription
+[INFO] : th(1) : Sun Oct 10 23:53:02 CEST 2021 : com.geode.net.mqtt.MqttInstance : subscribe to [test/arthur]
+[INFO] : th(1) : Sun Oct 10 23:53:02 CEST 2021 : com.geode.net.mqtt.MqttInstance : subscribe to test/arthur
+[INFO] : th(17) : Sun Oct 10 23:53:02 CEST 2021 : com.geode.net.mqtt.MqttInstance : listening start
+[INFO] : th(1) : Sun Oct 10 23:53:02 CEST 2021 : com.geode.net.mqtt.MqttInstance : add dynamic handler for test/arthur topic
+[INFO] : th(1) : Sun Oct 10 23:53:02 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[INFO] : th(15) : Sun Oct 10 23:53:02 CEST 2021 : com.geode.net.mqtt.MqttInstance : message delivered: Hello world from geode!
+[INFO] : th(15) : Sun Oct 10 23:53:02 CEST 2021 : com.geode.net.mqtt.MqttInstance : capture mqtt message : Hello world from geode!
+[INFO] : th(1) : Sun Oct 10 23:53:03 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[INFO] : th(15) : Sun Oct 10 23:53:03 CEST 2021 : com.geode.net.mqtt.MqttInstance : message delivered: Hello world from geode!
+[INFO] : th(15) : Sun Oct 10 23:53:03 CEST 2021 : com.geode.net.mqtt.MqttInstance : capture mqtt message : Hello world from geode!
+[INFO] : th(1) : Sun Oct 10 23:53:03 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[INFO] : th(15) : Sun Oct 10 23:53:03 CEST 2021 : com.geode.net.mqtt.MqttInstance : message delivered: Hello world from geode!
+[INFO] : th(15) : Sun Oct 10 23:53:03 CEST 2021 : com.geode.net.mqtt.MqttInstance : capture mqtt message : Hello world from geode!
+[INFO] : th(1) : Sun Oct 10 23:53:04 CEST 2021 : com.geode.net.mqtt.MqttInstance : mqtt client disconnected
+[INFO] : th(17) : Sun Oct 10 23:53:04 CEST 2021 : com.geode.net.mqtt.MqttInstance : listening end
+[INFO] : th(1) : Sun Oct 10 23:53:04 CEST 2021 : com.geode.net.mqtt.MqttInstance : mqtt client down
+[INFO] : th(1) : Sun Oct 10 23:53:05 CEST 2021 : com.geode.net.Geode : load configuration file : src/main/resources/conf.yml
+[INFO] : th(1) : Sun Oct 10 23:53:06 CEST 2021 : com.geode.net.Geode : data loaded : {servers={pingServer={host=127.0.0.1, port=50000, backlog=5, protocols=[com.geode.test.Pong], tls={ksfile=src/main/resources/auto/self/cli.jks}}}, clients={pingClient={host=127.0.0.1, port=50000, protocol=com.geode.test.Ping, tls={cafile=src/main/resources/auto/self/ca.crt, certfile=src/main/resources/auto/self/cli.crt, keyfile=src/main/resources/auto/self/cli.der}}}, mqtt={auto-ks={broker-ip=mac-arthur, broker-port=8883, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={ksfile=src/main/resources/auto/self/cli.jks}}, auto={broker-ip=mac-arthur, broker-port=8883, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={cafile=src/main/resources/auto/self/ca.crt, certfile=src/main/resources/auto/self/cli.crt, keyfile=src/main/resources/auto/self/cli.der}}, mosquitto={profile=pub-sub, broker-ip=test.mosquitto.org, broker-port=8884, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={ksfile=src/main/resources/auto/mosquitto/geode.jks, kspswd=password, kskeypswd=password}}}}
+[INFO] : th(1) : Sun Oct 10 23:53:06 CEST 2021 : com.geode.net.Geode : pingServer server registered: ServerInfos{host='127.0.0.1', backlog=5, port=50000, protocolClasses=[class com.geode.test.Pong]}
+[INFO] : th(1) : Sun Oct 10 23:53:06 CEST 2021 : com.geode.net.Geode : pingClient client registered: ClientInfos{host='127.0.0.1', port=50000, protocolClass=class com.geode.test.Ping, connectedMode=false}
+[INFO] : th(1) : Sun Oct 10 23:53:06 CEST 2021 : com.geode.net.Geode : auto-ks mqtt registered: MqttInfos{brokerIp='mac-arthur', brokerPort=8883, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:53:06 CEST 2021 : com.geode.net.Geode : auto mqtt registered: MqttInfos{brokerIp='mac-arthur', brokerPort=8883, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:53:06 CEST 2021 : com.geode.net.Geode : mosquitto mqtt registered: MqttInfos{brokerIp='test.mosquitto.org', brokerPort=8884, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:53:06 CEST 2021 : com.geode.net.Geode : configuration file process end
+[INFO] : th(1) : Sun Oct 10 23:53:06 CEST 2021 : com.geode.net.mqtt.MqttInstance : initialisation
+[INFO] : th(1) : Sun Oct 10 23:53:06 CEST 2021 : com.geode.net.mqtt.MqttInstance : mqtt client created at : ssl://test.mosquitto.org:8884 as arthur
+[INFO] : th(1) : Sun Oct 10 23:53:06 CEST 2021 : com.geode.net.tls.TLSUtils : load keystore : src/main/resources/auto/mosquitto/geode.jks
+[INFO] : th(1) : Sun Oct 10 23:53:06 CEST 2021 : com.geode.net.mqtt.MqttInstance : connect...
+[FATAL] : th(1) : Sun Oct 10 23:53:07 CEST 2021 : com.geode.net.mqtt.MqttInstance : initialisation error : Connexion perdue (32109) - java.io.EOFException
+[INFO] : th(1) : Sun Oct 10 23:53:07 CEST 2021 : com.geode.net.mqtt.MqttInstance : subscribe to test/arthur
+[ERROR] : th(1) : Sun Oct 10 23:53:07 CEST 2021 : com.geode.net.mqtt.MqttInstance : unable to subscribe : Client non connecté (32104)
+[INFO] : th(1) : Sun Oct 10 23:53:07 CEST 2021 : com.geode.net.mqtt.MqttInstance : add dynamic handler for test/arthur topic
+[INFO] : th(1) : Sun Oct 10 23:53:07 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[ERROR] : th(1) : Sun Oct 10 23:53:07 CEST 2021 : com.geode.net.mqtt.MqttInstance : publication failed : Client non connecté (32104)
+[INFO] : th(1) : Sun Oct 10 23:53:07 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[ERROR] : th(1) : Sun Oct 10 23:53:07 CEST 2021 : com.geode.net.mqtt.MqttInstance : publication failed : Client non connecté (32104)
+[INFO] : th(1) : Sun Oct 10 23:53:08 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[ERROR] : th(1) : Sun Oct 10 23:53:08 CEST 2021 : com.geode.net.mqtt.MqttInstance : publication failed : Client non connecté (32104)
+[INFO] : th(1) : Sun Oct 10 23:53:11 CEST 2021 : com.geode.net.Geode : load configuration file : src/main/resources/conf.yml
+[INFO] : th(1) : Sun Oct 10 23:53:12 CEST 2021 : com.geode.net.Geode : data loaded : {servers={pingServer={host=127.0.0.1, port=50000, backlog=5, protocols=[com.geode.test.Pong], tls={ksfile=src/main/resources/auto/self/cli.jks}}}, clients={pingClient={host=127.0.0.1, port=50000, protocol=com.geode.test.Ping, tls={cafile=src/main/resources/auto/self/ca.crt, certfile=src/main/resources/auto/self/cli.crt, keyfile=src/main/resources/auto/self/cli.der}}}, mqtt={auto-ks={broker-ip=mac-arthur, broker-port=8883, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={ksfile=src/main/resources/auto/self/cli.jks}}, auto={broker-ip=mac-arthur, broker-port=8883, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={cafile=src/main/resources/auto/self/ca.crt, certfile=src/main/resources/auto/self/cli.crt, keyfile=src/main/resources/auto/self/cli.der}}, mosquitto={profile=pub-sub, broker-ip=test.mosquitto.org, broker-port=8884, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={ksfile=src/main/resources/auto/mosquitto/geode.jks, kspswd=password, kskeypswd=password}}}}
+[INFO] : th(1) : Sun Oct 10 23:53:12 CEST 2021 : com.geode.net.Geode : pingServer server registered: ServerInfos{host='127.0.0.1', backlog=5, port=50000, protocolClasses=[class com.geode.test.Pong]}
+[INFO] : th(1) : Sun Oct 10 23:53:12 CEST 2021 : com.geode.net.Geode : pingClient client registered: ClientInfos{host='127.0.0.1', port=50000, protocolClass=class com.geode.test.Ping, connectedMode=false}
+[INFO] : th(1) : Sun Oct 10 23:53:12 CEST 2021 : com.geode.net.Geode : auto-ks mqtt registered: MqttInfos{brokerIp='mac-arthur', brokerPort=8883, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:53:12 CEST 2021 : com.geode.net.Geode : auto mqtt registered: MqttInfos{brokerIp='mac-arthur', brokerPort=8883, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:53:12 CEST 2021 : com.geode.net.Geode : mosquitto mqtt registered: MqttInfos{brokerIp='test.mosquitto.org', brokerPort=8884, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:53:12 CEST 2021 : com.geode.net.Geode : configuration file process end
+[INFO] : th(1) : Sun Oct 10 23:53:12 CEST 2021 : com.geode.net.mqtt.MqttInstance : initialisation
+[INFO] : th(1) : Sun Oct 10 23:53:12 CEST 2021 : com.geode.net.mqtt.MqttInstance : mqtt client created at : ssl://test.mosquitto.org:8884 as arthur
+[INFO] : th(1) : Sun Oct 10 23:53:12 CEST 2021 : com.geode.net.tls.TLSUtils : load keystore : src/main/resources/auto/mosquitto/geode.jks
+[INFO] : th(1) : Sun Oct 10 23:53:12 CEST 2021 : com.geode.net.mqtt.MqttInstance : connect...
+[INFO] : th(1) : Sun Oct 10 23:53:13 CEST 2021 : com.geode.net.mqtt.MqttInstance : connected
+[INFO] : th(1) : Sun Oct 10 23:53:13 CEST 2021 : com.geode.net.mqtt.MqttInstance : init subscription
+[INFO] : th(1) : Sun Oct 10 23:53:13 CEST 2021 : com.geode.net.mqtt.MqttInstance : subscribe to [test/arthur]
+[INFO] : th(1) : Sun Oct 10 23:53:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : subscribe to test/arthur
+[INFO] : th(21) : Sun Oct 10 23:53:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : listening start
+[INFO] : th(1) : Sun Oct 10 23:53:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : add dynamic handler for test/arthur topic
+[INFO] : th(1) : Sun Oct 10 23:53:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[INFO] : th(19) : Sun Oct 10 23:53:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : message delivered: Hello world from geode!
+[INFO] : th(19) : Sun Oct 10 23:53:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : capture mqtt message : Hello world from geode!
+[INFO] : th(1) : Sun Oct 10 23:53:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[INFO] : th(19) : Sun Oct 10 23:53:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : message delivered: Hello world from geode!
+[INFO] : th(19) : Sun Oct 10 23:53:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : capture mqtt message : Hello world from geode!
+[INFO] : th(1) : Sun Oct 10 23:53:15 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[INFO] : th(19) : Sun Oct 10 23:53:15 CEST 2021 : com.geode.net.mqtt.MqttInstance : message delivered: Hello world from geode!
+[INFO] : th(19) : Sun Oct 10 23:53:15 CEST 2021 : com.geode.net.mqtt.MqttInstance : capture mqtt message : Hello world from geode!
+[INFO] : th(1) : Sun Oct 10 23:53:15 CEST 2021 : com.geode.net.mqtt.MqttInstance : mqtt client disconnected
+[INFO] : th(21) : Sun Oct 10 23:53:15 CEST 2021 : com.geode.net.mqtt.MqttInstance : listening end
+[INFO] : th(1) : Sun Oct 10 23:53:15 CEST 2021 : com.geode.net.mqtt.MqttInstance : mqtt client down
+[INFO] : th(1) : Sun Oct 10 23:56:11 CEST 2021 : com.geode.net.Geode : load configuration file : src/main/resources/conf.yml
+[INFO] : th(1) : Sun Oct 10 23:56:11 CEST 2021 : com.geode.net.Geode : data loaded : {servers={pingServer={host=127.0.0.1, port=50000, backlog=5, protocols=[com.geode.test.Pong], tls={ksfile=src/main/resources/auto/self/cli.jks}}}, clients={pingClient={host=127.0.0.1, port=50000, protocol=com.geode.test.Ping, tls={cafile=src/main/resources/auto/self/ca.crt, certfile=src/main/resources/auto/self/cli.crt, keyfile=src/main/resources/auto/self/cli.der}}}, mqtt={auto-ks={broker-ip=mac-arthur, broker-port=8883, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={ksfile=src/main/resources/auto/self/cli.jks}}, auto={broker-ip=mac-arthur, broker-port=8883, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={cafile=src/main/resources/auto/self/ca.crt, certfile=src/main/resources/auto/self/cli.crt, keyfile=src/main/resources/auto/self/cli.der}}, mosquitto={profile=pub-sub, broker-ip=test.mosquitto.org, broker-port=8884, client-id=arthur, default-qos=0, topic-handler=com.geode.test.TopicMan, tls={ksfile=src/main/resources/auto/mosquitto/geode.jks, kspswd=password, kskeypswd=password}}}}
+[INFO] : th(1) : Sun Oct 10 23:56:11 CEST 2021 : com.geode.net.Geode : pingServer server registered: ServerInfos{host='127.0.0.1', backlog=5, port=50000, protocolClasses=[class com.geode.test.Pong]}
+[INFO] : th(1) : Sun Oct 10 23:56:11 CEST 2021 : com.geode.net.Geode : pingClient client registered: ClientInfos{host='127.0.0.1', port=50000, protocolClass=class com.geode.test.Ping, connectedMode=false}
+[INFO] : th(1) : Sun Oct 10 23:56:11 CEST 2021 : com.geode.net.Geode : auto-ks mqtt registered: MqttInfos{brokerIp='mac-arthur', brokerPort=8883, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:56:11 CEST 2021 : com.geode.net.Geode : auto mqtt registered: MqttInfos{brokerIp='mac-arthur', brokerPort=8883, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:56:11 CEST 2021 : com.geode.net.Geode : mosquitto mqtt registered: MqttInfos{brokerIp='test.mosquitto.org', brokerPort=8884, defaultQos=0, clientId='arthur', topicsClass=class com.geode.test.TopicMan}
+[INFO] : th(1) : Sun Oct 10 23:56:11 CEST 2021 : com.geode.net.Geode : configuration file process end
+[INFO] : th(1) : Sun Oct 10 23:56:11 CEST 2021 : com.geode.net.mqtt.MqttInstance : initialisation
+[INFO] : th(1) : Sun Oct 10 23:56:11 CEST 2021 : com.geode.net.mqtt.MqttInstance : mqtt client created at : ssl://test.mosquitto.org:8884 as arthur
+[INFO] : th(1) : Sun Oct 10 23:56:11 CEST 2021 : com.geode.net.tls.TLSUtils : load keystore : src/main/resources/auto/mosquitto/geode.jks
+[INFO] : th(1) : Sun Oct 10 23:56:11 CEST 2021 : com.geode.net.mqtt.MqttInstance : connect...
+[INFO] : th(1) : Sun Oct 10 23:56:13 CEST 2021 : com.geode.net.mqtt.MqttInstance : connected
+[INFO] : th(1) : Sun Oct 10 23:56:13 CEST 2021 : com.geode.net.mqtt.MqttInstance : init subscription
+[INFO] : th(1) : Sun Oct 10 23:56:13 CEST 2021 : com.geode.net.mqtt.MqttInstance : subscribe to [test/arthur]
+[INFO] : th(1) : Sun Oct 10 23:56:13 CEST 2021 : com.geode.net.mqtt.MqttInstance : subscribe to test/arthur
+[INFO] : th(17) : Sun Oct 10 23:56:13 CEST 2021 : com.geode.net.mqtt.MqttInstance : listening start
+[INFO] : th(1) : Sun Oct 10 23:56:13 CEST 2021 : com.geode.net.mqtt.MqttInstance : add dynamic handler for test/arthur topic
+[INFO] : th(1) : Sun Oct 10 23:56:13 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[INFO] : th(15) : Sun Oct 10 23:56:13 CEST 2021 : com.geode.net.mqtt.MqttInstance : message delivered: Hello world from geode!
+[INFO] : th(15) : Sun Oct 10 23:56:13 CEST 2021 : com.geode.net.mqtt.MqttInstance : capture mqtt message : Hello world from geode!
+[INFO] : th(1) : Sun Oct 10 23:56:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[INFO] : th(15) : Sun Oct 10 23:56:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : message delivered: Hello world from geode!
+[INFO] : th(15) : Sun Oct 10 23:56:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : capture mqtt message : Hello world from geode!
+[INFO] : th(1) : Sun Oct 10 23:56:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : publish Hello world from geode! on test/arthur topic
+[INFO] : th(15) : Sun Oct 10 23:56:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : message delivered: Hello world from geode!
+[INFO] : th(15) : Sun Oct 10 23:56:14 CEST 2021 : com.geode.net.mqtt.MqttInstance : capture mqtt message : Hello world from geode!
+[INFO] : th(1) : Sun Oct 10 23:56:15 CEST 2021 : com.geode.net.mqtt.MqttInstance : mqtt client disconnected
+[INFO] : th(17) : Sun Oct 10 23:56:15 CEST 2021 : com.geode.net.mqtt.MqttInstance : listening end
+[INFO] : th(1) : Sun Oct 10 23:56:15 CEST 2021 : com.geode.net.mqtt.MqttInstance : mqtt client down

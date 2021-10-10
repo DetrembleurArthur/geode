@@ -1,16 +1,28 @@
 package com.geode.net.tls;
 
-import com.geode.logging.Logger;
-
-import javax.net.ssl.*;
-import java.io.*;
-import java.security.*;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.KeyFactory;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Scanner;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
+
+import com.geode.logging.Logger;
 
 public class TLSUtils
 {
@@ -47,22 +59,15 @@ public class TLSUtils
         return kf.generatePrivate(spec);
     }
 
-    public static SSLContext getSSLContext(final String keystoreFile) throws Exception
+    public static SSLContext getSSLContextKeystore(final String keystoreFile, String kspswd, String kdkeypswd) throws Exception
     {
-        String password;
-        Scanner scanner = new Scanner(System.in);
-        System.err.print("keystore password: ");
-        password = new Scanner(System.in).nextLine();
-        KeyStore keyStore = loadKeystore(keystoreFile, password);
+        KeyStore keyStore = loadKeystore(keystoreFile, kspswd);
         TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
 
         tmf.init(keyStore);
         KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
 
-        System.err.print("private key password: ");
-        password = new Scanner(System.in).nextLine();
-        scanner.close();
-        kmf.init(keyStore, password.toCharArray());
+        kmf.init(keyStore, kdkeypswd.toCharArray());
 
         SSLContext context = SSLContext.getInstance("TLSv1.2");
         context.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
@@ -70,14 +75,14 @@ public class TLSUtils
         return context;
     }
 
-    public static SSLSocketFactory getSocketFactory(final String keystore) throws Exception
+    public static SSLSocketFactory getSocketFactoryKeystore(final String keystore, String kspswd, String kdkeypswd) throws Exception
     {
-        return getSSLContext(keystore).getSocketFactory();
+        return getSSLContextKeystore(keystore, kspswd, kdkeypswd).getSocketFactory();
     }
 
-    public static SSLServerSocketFactory getServerSocketFactory(final String keystore) throws Exception
+    public static SSLServerSocketFactory getServerSocketFactoryKeystore(final String keystore, String kspswd, String kdkeypswd) throws Exception
     {
-        return getSSLContext(keystore).getServerSocketFactory();
+        return getSSLContextKeystore(keystore, kspswd, kdkeypswd).getServerSocketFactory();
     }
 
     public static SSLContext getSSLContext(final String caCrtFile, final String certFile, final String keyFile) throws Exception
@@ -122,7 +127,11 @@ public class TLSUtils
     public static SSLSocketFactory getSocketFactory(TLSInfos infos) throws Exception
     {
         if (infos.getKeystore() != null)
-            return getSocketFactory(infos.getKeystore());
+            return getSocketFactoryKeystore(
+                infos.getKeystore(),
+                infos.getKeystorePassword(),
+                infos.getKeystoreKeyPassword()
+            );
         else
             return getSocketFactory(infos.getCafile(), infos.getCertfile(), infos.getKeyfile());
     }
@@ -130,7 +139,10 @@ public class TLSUtils
     public static SSLServerSocketFactory getServerSocketFactory(TLSInfos infos) throws Exception
     {
         if (infos.getKeystore() != null)
-            return getServerSocketFactory(infos.getKeystore());
+            return getServerSocketFactoryKeystore(
+                infos.getKeystore(),
+                infos.getKeystorePassword(),
+                infos.getKeystoreKeyPassword());
         else
             return getServerSocketFactory(infos.getCafile(), infos.getCertfile(), infos.getKeyfile());
     }

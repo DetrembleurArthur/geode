@@ -67,6 +67,8 @@ public final class Geode
             if(data.containsKey("ksfile"))
             {
                 infos.setKeystore((String)data.getOrDefault("ksfile", null));
+                infos.setKeystorePassword((String)data.getOrDefault("kspswd", null));
+                infos.setKeystoreKeyPassword((String)data.getOrDefault("kskeypswd", null));
             }
             else
             {
@@ -141,11 +143,13 @@ public final class Geode
             Map<String, Object> mqttData = (Map<String, Object>) mqtt.get(mqttId);
             MqttInfos infos = new MqttInfos();
             tlsInit(infos, mqttData);
+            infos.setProfile((String) mqttData.getOrDefault("profile", "pub-sub"));
             infos.setBrokerIp((String) mqttData.getOrDefault("broker-ip", null));
             infos.setBrokerPort((int) mqttData.getOrDefault("broker-port", 1883));
             infos.setClientId((String) mqttData.getOrDefault("client-id", "geode-mqtt"));
             infos.setDefaultQos((int) mqttData.getOrDefault("default-qos", 0));
-            infos.setTopicsClass(Class.forName((String) mqttData.get("topic-handler")));
+            if(mqttData.containsKey("topic-handler"))
+                infos.setTopicsClass(Class.forName((String) mqttData.get("topic-handler")));
             registerMqtt(mqttId, infos);
         }
         logger.info("configuration file process end");

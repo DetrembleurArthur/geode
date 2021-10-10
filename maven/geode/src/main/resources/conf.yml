@@ -36,6 +36,7 @@ mqtt:
       certfile: src/main/resources/auto/self/cli.crt
       keyfile: src/main/resources/auto/self/cli.der
   mosquitto:
+    profile: pub-sub
     broker-ip: test.mosquitto.org
     broker-port: 8884
     client-id: arthur
@@ -43,3 +44,5 @@ mqtt:
     topic-handler: com.geode.test.TopicMan
     tls:
       ksfile: src/main/resources/auto/mosquitto/geode.jks
+      kspswd: password
+      kskeypswd: password
