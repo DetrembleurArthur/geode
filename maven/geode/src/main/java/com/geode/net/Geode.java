@@ -1,31 +1,23 @@
 package com.geode.net;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.security.Security;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.geode.logging.Logger;
 import com.geode.net.mqtt.MqttInfos;
 import com.geode.net.mqtt.MqttInstance;
 import com.geode.net.tls.TLSInfos;
-
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.yaml.snakeyaml.Yaml;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The type Geode.
  */
 public final class Geode
 {
-    static
-    {
-        Security.addProvider(new BouncyCastleProvider());
-    }
-
     private static final Logger logger = new Logger(Geode.class);
 
     private final HashMap<String, ServerInfos> serversInfos;
@@ -86,16 +78,27 @@ public final class Geode
         Yaml yaml = new Yaml();
         Map<String, Object> data = yaml.load(stream);
         logger.info("data loaded : " + data);
+
+        Map<String, Object> settings = (Map<String, Object>) data.get("settings");
         Map<String, Object> servers = (Map<String, Object>) data.get("servers");
         Map<String, Object> clients = (Map<String, Object>) data.get("clients");
         Map<String, Object> udpHandlers = (Map<String, Object>) data.get("udpHandlers");
         Map<String, Object> mqtt = (Map<String, Object>) data.get("mqtt");
+        if(settings != null)
+        {
+            boolean logging = (boolean) settings.getOrDefault("enable-logging", true);
+            Logger.setCmdOut(logging);
+            String loggingPath = (String) settings.getOrDefault("logging-file", null);
+            boolean loggingFileAppend = (boolean) settings.getOrDefault("logging-file-append", true);
+            Logger.setFile(loggingPath, loggingFileAppend);
+        }
         if(servers != null)
         for(String key : servers.keySet())
         {
             String serverId = key;
             Map<String, Object> serverData = (Map<String, Object>) servers.get(serverId);
             ServerInfos serverInfos = new ServerInfos();
+            serverInfos.setName(serverId);
             tlsInit(serverInfos, serverData);
             serverInfos.setHost((String) serverData.getOrDefault("host", "127.0.0.1"));
             serverInfos.setPort((Integer) serverData.getOrDefault("port", 50000));
@@ -117,6 +120,7 @@ public final class Geode
             String clientId = key;
             Map<String, Object> clientData = (Map<String, Object>) clients.get(clientId);
             ClientInfos clientInfos = new ClientInfos();
+            clientInfos.setName(clientId);
             tlsInit(clientInfos, clientData);
             clientInfos.setHost((String) clientData.getOrDefault("host", "127.0.0.1"));
             clientInfos.setPort((Integer) clientData.getOrDefault("port", 50000));
@@ -131,6 +135,7 @@ public final class Geode
             String udpId = key;
             Map<String, Object> udpData = (Map<String, Object>) udpHandlers.get(udpId);
             UdpInfos udpInfos = new UdpInfos();
+            udpInfos.setName(udpId);
             udpInfos.setBind((Boolean) udpData.getOrDefault("bind", false));
             udpInfos.setHost((String) udpData.getOrDefault("host", "127.0.0.1"));
             udpInfos.setPort((Integer) udpData.getOrDefault("port", 50000));
@@ -142,6 +147,7 @@ public final class Geode
             String mqttId = key;
             Map<String, Object> mqttData = (Map<String, Object>) mqtt.get(mqttId);
             MqttInfos infos = new MqttInfos();
+            infos.setName(mqttId);
             tlsInit(infos, mqttData);
             infos.setProfile((String) mqttData.getOrDefault("profile", "pub-sub"));
             infos.setBrokerIp((String) mqttData.getOrDefault("broker-ip", null));

@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Queue
 {
-    private final ConcurrentLinkedQueue<Query> queue;
+    private final ConcurrentLinkedQueue<GeodeQuery> queue;
 
     /**
      * Instantiates a new Queue.
@@ -21,11 +21,11 @@ public class Queue
     /**
      * Produce.
      *
-     * @param query the query
+     * @param geodeQuery the query
      */
-    public synchronized void produce(Query query)
+    public synchronized void produce(GeodeQuery geodeQuery)
     {
-        queue.add(query);
+        queue.add(geodeQuery);
     }
 
     /**
@@ -33,7 +33,7 @@ public class Queue
      *
      * @return the query
      */
-    public synchronized Query consume()
+    public synchronized GeodeQuery consume()
     {
         return queue.poll();
     }

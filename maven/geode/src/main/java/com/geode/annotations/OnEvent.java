@@ -44,6 +44,8 @@ public @interface OnEvent
         /**
          * Query in event.
          */
-        QUERY_IN
+        QUERY_IN,
+        SEND_ERROR,
+        RECV_ERROR
     }
 }

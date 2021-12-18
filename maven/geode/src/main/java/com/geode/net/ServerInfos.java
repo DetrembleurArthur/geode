@@ -10,6 +10,7 @@ import com.geode.net.tls.TLSInfos;
  */
 public class ServerInfos extends TLSInfos
 {
+    private String name;
     private String host;
     private int backlog;
     private int port;
@@ -131,11 +132,22 @@ public class ServerInfos extends TLSInfos
         this.protocolClasses = protocolClasses;
     }
 
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
     @Override
     public String toString()
     {
         return "ServerInfos{" +
-                "host='" + host + '\'' +
+                "name='" + name + '\'' +
+                ", host='" + host + '\'' +
                 ", backlog=" + backlog +
                 ", port=" + port +
                 ", protocolClasses=" + protocolClasses +

@@ -3,7 +3,7 @@ package com.geode.net;
 import com.geode.annotations.Control;
 import com.geode.annotations.Protocol;
 import com.geode.logging.Logger;
-import com.geode.net.Query.Category;
+import com.geode.net.GeodeQuery.Category;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -34,17 +34,17 @@ public class ClientProtocolHandler extends ProtocolHandler
         logger.info("start discovery protocol");
         try
         {
-            Query query = tunnel.recv();
-            if (query.getType().equalsIgnoreCase("protocol"))
+            GeodeQuery geodeQuery = tunnel.recv();
+            if (geodeQuery.getType().equalsIgnoreCase("protocol"))
             {
-                query.setType("protocol_send");
-                query.pack(protocolClass.getAnnotation(Protocol.class).value());
-                tunnel.send(query);
-                query = tunnel.recv();
-                if (query.getType().equalsIgnoreCase("protocol_ok"))
+                geodeQuery.setType("protocol_send");
+                geodeQuery.pack(protocolClass.getAnnotation(Protocol.class).value());
+                tunnel.send(geodeQuery);
+                geodeQuery = tunnel.recv();
+                if (geodeQuery.getType().equalsIgnoreCase("protocol_ok"))
                 {
                     logger.info("protocol discovery success");
-                    identifier = (int) query.getArgs().get(0);
+                    identifier = (int) geodeQuery.getArgs().get(0);
                     return protocolClass.getConstructor().newInstance();
                 }
             }
@@ -58,27 +58,27 @@ public class ClientProtocolHandler extends ProtocolHandler
     }
 
     @Override
-    protected Object manageTopicNotifyQuery(Query query)
+    protected Object manageTopicNotifyQuery(GeodeQuery geodeQuery)
     {
-        return manageControlQuery(query, Control.Type.TOPIC);
+        return manageControlQuery(geodeQuery, Control.Type.TOPIC);
     }
 
     @Override
-    protected Object manageTopicNotifyOthersQuery(Query query)
+    protected Object manageTopicNotifyOthersQuery(GeodeQuery geodeQuery)
     {
-        return manageTopicNotifyQuery(query);
+        return manageTopicNotifyQuery(geodeQuery);
     }
 
     @Override
-    protected Object manageNotifyQuery(Query query)
+    protected Object manageNotifyQuery(GeodeQuery geodeQuery)
     {
-        return manageControlQuery(query, Control.Type.DIRECT);
+        return manageControlQuery(geodeQuery, Control.Type.DIRECT);
     }
 
     @Override
-    protected Object manageQueueConsumeQuery(Query query)
+    protected Object manageQueueConsumeQuery(GeodeQuery geodeQuery)
     {
-        return manageControlQuery(query, Control.Type.QUEUE);
+        return manageControlQuery(geodeQuery, Control.Type.QUEUE);
     }
 
     /**
@@ -88,7 +88,7 @@ public class ClientProtocolHandler extends ProtocolHandler
      */
     public void subscribeTopic(String topic)
     {
-        send(new Query(topic).setCategory(Category.TOPIC_SUBSCRIBE));
+        send(new GeodeQuery(topic).setCategory(Category.TOPIC_SUBSCRIBE));
     }
 
     /**
@@ -98,7 +98,7 @@ public class ClientProtocolHandler extends ProtocolHandler
      */
     public void unsubscribeTopic(String topic)
     {
-        send(new Query(topic).setCategory(Category.TOPIC_UNSUBSCRIBE));
+        send(new GeodeQuery(topic).setCategory(Category.TOPIC_UNSUBSCRIBE));
     }
 
     /**
@@ -108,7 +108,7 @@ public class ClientProtocolHandler extends ProtocolHandler
      */
     public void subscribeQueue(String queue)
     {
-        send(new Query(queue).setCategory(Category.QUEUE_SUBSCRIBE));
+        send(new GeodeQuery(queue).setCategory(Category.QUEUE_SUBSCRIBE));
     }
 
     /**
@@ -118,7 +118,7 @@ public class ClientProtocolHandler extends ProtocolHandler
      */
     public void unsubscribeQueue(String queue)
     {
-        send(new Query(queue).setCategory(Category.QUEUE_UNSUBSCRIBE));
+        send(new GeodeQuery(queue).setCategory(Category.QUEUE_UNSUBSCRIBE));
     }
 
     @Override

@@ -45,7 +45,7 @@ public class Server extends Thread implements Initializable
     {
         if(serverInfos.isTLSEnable())
         {
-            logger.info("enabling TLS...");
+            logger.info("enabling TLS...", getServerInfos().getName());
             SSLServerSocketFactory factory = TLSUtils.getServerSocketFactory(serverInfos);
             return factory.createServerSocket(
                 serverInfos.getPort(),
@@ -59,17 +59,17 @@ public class Server extends Thread implements Initializable
     @Override
     public void init()
     {
-        logger.info("initialisation");
+        logger.info("initialisation", getServerInfos().getName());
         try
         {
             serverSocket = initServerSocket();
             gState = GState.READY;
         } catch (Exception e)
         {
-            logger.fatal("unable to initialise the server: " + serverInfos + " -> " + e.getMessage());
+            logger.fatal("unable to initialise the server: " + serverInfos + " -> " + e.getMessage(), getServerInfos().getName());
             gState = GState.BROKEN;
         }
-        logger.info("init server: " + serverInfos);
+        logger.info("init server: " + serverInfos, getServerInfos().getName());
     }
 
     @Override
@@ -78,25 +78,25 @@ public class Server extends Thread implements Initializable
         init();
         if (gState == GState.READY)
         {
-            logger.info("server is running");
+            logger.info("server is running", getServerInfos().getName());
             gState = GState.RUNNING;
             while (gState == GState.RUNNING)
             {
                 try
                 {
                     Socket socket = serverSocket.accept();
-                    logger.info("client connection accepted: " + socket);
+                    logger.info("client connection accepted: " + socket, getServerInfos().getName());
                     ServerProtocolHandler handler = new ServerProtocolHandler(socket, this);
                     handler.start();
                     handlers.add(handler);
                 } catch (IOException e)
                 {
-                    logger.error("server accept error: " + e.getMessage());
+                    logger.error("server accept error: " + e.getMessage(), getServerInfos().getName());
                 }
             }
         } else
         {
-            logger.fatal("server " + gState + " can not run");
+            logger.fatal("server " + gState + " can not run", getServerInfos().getName());
         }
     }
 
@@ -112,10 +112,10 @@ public class Server extends Thread implements Initializable
             try
             {
                 serverInfos.getProtocolClasses().add(Class.forName(className));
-                logger.info("register protocolClass: " + className);
+                logger.info("register protocolClass: " + className, getServerInfos().getName());
             } catch (ClassNotFoundException e)
             {
-                logger.error("unable to register protocolClass: " + className + " -> " + e.getMessage());
+                logger.error("unable to register protocolClass: " + className + " -> " + e.getMessage(), getServerInfos().getName());
             }
         }
     }
@@ -130,7 +130,7 @@ public class Server extends Thread implements Initializable
         for (Class<?> pclass : classes)
         {
             serverInfos.getProtocolClasses().add(pclass);
-            logger.info("register protocolClass: " + pclass);
+            logger.info("register protocolClass: " + pclass, getServerInfos().getName());
         }
     }
 
@@ -182,7 +182,7 @@ public class Server extends Thread implements Initializable
      */
     public synchronized void subscribeTopic(String topic, ProtocolHandler handler)
     {
-        logger.info("subscribe to topic : " + topic);
+        logger.info("subscribe to topic : " + topic, getServerInfos().getName());
         ArrayList<ProtocolHandler> handlers;
         if (!topicsMap.containsKey(topic))
         {
@@ -206,7 +206,7 @@ public class Server extends Thread implements Initializable
      */
     public synchronized void unsubscribeTopic(String topic, ProtocolHandler handler)
     {
-        logger.info("unsubscribe to topic : " + topic);
+        logger.info("unsubscribe to topic : " + topic, getServerInfos().getName());
         if (topicsMap.containsKey(topic))
         {
             topicsMap.get(topic).remove(handler);
@@ -217,7 +217,7 @@ public class Server extends Thread implements Initializable
     {
         for (String key : topicsMap.keySet())
         {
-            logger.info("unsubscribe to topic : " + key);
+            logger.info("unsubscribe to topic : " + key, getServerInfos().getName());
             topicsMap.get(key).remove(serverProtocolHandler);
         }
     }
@@ -225,59 +225,59 @@ public class Server extends Thread implements Initializable
     /**
      * Topic notify subscribers.
      *
-     * @param query                 the query
+     * @param geodeQuery                 the query
      * @param serverProtocolHandler the server protocol handler
      */
-    public synchronized void topicNotifySubscribers(Query query, ServerProtocolHandler serverProtocolHandler)
+    public synchronized void topicNotifySubscribers(GeodeQuery geodeQuery, ServerProtocolHandler serverProtocolHandler)
     {
-        String topic = query.getType();
+        String topic = geodeQuery.getType();
         ArrayList<ProtocolHandler> handlers = topicsMap.get(topic);
         ArrayList<Serializable> newArgs = new ArrayList<>();
         newArgs.add(serverProtocolHandler.getIdentifier());
-        newArgs.addAll(query.getArgs());
-        query.setArgs(newArgs);
+        newArgs.addAll(geodeQuery.getArgs());
+        geodeQuery.setArgs(newArgs);
         for (ProtocolHandler handler : handlers)
         {
-            handler.send(query);
+            handler.send(geodeQuery);
         }
     }
 
     /**
      * Topic notify other subscribers.
      *
-     * @param query                 the query
+     * @param geodeQuery                 the query
      * @param serverProtocolHandler the server protocol handler
      */
-    public synchronized void topicNotifyOtherSubscribers(Query query, ServerProtocolHandler serverProtocolHandler)
+    public synchronized void topicNotifyOtherSubscribers(GeodeQuery geodeQuery, ServerProtocolHandler serverProtocolHandler)
     {
-        String topic = query.getType();
+        String topic = geodeQuery.getType();
         ArrayList<ProtocolHandler> handlers = topicsMap.get(topic);
         ArrayList<Serializable> newArgs = new ArrayList<>();
         newArgs.add(serverProtocolHandler.getIdentifier());
-        newArgs.addAll(query.getArgs());
-        query.setArgs(newArgs);
+        newArgs.addAll(geodeQuery.getArgs());
+        geodeQuery.setArgs(newArgs);
         for (ProtocolHandler handler : handlers)
         {
             if (handler != serverProtocolHandler)
-                handler.send(query);
+                handler.send(geodeQuery);
         }
     }
 
     /**
      * Notify other.
      *
-     * @param query                 the query
+     * @param geodeQuery                 the query
      * @param serverProtocolHandler the server protocol handler
      */
-    public synchronized void notifyOther(Query query, ServerProtocolHandler serverProtocolHandler)
+    public synchronized void notifyOther(GeodeQuery geodeQuery, ServerProtocolHandler serverProtocolHandler)
     {
-        ArrayList<Integer> ids = (ArrayList<Integer>) query.getArgs().get(0);
-        query.getArgs().set(0, serverProtocolHandler.getIdentifier());
+        ArrayList<Integer> ids = (ArrayList<Integer>) geodeQuery.getArgs().get(0);
+        geodeQuery.getArgs().set(0, serverProtocolHandler.getIdentifier());
         for (ProtocolHandler handler : handlers)
         {
             if (ids.contains(handler.getIdentifier()))
             {
-                handler.send(query);
+                handler.send(geodeQuery);
             }
         }
     }
@@ -328,15 +328,15 @@ public class Server extends Thread implements Initializable
     /**
      * Produce queue.
      *
-     * @param query                 the query
+     * @param geodeQuery                 the query
      * @param serverProtocolHandler the server protocol handler
      */
-    public void produceQueue(Query query, ServerProtocolHandler serverProtocolHandler)
+    public void produceQueue(GeodeQuery geodeQuery, ServerProtocolHandler serverProtocolHandler)
     {
-        Queue queue = queuesMap.getOrDefault(query.getType(), null);
+        Queue queue = queuesMap.getOrDefault(geodeQuery.getType(), null);
         if (queue != null)
         {
-            serverProtocolHandler.queueProduce(queue, query.setCategory(Query.Category.QUEUE_CONSUME));
+            serverProtocolHandler.queueProduce(queue, geodeQuery.setCategory(GeodeQuery.Category.QUEUE_CONSUME));
         }
     }
 }

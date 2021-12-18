@@ -81,16 +81,16 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     /**
      * Send.
      *
-     * @param query the query
+     * @param geodeQuery the query
      */
-    public synchronized void send(Query query)
+    public synchronized void send(GeodeQuery geodeQuery)
     {
         try
         {
-            tunnel.send(query);
+            tunnel.send(geodeQuery);
         } catch (Exception e)
         {
-
+            callListener(OnEvent.Event.SEND_ERROR, new Object[0]);
         }
     }
 
@@ -99,17 +99,17 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      *
      * @return the query
      */
-    public Query recv()
+    public GeodeQuery recv()
     {
-        Query query = null;
+        GeodeQuery geodeQuery = null;
         try
         {
-            query = tunnel.recv();
+            geodeQuery = tunnel.recv();
         } catch (Exception e)
         {
-
+            callListener(OnEvent.Event.RECV_ERROR, new Object[0]);
         }
-        return query;
+        return geodeQuery;
     }
 
     @Override
@@ -270,10 +270,10 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                 try
                 {
                     logger.info("wait for query...");
-                    Query query = tunnel.recv();
-                    callListener(OnEvent.Event.QUERY_IN, new Object[]{query});
-                    Object result = manageQuery(query);
-                    manageQueryResult(query, result);
+                    GeodeQuery geodeQuery = tunnel.recv();
+                    callListener(OnEvent.Event.QUERY_IN, new Object[]{geodeQuery});
+                    Object result = manageQuery(geodeQuery);
+                    manageQueryResult(geodeQuery, result);
                 } catch (IOException e)
                 {
                     logger.error("receive IO error: " + e.getMessage());
@@ -300,25 +300,25 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         end();
     }
 
-    private void manageQueryResult(Query query, Object result) throws IOException
+    private void manageQueryResult(GeodeQuery geodeQuery, Object result) throws IOException
     {
         if (result != null)
         {
-            if (result instanceof Query)
+            if (result instanceof GeodeQuery)
             {
-                tunnel.send((Query) result);
+                tunnel.send((GeodeQuery) result);
             } else if (result instanceof String)
             {
-                tunnel.send(Query.simple((String) result));
-            } else if (result == Query.SUCCESS)
+                tunnel.send(GeodeQuery.simple((String) result));
+            } else if (result == GeodeQuery.SUCCESS)
             {
-                tunnel.send(Query.success(query.getType()));
-            } else if (result == Query.FAILED)
+                tunnel.send(GeodeQuery.success(geodeQuery.getType()));
+            } else if (result == GeodeQuery.FAILED)
             {
-                tunnel.send(Query.failed(query.getType()));
+                tunnel.send(GeodeQuery.failed(geodeQuery.getType()));
             } else if (result instanceof Serializable)
             {
-                tunnel.send(Query.simple(query.getType()).pack((Serializable) result));
+                tunnel.send(GeodeQuery.simple(geodeQuery.getType()).pack((Serializable) result));
             }
         }
     }
@@ -326,35 +326,35 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     /**
      * Manage query object.
      *
-     * @param query the query
+     * @param geodeQuery the query
      * @return the object
      */
-    protected Object manageQuery(Query query)
+    protected Object manageQuery(GeodeQuery geodeQuery)
     {
-        switch (query.getCategory())
+        switch (geodeQuery.getCategory())
         {
             case NORMAL:
-                return manageControlQuery(query, Control.Type.CLASSIC);
+                return manageControlQuery(geodeQuery, Control.Type.CLASSIC);
             case TOPIC_SUBSCRIBE:
-                return manageTopicSubscribeQuery(query);
+                return manageTopicSubscribeQuery(geodeQuery);
             case TOPIC_UNSUBSCRIBE:
-                return manageTopicUnsubscribeQuery(query);
+                return manageTopicUnsubscribeQuery(geodeQuery);
             case TOPIC_NOTIFY_OTHERS:
-                return manageTopicNotifyOthersQuery(query);
+                return manageTopicNotifyOthersQuery(geodeQuery);
             case TOPIC_NOTIFY:
-                return manageTopicNotifyQuery(query);
+                return manageTopicNotifyQuery(geodeQuery);
             case NOTIFY:
-                return manageNotifyQuery(query);
+                return manageNotifyQuery(geodeQuery);
             case QUEUE_SUBSCRIBE:
-                return manageQueueSubscribeQuery(query);
+                return manageQueueSubscribeQuery(geodeQuery);
             case QUEUE_UNSUBSCRIBE:
-                return manageQueueUnsubscribeQuery(query);
+                return manageQueueUnsubscribeQuery(geodeQuery);
             case QUEUE_CONSUME:
-                return manageQueueConsumeQuery(query);
+                return manageQueueConsumeQuery(geodeQuery);
             case QUEUE_PRODUCE:
-                return manageQueueProduceQuery(query);
+                return manageQueueProduceQuery(geodeQuery);
             default:
-                logger.warning(query.getCategory() + " are not allowed here");
+                logger.warning(geodeQuery.getCategory() + " are not allowed here");
         }
         return null;
     }
@@ -363,13 +363,13 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     /**
      * Manage control query object.
      *
-     * @param query the query
+     * @param geodeQuery the query
      * @param ctype the ctype
      * @return the object
      */
-    protected Object manageControlQuery(Query query, Control.Type ctype)
+    protected Object manageControlQuery(GeodeQuery geodeQuery, Control.Type ctype)
     {
-        String type = query.getType();
+        String type = geodeQuery.getType();
         for (Method control : controls)
         {
             if (control.getAnnotation(Control.class).type() != ctype) continue;
@@ -379,7 +379,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             {
                 if(control.getAnnotation(Control.class).state().equals(protocolState))
                 {
-                    Serializable[] args = query.getArgsArray();
+                    Serializable[] args = geodeQuery.getArgsArray();
                     if (args.length == control.getParameterCount())
                     {
                         int i = 0;
@@ -405,16 +405,16 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                 }
             }
         }
-        return manageDynamicControlQuery(query);
+        return manageDynamicControlQuery(geodeQuery);
     }
 
-    private Object manageDynamicControlQuery(Query query)
+    private Object manageDynamicControlQuery(GeodeQuery geodeQuery)
     {
-        String type = query.getType();
+        String type = geodeQuery.getType();
         QueryListener listener = dynamicControls.getOrDefault(type, null);
         if (listener != null)
-            return listener.listen(query.getArgs());
-        logger.error("no control found for " + query);
+            return listener.listen(geodeQuery.getArgs());
+        logger.error("no control found for " + geodeQuery);
         return null;
     }
 
@@ -428,108 +428,108 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     /**
      * Manage topic subscribe query object.
      *
-     * @param query the query
+     * @param geodeQuery the query
      * @return the object
      */
-    protected Object manageTopicSubscribeQuery(Query query)
+    protected Object manageTopicSubscribeQuery(GeodeQuery geodeQuery)
     {
-        logger.warning(query.getCategory() + " are not allowed here");
+        logger.warning(geodeQuery.getCategory() + " are not allowed here");
         return null;
     }
 
     /**
      * Manage topic unsubscribe query object.
      *
-     * @param query the query
+     * @param geodeQuery the query
      * @return the object
      */
-    protected Object manageTopicUnsubscribeQuery(Query query)
+    protected Object manageTopicUnsubscribeQuery(GeodeQuery geodeQuery)
     {
-        logger.warning(query.getCategory() + " are not allowed here");
+        logger.warning(geodeQuery.getCategory() + " are not allowed here");
         return null;
     }
 
     /**
      * Manage topic notify query object.
      *
-     * @param query the query
+     * @param geodeQuery the query
      * @return the object
      */
-    protected Object manageTopicNotifyQuery(Query query)
+    protected Object manageTopicNotifyQuery(GeodeQuery geodeQuery)
     {
-        logger.warning(query.getCategory() + " are not allowed here");
+        logger.warning(geodeQuery.getCategory() + " are not allowed here");
         return null;
     }
 
     /**
      * Manage topic notify others query object.
      *
-     * @param query the query
+     * @param geodeQuery the query
      * @return the object
      */
-    protected Object manageTopicNotifyOthersQuery(Query query)
+    protected Object manageTopicNotifyOthersQuery(GeodeQuery geodeQuery)
     {
-        logger.warning(query.getCategory() + " are not allowed here");
+        logger.warning(geodeQuery.getCategory() + " are not allowed here");
         return null;
     }
 
     /**
      * Manage notify query object.
      *
-     * @param query the query
+     * @param geodeQuery the query
      * @return the object
      */
-    protected Object manageNotifyQuery(Query query)
+    protected Object manageNotifyQuery(GeodeQuery geodeQuery)
     {
-        logger.warning(query.getCategory() + " are not allowed here");
+        logger.warning(geodeQuery.getCategory() + " are not allowed here");
         return null;
     }
 
     /**
      * Manage queue subscribe query object.
      *
-     * @param query the query
+     * @param geodeQuery the query
      * @return the object
      */
-    protected Object manageQueueSubscribeQuery(Query query)
+    protected Object manageQueueSubscribeQuery(GeodeQuery geodeQuery)
     {
-        logger.warning(query.getCategory() + " are not allowed here");
+        logger.warning(geodeQuery.getCategory() + " are not allowed here");
         return null;
     }
 
     /**
      * Manage queue unsubscribe query object.
      *
-     * @param query the query
+     * @param geodeQuery the query
      * @return the object
      */
-    protected Object manageQueueUnsubscribeQuery(Query query)
+    protected Object manageQueueUnsubscribeQuery(GeodeQuery geodeQuery)
     {
-        logger.warning(query.getCategory() + " are not allowed here");
+        logger.warning(geodeQuery.getCategory() + " are not allowed here");
         return null;
     }
 
     /**
      * Manage queue consume query object.
      *
-     * @param query the query
+     * @param geodeQuery the query
      * @return the object
      */
-    protected Object manageQueueConsumeQuery(Query query)
+    protected Object manageQueueConsumeQuery(GeodeQuery geodeQuery)
     {
-        logger.warning(query.getCategory() + " are not allowed here");
+        logger.warning(geodeQuery.getCategory() + " are not allowed here");
         return null;
     }
 
     /**
      * Manage queue produce query object.
      *
-     * @param query the query
+     * @param geodeQuery the query
      * @return the object
      */
-    protected Object manageQueueProduceQuery(Query query)
+    protected Object manageQueueProduceQuery(GeodeQuery geodeQuery)
     {
-        logger.warning(query.getCategory() + " are not allowed here");
+        logger.warning(geodeQuery.getCategory() + " are not allowed here");
         return null;
     }
 

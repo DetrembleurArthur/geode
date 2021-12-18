@@ -3,7 +3,7 @@ package com.geode.net;
 import com.geode.annotations.Control;
 import com.geode.annotations.Protocol;
 import com.geode.logging.Logger;
-import com.geode.net.Query.Category;
+import com.geode.net.GeodeQuery.Category;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -45,15 +45,15 @@ public class ServerProtocolHandler extends ProtocolHandler
         logger.info("start discovery protocol");
         try
         {
-            tunnel.send(Query.simple("protocol").setCategory(Query.Category.DISCOVERY));
-            Query query = tunnel.recv();
-            if (query.getType().equals("protocol_send"))
+            tunnel.send(GeodeQuery.simple("protocol").setCategory(GeodeQuery.Category.DISCOVERY));
+            GeodeQuery geodeQuery = tunnel.recv();
+            if (geodeQuery.getType().equals("protocol_send"))
             {
-                if (query.getCategory() == Category.DISCOVERY)
+                if (geodeQuery.getCategory() == Category.DISCOVERY)
                 {
-                    if (query.getArgs().size() == 1)
+                    if (geodeQuery.getArgs().size() == 1)
                     {
-                        String protocolName = (String) query.getArgs().get(0);
+                        String protocolName = (String) geodeQuery.getArgs().get(0);
                         for (Class<?> protocolClass : protocolClasses)
                         {
                             String name = protocolClass.getAnnotation(Protocol.class).value();
@@ -61,7 +61,7 @@ public class ServerProtocolHandler extends ProtocolHandler
                             if (name.equalsIgnoreCase(protocolName))
                             {
                                 identifier = counter.incrementAndGet();
-                                tunnel.send(Query.simple("protocol_ok").setCategory(Query.Category.DISCOVERY).pack(identifier));
+                                tunnel.send(GeodeQuery.simple("protocol_ok").setCategory(GeodeQuery.Category.DISCOVERY).pack(identifier));
                                 protocolClasses = null;
                                 return protocolClass.getDeclaredConstructor().newInstance();
                             }
@@ -76,7 +76,7 @@ public class ServerProtocolHandler extends ProtocolHandler
         }
         try
         {
-            tunnel.send(Query.simple("protocol_err"));
+            tunnel.send(GeodeQuery.simple("protocol_err"));
         } catch (IOException e)
         {
             logger.fatal("fatal error: " + e.getMessage());
@@ -92,58 +92,58 @@ public class ServerProtocolHandler extends ProtocolHandler
     }
 
     @Override
-    protected Serializable manageTopicNotifyQuery(Query query)
+    protected Serializable manageTopicNotifyQuery(GeodeQuery geodeQuery)
     {
-        server.topicNotifySubscribers(query, this);
+        server.topicNotifySubscribers(geodeQuery, this);
         return null;
     }
 
     @Override
-    protected Serializable manageTopicNotifyOthersQuery(Query query)
+    protected Serializable manageTopicNotifyOthersQuery(GeodeQuery geodeQuery)
     {
-        server.topicNotifyOtherSubscribers(query, this);
+        server.topicNotifyOtherSubscribers(geodeQuery, this);
         return null;
     }
 
     @Override
-    protected Serializable manageTopicSubscribeQuery(Query query)
+    protected Serializable manageTopicSubscribeQuery(GeodeQuery geodeQuery)
     {
-        server.subscribeTopic(query.getType(), this);
+        server.subscribeTopic(geodeQuery.getType(), this);
         return null;
     }
 
     @Override
-    protected Serializable manageTopicUnsubscribeQuery(Query query)
+    protected Serializable manageTopicUnsubscribeQuery(GeodeQuery geodeQuery)
     {
-        server.unsubscribeTopic(query.getType(), this);
+        server.unsubscribeTopic(geodeQuery.getType(), this);
         return null;
     }
 
     @Override
-    protected Serializable manageNotifyQuery(Query query)
+    protected Serializable manageNotifyQuery(GeodeQuery geodeQuery)
     {
-        server.notifyOther(query, this);
+        server.notifyOther(geodeQuery, this);
         return null;
     }
 
     @Override
-    protected Object manageQueueSubscribeQuery(Query query)
+    protected Object manageQueueSubscribeQuery(GeodeQuery geodeQuery)
     {
-        server.subscribeQueue(query.getType(), this);
+        server.subscribeQueue(geodeQuery.getType(), this);
         return null;
     }
 
     @Override
-    protected Object manageQueueUnsubscribeQuery(Query query)
+    protected Object manageQueueUnsubscribeQuery(GeodeQuery geodeQuery)
     {
-        server.unsubscribeQueue(query.getType(), this);
+        server.unsubscribeQueue(geodeQuery.getType(), this);
         return null;
     }
 
     @Override
-    protected Object manageQueueProduceQuery(Query query)
+    protected Object manageQueueProduceQuery(GeodeQuery geodeQuery)
     {
-        server.produceQueue(query, this);
+        server.produceQueue(geodeQuery, this);
         return null;
     }
 
@@ -179,13 +179,13 @@ public class ServerProtocolHandler extends ProtocolHandler
      * Queue produce.
      *
      * @param queue the queue
-     * @param query the query
+     * @param geodeQuery the query
      */
-    public synchronized void queueProduce(Queue queue, Query query)
+    public synchronized void queueProduce(Queue queue, GeodeQuery geodeQuery)
     {
         synchronized (queue)
         {
-            queue.produce(query);
+            queue.produce(geodeQuery);
         }
     }
 
@@ -207,10 +207,10 @@ public class ServerProtocolHandler extends ProtocolHandler
                     {
                         synchronized (queue)
                         {
-                            Query query = queue.consume();
-                            if (query != null)
+                            GeodeQuery geodeQuery = queue.consume();
+                            if (geodeQuery != null)
                             {
-                                send(query);
+                                send(geodeQuery);
                             }
                         }
                     }

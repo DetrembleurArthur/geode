@@ -41,7 +41,7 @@ public class Client implements Initializable, Runnable
     {
         if(clientInfos.isTLSEnable())
         {
-            logger.info("enabling TLS...");
+            logger.info("enabling TLS...", getClientInfos().getName());
             SSLSocketFactory factory = TLSUtils.getSocketFactory(clientInfos);
             return factory.createSocket(
                 InetAddress.getByName(clientInfos.getHost()),
@@ -54,16 +54,16 @@ public class Client implements Initializable, Runnable
     @Override
     public void init()
     {
-        logger.info("initialisation");
+        logger.info("initialisation", getClientInfos().getName());
         try
         {
             Socket socket = initSocket();
-            logger.info("client connected : " + socket);
+            logger.info("client connected : " + socket, getClientInfos().getName());
             handler = new ClientProtocolHandler(socket, clientInfos.getProtocolClass());
             gState = GState.READY;
         } catch (Exception e)
         {
-            logger.fatal("client connection error: " + e.getMessage());
+            logger.fatal("client connection error: " + e.getMessage(), getClientInfos().getName());
             gState = GState.BROKEN;
         }
     }
@@ -76,10 +76,10 @@ public class Client implements Initializable, Runnable
         {
             gState = GState.RUNNING;
             handler.start();
-            logger.info("client handler is running");
+            logger.info("client handler is running", getClientInfos().getName());
         } else
         {
-            logger.fatal("client " + gState + " can not run");
+            logger.fatal("client " + gState + " can not run", getClientInfos().getName());
         }
     }
 

@@ -5,6 +5,7 @@ package com.geode.net;
  */
 public class UdpInfos
 {
+    private String name;
     private String host;
     private int port;
     private boolean bind;
@@ -91,11 +92,22 @@ public class UdpInfos
         this.bind = bind;
     }
 
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
     @Override
     public String toString()
     {
         return "UdpInfos{" +
-                "host='" + host + '\'' +
+                "name='" + name + '\'' +
+                ", host='" + host + '\'' +
                 ", port=" + port +
                 ", bind=" + bind +
                 '}';

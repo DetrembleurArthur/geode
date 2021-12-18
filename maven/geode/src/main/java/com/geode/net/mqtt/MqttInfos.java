@@ -4,6 +4,7 @@ import com.geode.net.tls.TLSInfos;
 
 public class MqttInfos extends TLSInfos
 {
+    private String name;
     private String brokerIp;
     private int brokerPort;
     private int defaultQos;
@@ -95,15 +96,27 @@ public class MqttInfos extends TLSInfos
         return profile.contains("pub");
     }
 
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
     @Override
     public String toString()
     {
         return "MqttInfos{" +
-                "brokerIp='" + brokerIp + '\'' +
+                "name='" + name + '\'' +
+                ", brokerIp='" + brokerIp + '\'' +
                 ", brokerPort=" + brokerPort +
                 ", defaultQos=" + defaultQos +
                 ", clientId='" + clientId + '\'' +
                 ", topicsClass=" + topicsClass +
+                ", profile='" + profile + '\'' +
                 '}';
     }
 }

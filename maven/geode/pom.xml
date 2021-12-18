@@ -10,6 +10,7 @@
 
     <properties>
         <java.version>1.13</java.version>
+        <app.name>client</app.name>
     </properties>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
@@ -59,7 +60,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.geode.test.Pub</mainClass>
+                            <mainClass>com.geode.test.TestClient</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -74,7 +75,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/GEODE-APP</outputDirectory>
+                            <outputDirectory>${project.build.directory}/${app.name}</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -89,7 +90,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/GEODE-APP/src/main/resources
+                            <outputDirectory>${project.build.directory}/${app.name}/src/main/resources
                             </outputDirectory>
                             <resources>
                                 <resource>
@@ -105,6 +106,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>

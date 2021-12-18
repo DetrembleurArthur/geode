@@ -37,7 +37,7 @@ public class UdpHandler extends Thread implements Initializable
     @Override
     public void init()
     {
-        logger.info("initialisation");
+        logger.info("initialisation", getInfos().getName());
         if (infos.isBind())
         {
             try

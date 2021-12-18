@@ -10,7 +10,7 @@ public class Logger
     private static boolean cmdOut = true;
     private static FileWriter fileWriter;
 
-    private Class<?> loggingClassScope;
+    private final Class<?> loggingClassScope;
 
     public Logger(Class<?> loggingClassScope)
     {
@@ -29,15 +29,21 @@ public class Logger
                     .append(") : ")
                     .append(Date.from(Instant.now()))
                     .append(" : ")
-                    .append(loggingClassScope.getCanonicalName())
+                    .append(loggingClassScope.getName())
                     .append(" : ")
                     .append(message);
-            if(cmdOut) System.err.println(builder);
+            if(cmdOut)
+            {
+                if(level.getId() >= Level.WARNING.getId())
+                    System.err.println(builder);
+                else
+                    System.out.println(builder);
+            }
             if(fileWriter != null)
             {
                 try
                 {
-                    fileWriter.write(builder.toString() + "\n");
+                    fileWriter.write(builder + "\n");
                     fileWriter.flush();
                 } catch (IOException e)
                 {
@@ -75,6 +81,36 @@ public class Logger
     public void fatal(String message)
     {
         write(message, Level.FATAL);
+    }
+
+    public void debug(String message, String who)
+    {
+        write(message + " : " + who, Level.DEBUG);
+    }
+
+    public void info(String message, String who)
+    {
+        write(message + " : " + who, Level.INFO);
+    }
+
+    public void warning(String message, String who)
+    {
+        write(message + " : " + who, Level.WARNING);
+    }
+
+    public void error(String message, String who)
+    {
+        write(message + " : " + who, Level.ERROR);
+    }
+
+    public void critical(String message, String who)
+    {
+        write(message + " : " + who, Level.CRITICAL);
+    }
+
+    public void fatal(String message, String who)
+    {
+        write(message + " : " + who, Level.FATAL);
     }
 
     public static void setLevel(Level level)
