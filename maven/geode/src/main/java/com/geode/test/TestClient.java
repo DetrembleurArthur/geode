@@ -10,9 +10,10 @@ public class TestClient
     public static void main(String[] args) throws ClassNotFoundException
     {
         Geode geode = new Geode();
-        geode.registerClient("myClient", new ClientInfos("127.0.0.1", 50000, Class.forName("com.geode.test.ClientProtocol")));
+        ClientInfos infos = new ClientInfos("127.0.0.1", 50000, Class.forName("com.geode.test.ClientProtocol"));
+        geode.registerClient("myClient", infos);
 
-        ClientProtocolHandler handler = geode.launchClient("myClient").getHandlerSafe();
+        ClientProtocolHandler handler = geode.launchClient("myClient").getHandler();
         handler.send(GeodeQuery.simple("ping").pack("It works!"));
     }
 }

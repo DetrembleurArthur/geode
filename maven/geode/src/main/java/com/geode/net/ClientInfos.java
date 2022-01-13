@@ -11,7 +11,7 @@ public class ClientInfos extends TLSInfos
     private String host;
     private int port;
     private Class<?> protocolClass;
-    private boolean connectedMode;
+    private boolean enableDiscovery;
 
     /**
      * Instantiates a new Client infos.
@@ -25,7 +25,7 @@ public class ClientInfos extends TLSInfos
         this.host = host;
         this.port = port;
         this.protocolClass = protocolClass;
-        connectedMode = true;
+        enableDiscovery = true;
     }
 
     /**
@@ -96,24 +96,14 @@ public class ClientInfos extends TLSInfos
         this.protocolClass = protocolClass;
     }
 
-    /**
-     * Is connected mode boolean.
-     *
-     * @return the boolean
-     */
-    public boolean isConnectedMode()
+    public boolean isEnableDiscovery()
     {
-        return connectedMode;
+        return enableDiscovery;
     }
 
-    /**
-     * Sets connected mode.
-     *
-     * @param connectedMode the connected mode
-     */
-    public void setConnectedMode(boolean connectedMode)
+    public void setEnableDiscovery(boolean enableDiscovery)
     {
-        this.connectedMode = connectedMode;
+        this.enableDiscovery = enableDiscovery;
     }
 
     public String getName()
@@ -127,14 +117,10 @@ public class ClientInfos extends TLSInfos
     }
 
     @Override
-    public String toString()
-    {
-        return "ClientInfos{" +
-                "name='" + name + '\'' +
-                ", host='" + host + '\'' +
-                ", port=" + port +
-                ", protocolClass=" + protocolClass +
-                ", connectedMode=" + connectedMode +
-                '}';
+    public String toString() {
+        return "ClientInfos [enableDiscovery=" + enableDiscovery + ", host=" + host + ", name=" + name + ", port="
+                + port + ", protocolClass=" + protocolClass + "]";
     }
+
+    
 }

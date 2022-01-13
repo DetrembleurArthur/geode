@@ -56,21 +56,25 @@ public abstract class ProtocolHandler extends Thread implements Initializable
 
     protected String protocolState = "DEFAULT";
 
+    protected boolean enableDiscovery;
+
     /**
      * Instantiates a new Protocol handler.
      *
      * @param socket the socket
      */
-    public ProtocolHandler(Socket socket)
+    public ProtocolHandler(Socket socket, boolean discovery)
     {
         dynamicControls = new HashMap<>();
         controls = new ArrayList<>();
         listeners = new HashMap<>();
         running = false;
         gState = GState.DOWN;
+        this.enableDiscovery = discovery;
         try
         {
             tunnel = new TcpTunnel(socket);
+            logger.info("tunnel created");
         } catch (IOException e)
         {
             gState = GState.BROKEN;
@@ -118,7 +122,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         logger.info("initialisation");
         if (gState == GState.DOWN)
         {
-            protocol = discovery();
+            protocol = enableDiscovery ? discovery() : createProtocol();
             if (protocol == null) return;
             initControls();
             initInjections();
@@ -132,6 +136,8 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             logger.fatal("handler " + gState + " can not be initialized");
         }
     }
+
+    protected abstract Object createProtocol();
 
     /**
      * Call listener.
@@ -255,7 +261,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     /**
      * End.
      */
-    protected abstract void end();
+    public abstract void end();
 
     @Override
     public void run()
@@ -364,7 +370,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      * Manage control query object.
      *
      * @param geodeQuery the query
-     * @param ctype the ctype
+     * @param ctype      the ctype
      * @return the object
      */
     protected Object manageControlQuery(GeodeQuery geodeQuery, Control.Type ctype)
@@ -377,7 +383,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                     control.getName() : control.getAnnotation(Control.class).value();
             if (type.equals(controlType))
             {
-                if(control.getAnnotation(Control.class).state().equals(protocolState))
+                if (control.getAnnotation(Control.class).state().equals(protocolState))
                 {
                     Serializable[] args = geodeQuery.getArgsArray();
                     if (args.length == control.getParameterCount())

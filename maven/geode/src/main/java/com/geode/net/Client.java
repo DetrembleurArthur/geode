@@ -1,22 +1,16 @@
 package com.geode.net;
 
-import com.geode.logging.Logger;
-import com.geode.net.tls.TLSUtils;
-
-import javax.net.ssl.SSLSocketFactory;
-import java.net.InetAddress;
 import java.net.Socket;
+
+import com.geode.logging.Logger;
 
 /**
  * The type Client.
  */
-public class Client implements Initializable, Runnable
+public class Client extends AbstractClient implements Runnable
 {
     private static final Logger logger = new Logger(Client.class);
-    /**
-     * The Client infos.
-     */
-    protected final ClientInfos clientInfos;
+
     /**
      * The Handler.
      */
@@ -33,22 +27,8 @@ public class Client implements Initializable, Runnable
      */
     public Client(ClientInfos clientInfos)
     {
-        this.clientInfos = clientInfos;
+        super(clientInfos);
         gState = GState.DOWN;
-    }
-
-    public Socket initSocket() throws Exception
-    {
-        if(clientInfos.isTLSEnable())
-        {
-            logger.info("enabling TLS...", getClientInfos().getName());
-            SSLSocketFactory factory = TLSUtils.getSocketFactory(clientInfos);
-            return factory.createSocket(
-                InetAddress.getByName(clientInfos.getHost()),
-                clientInfos.getPort()
-            );
-        }
-        return new Socket(getClientInfos().getHost(), getClientInfos().getPort());
     }
 
     @Override
@@ -59,7 +39,7 @@ public class Client implements Initializable, Runnable
         {
             Socket socket = initSocket();
             logger.info("client connected : " + socket, getClientInfos().getName());
-            handler = new ClientProtocolHandler(socket, clientInfos.getProtocolClass());
+            handler = new ClientProtocolHandler(socket, clientInfos.getProtocolClass(), clientInfos.isEnableDiscovery());
             gState = GState.READY;
         } catch (Exception e)
         {
@@ -71,7 +51,10 @@ public class Client implements Initializable, Runnable
     @Override
     public void run()
     {
+        logger.info("pre init");
         init();
+        logger.info("let's running");
+        logger.info("async activated");
         if (gState == GState.READY)
         {
             gState = GState.RUNNING;
@@ -143,16 +126,4 @@ public class Client implements Initializable, Runnable
     {
         this.gState = gState;
     }
-
-    /**
-     * Gets client infos.
-     *
-     * @return the client infos
-     */
-    public ClientInfos getClientInfos()
-    {
-        return clientInfos;
-    }
-
-
 }

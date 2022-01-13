@@ -26,6 +26,7 @@ public class Server extends Thread implements Initializable
     private final HashMap<String, Queue> queuesMap;
     private ServerSocket serverSocket;
     private GState gState;
+    private Object chargeMonitor = new Object();
 
     /**
      * Instantiates a new Server.
@@ -84,20 +85,49 @@ public class Server extends Thread implements Initializable
             {
                 try
                 {
+                    waitChargeAvailability();
                     Socket socket = serverSocket.accept();
                     logger.info("client connection accepted: " + socket, getServerInfos().getName());
-                    ServerProtocolHandler handler = new ServerProtocolHandler(socket, this);
+                    ServerProtocolHandler handler = new ServerProtocolHandler(socket, this, serverInfos.isEnableDiscovery());
                     handler.start();
                     handlers.add(handler);
                 } catch (IOException e)
                 {
                     logger.error("server accept error: " + e.getMessage(), getServerInfos().getName());
                 }
+                catch (InterruptedException e)
+                {
+                    logger.error("server charge error: " + e.getMessage(), getServerInfos().getName());
+                }
             }
         } else
         {
             logger.fatal("server " + gState + " can not run", getServerInfos().getName());
         }
+    }
+
+    public synchronized void waitChargeAvailability() throws InterruptedException
+    {
+            while(handlers.size() >= serverInfos.getMaxHandlers())
+            {
+                logger.warning("wait for charge availability ", getServerInfos().getName());
+                wait();
+                logger.warning("free charge availability ", getServerInfos().getName());
+            }
+    }
+
+    /**
+     * Remove.
+     *
+     * @param serverProtocolHandler the server protocol handler
+     */
+    public synchronized void remove(ServerProtocolHandler serverProtocolHandler)
+    {
+        logger.warning("remove protocol handler", getServerInfos().getName());
+        handlers.remove(serverProtocolHandler);
+        unsubscribeTopic(serverProtocolHandler);
+        if(handlers.size() + 1 >= serverInfos.getMaxHandlers())
+            notify();
     }
 
     /**
@@ -283,17 +313,6 @@ public class Server extends Thread implements Initializable
     }
 
     /**
-     * Remove.
-     *
-     * @param serverProtocolHandler the server protocol handler
-     */
-    public synchronized void remove(ServerProtocolHandler serverProtocolHandler)
-    {
-        handlers.remove(serverProtocolHandler);
-        unsubscribeTopic(serverProtocolHandler);
-    }
-
-    /**
      * Subscribe queue.
      *
      * @param type                  the type
@@ -337,6 +356,18 @@ public class Server extends Thread implements Initializable
         if (queue != null)
         {
             serverProtocolHandler.queueProduce(queue, geodeQuery.setCategory(GeodeQuery.Category.QUEUE_CONSUME));
+        }
+    }
+
+    public void end()
+    {
+        gState = GState.DOWN;
+        try
+        {
+            getServerSocket().close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
         }
     }
 }

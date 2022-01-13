@@ -1,0 +1,16 @@
+servers:
+  myServer:
+    host: 0.0.0.0
+    port: 60000
+    discovery: false
+    max-handlers: 1
+    protocols:
+      - com.geode.test.ServerProtocol
+
+clients:
+  myClient:
+    light: true
+    host: 0.0.0.0
+    port: 60000
+    discovery: false
+    protocol: com.geode.test.ClientProtocol

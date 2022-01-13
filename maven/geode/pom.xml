@@ -60,7 +60,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.geode.test.TestClient</mainClass>
+                            <mainClass>com.geode.test.TestServer</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

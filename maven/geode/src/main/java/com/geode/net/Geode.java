@@ -6,6 +6,7 @@ import com.geode.net.mqtt.MqttInstance;
 import com.geode.net.tls.TLSInfos;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -22,12 +23,14 @@ public final class Geode
 
     private final HashMap<String, ServerInfos> serversInfos;
     private final HashMap<String, ClientInfos> clientsInfos;
+    private final HashMap<String, ClientInfos> lightClientsInfos;
     private final HashMap<String, UdpInfos> udpsInfos;
     private final HashMap<String, MqttInfos> mqttInfos;
     private final ArrayList<Server> servers;
     private final ArrayList<Client> tcpClients;
     private final ArrayList<UdpHandler> udpHandlers;
     private final ArrayList<MqttInstance> mqttInstances;
+    private final ArrayList<LightClient> tcpLightClients;
     private boolean broken;
 
     /**
@@ -48,6 +51,15 @@ public final class Geode
         udpHandlers = new ArrayList<>();
         mqttInstances = new ArrayList<>();
         mqttInfos = new HashMap<>();
+        lightClientsInfos = new HashMap<>();
+        tcpLightClients = new ArrayList<>();
+    }
+
+    public static Geode load(String filename) throws Exception
+    {
+        Geode geode = new Geode();
+        geode.init(filename);
+        return geode;
     }
 
     private void tlsInit(TLSInfos infos, Map<String, Object> data)
@@ -103,6 +115,8 @@ public final class Geode
             serverInfos.setHost((String) serverData.getOrDefault("host", "127.0.0.1"));
             serverInfos.setPort((Integer) serverData.getOrDefault("port", 50000));
             serverInfos.setBacklog((Integer) serverData.getOrDefault("backlog", 10));
+            serverInfos.setMaxHandlers((Integer) serverData.getOrDefault("max-handlers", Integer.MAX_VALUE));
+            serverInfos.setEnableDiscovery((Boolean) serverData.getOrDefault("discovery", true));
             ArrayList<String> protocolNames = (ArrayList<String>) serverData.get("protocols");
             if(protocolNames != null)
             {
@@ -124,10 +138,19 @@ public final class Geode
             tlsInit(clientInfos, clientData);
             clientInfos.setHost((String) clientData.getOrDefault("host", "127.0.0.1"));
             clientInfos.setPort((Integer) clientData.getOrDefault("port", 50000));
-            clientInfos.setProtocolClass(Class.forName((String) clientData.get("protocol")));
-            if(clientInfos.getProtocolClass() == null)
-                throw new Exception("no protocols for '" + key + "' server...");
-            registerClient(clientId, clientInfos);
+            if((Boolean)clientData.getOrDefault("light", false))
+            {
+                clientInfos.setEnableDiscovery(false);
+                registerLightClient(clientId, clientInfos);
+            }
+            else
+            {
+                clientInfos.setEnableDiscovery((Boolean) clientData.getOrDefault("discovery", true));
+                clientInfos.setProtocolClass(Class.forName((String) clientData.get("protocol")));
+                if(clientInfos.getProtocolClass() == null)
+                    throw new Exception("no protocols for '" + key + "' client...");
+                registerClient(clientId, clientInfos);
+            }
         }
         if(udpHandlers != null)
         for(String key : udpHandlers.keySet())
@@ -192,6 +215,13 @@ public final class Geode
     public Geode registerClient(String id, ClientInfos clientInfos)
     {
         clientsInfos.put(id, clientInfos);
+        logger.info(id + " light client registered: " + clientInfos);
+        return this;
+    }
+
+    public Geode registerLightClient(String id, ClientInfos clientInfos)
+    {
+        lightClientsInfos.put(id, clientInfos);
         logger.info(id + " client registered: " + clientInfos);
         return this;
     }
@@ -231,12 +261,34 @@ public final class Geode
         return null;
     }
 
+    public void launchClosableServer(String id)
+    {
+        Server server = launchServer(id);
+        JOptionPane.showMessageDialog(null, "Click here to close '" + id + "' server");
+        server.end();
+    }
+
     /**
      * Launch client client.
      *
      * @param id the id
      * @return the client
      */
+    public LightClient launchLightClient(String id)
+    {
+        if (!lightClientsInfos.containsKey(id))
+        {
+            logger.fatal(id + " light client not exists");
+        } else
+        {
+            LightClient tcpClient = new LightClient(lightClientsInfos.get(id));
+            tcpClient.init();
+            tcpLightClients.add(tcpClient);
+            return tcpClient;
+        }
+        return null;
+    }
+
     public Client launchClient(String id)
     {
         if (!clientsInfos.containsKey(id))

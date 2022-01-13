@@ -7,6 +7,7 @@ import com.geode.net.GeodeQuery.Category;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,12 +30,13 @@ public class ServerProtocolHandler extends ProtocolHandler
      * @param socket the socket
      * @param server the server
      */
-    public ServerProtocolHandler(Socket socket, Server server)
+    public ServerProtocolHandler(Socket socket, Server server, boolean discovery)
     {
-        super(socket);
+        super(socket, discovery);
         this.protocolClasses = server.getServerInfos().getProtocolClasses();
         this.server = server;
         subscribedQueues = new ArrayList<>();
+        setDaemon(true);
         queueConsumerDameon = new Thread(this::consumeDaemon);
         queueConsumerDameon.setDaemon(true);
     }
@@ -225,10 +227,11 @@ public class ServerProtocolHandler extends ProtocolHandler
     }
 
     @Override
-    protected void end()
+    public void end()
     {
         try
         {
+            logger.debug("ending ***");
             server.remove(this);
             tunnel.getSocket().close();
             queueConsumerDameon.interrupt();
@@ -238,5 +241,17 @@ public class ServerProtocolHandler extends ProtocolHandler
             e.printStackTrace();
             logger.error("end handler : " + e.getMessage());
         }
+    }
+
+    @Override
+    protected Object createProtocol()
+    {
+        try {
+            return protocolClasses.get(0).getConstructor().newInstance();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

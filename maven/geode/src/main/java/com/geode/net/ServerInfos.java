@@ -14,7 +14,9 @@ public class ServerInfos extends TLSInfos
     private String host;
     private int backlog;
     private int port;
+    private boolean enableDiscovery;
     private ArrayList<Class<?>> protocolClasses;
+    private int maxHandlers;
 
     /**
      * Instantiates a new Server infos.
@@ -30,6 +32,8 @@ public class ServerInfos extends TLSInfos
         this.backlog = backlog;
         this.port = port;
         this.protocolClasses = new ArrayList<>(Arrays.asList(protocolClasses));
+        enableDiscovery = true;
+        maxHandlers = Integer.MAX_VALUE;
     }
 
     /**
@@ -142,15 +146,36 @@ public class ServerInfos extends TLSInfos
         this.name = name;
     }
 
-    @Override
-    public String toString()
+    
+
+    public boolean isEnableDiscovery()
     {
-        return "ServerInfos{" +
-                "name='" + name + '\'' +
-                ", host='" + host + '\'' +
-                ", backlog=" + backlog +
-                ", port=" + port +
-                ", protocolClasses=" + protocolClasses +
-                '}';
+        return enableDiscovery;
     }
+
+    public void setEnableDiscovery(boolean enableDiscovery)
+    {
+        this.enableDiscovery = enableDiscovery;
+    }
+
+    
+
+    public int getMaxHandlers()
+    {
+        return maxHandlers;
+    }
+
+    public void setMaxHandlers(int maxHandlers)
+    {
+        this.maxHandlers = maxHandlers;
+    }
+
+    @Override
+    public String toString() {
+        return "ServerInfos [backlog=" + backlog + ", enableDiscovery=" + enableDiscovery + ", host=" + host
+                + ", maxHandlers=" + maxHandlers + ", name=" + name + ", port=" + port + ", protocolClasses="
+                + protocolClasses + "]";
+    }
+
+    
 }

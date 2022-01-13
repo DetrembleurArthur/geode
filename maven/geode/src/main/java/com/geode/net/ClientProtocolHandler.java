@@ -6,6 +6,7 @@ import com.geode.logging.Logger;
 import com.geode.net.GeodeQuery.Category;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 
 /**
@@ -22,9 +23,9 @@ public class ClientProtocolHandler extends ProtocolHandler
      * @param socket        the socket
      * @param protocolClass the protocol class
      */
-    public ClientProtocolHandler(Socket socket, Class<?> protocolClass)
+    public ClientProtocolHandler(Socket socket, Class<?> protocolClass, boolean discovery)
     {
-        super(socket);
+        super(socket, discovery);
         this.protocolClass = protocolClass;
     }
 
@@ -45,7 +46,7 @@ public class ClientProtocolHandler extends ProtocolHandler
                 {
                     logger.info("protocol discovery success");
                     identifier = (int) geodeQuery.getArgs().get(0);
-                    return protocolClass.getConstructor().newInstance();
+                    return createProtocol();
                 }
             }
         } catch (Exception e)
@@ -122,7 +123,7 @@ public class ClientProtocolHandler extends ProtocolHandler
     }
 
     @Override
-    protected void end()
+    public void end()
     {
         try
         {
@@ -133,5 +134,17 @@ public class ClientProtocolHandler extends ProtocolHandler
             e.printStackTrace();
             logger.warning("unable to close socket : " + e.getMessage());
         }
+    }
+
+    @Override
+    protected Object createProtocol()
+    {
+        try {
+            return protocolClass.getConstructor().newInstance();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
