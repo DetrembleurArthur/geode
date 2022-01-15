@@ -231,7 +231,6 @@ public class ServerProtocolHandler extends ProtocolHandler
     {
         try
         {
-            logger.debug("ending ***");
             server.remove(this);
             tunnel.getSocket().close();
             queueConsumerDameon.interrupt();

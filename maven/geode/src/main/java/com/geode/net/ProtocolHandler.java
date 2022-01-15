@@ -381,7 +381,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             if (control.getAnnotation(Control.class).type() != ctype) continue;
             String controlType = control.getAnnotation(Control.class).value().isEmpty() ?
                     control.getName() : control.getAnnotation(Control.class).value();
-            if (type.equals(controlType))
+            if (type.equals(controlType.toLowerCase()))
             {
                 if (control.getAnnotation(Control.class).state().equals(protocolState))
                 {

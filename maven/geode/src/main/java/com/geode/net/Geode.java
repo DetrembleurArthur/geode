@@ -62,6 +62,11 @@ public final class Geode
         return geode;
     }
 
+    public static Geode load() throws Exception
+    {
+        return load("src/main/resources/geode.yaml");
+    }
+
     private void tlsInit(TLSInfos infos, Map<String, Object> data)
     {
         if(data.containsKey("tls"))
