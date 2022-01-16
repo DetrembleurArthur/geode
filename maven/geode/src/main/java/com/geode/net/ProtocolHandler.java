@@ -5,6 +5,7 @@ import com.geode.annotations.Inject;
 import com.geode.annotations.OnEvent;
 import com.geode.annotations.Protocol;
 import com.geode.logging.Logger;
+import com.geode.net.GeodeQuery.Category;
 import com.geode.net.channels.ChannelsManager;
 import com.geode.net.channels.ChannelsManagerInfos;
 
@@ -22,6 +23,11 @@ import java.util.HashMap;
  */
 public abstract class ProtocolHandler extends Thread implements Initializable
 {
+    interface CategoryHandler
+    {
+        Object manage(GeodeQuery query);
+    }
+
     private static final Logger logger = new Logger(ProtocolHandler.class);
     /**
      * The Protocol.
@@ -31,6 +37,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      * The Controls.
      */
     protected ArrayList<Method> controls;
+    protected HashMap<Category, CategoryHandler> categoryHandlers;
     /**
      * The Dynamic constrols.
      */
@@ -74,6 +81,8 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         this.channelsManager = channelsManager;
         this.channelsManagerInfos = channelsManagerInfos;
         dynamicControls = new HashMap<>();
+        categoryHandlers = new HashMap<>();
+        initCatgegoryHandlers();
         controls = new ArrayList<>();
         listeners = new HashMap<>();
         running = false;
@@ -89,6 +98,19 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             logger.fatal("handle error: " + e.getMessage());
         }
     }
+
+    public void initCatgegoryHandlers()
+    {
+        categoryHandlers.put(Category.NORMAL, (query) -> manageControlQuery(query, Control.Type.CLASSIC));
+        categoryHandlers.put(Category.NOTIFY, (query) -> manageNotifyQuery(query));
+        categoryHandlers.put(Category.QUEUE_CONSUME, (query) -> manageQueueConsumeQuery(query));
+        categoryHandlers.put(Category.QUEUE_PRODUCE, (query) -> manageQueueProduceQuery(query));
+        categoryHandlers.put(Category.QUEUE_SUBSCRIBE, (query) -> manageQueueSubscribeQuery(query));
+        categoryHandlers.put(Category.QUEUE_UNSUBSCRIBE, (query) -> manageQueueUnsubscribeQuery(query));
+        categoryHandlers.put(Category.TOPIC_NOTIFY, (query) -> manageTopicNotifyQuery(query));
+        categoryHandlers.put(Category.TOPIC_NOTIFY_OTHERS, (query) -> manageTopicNotifyOthersQuery(query));
+        categoryHandlers.put(Category.TOPIC_SUBSCRIBE, (query) -> manageTopicSubscribeQuery(query));
+        categoryHandlers.put(Category.TOPIC_UNSUBSCRIBE, (query) -> manageTopicUnsubscribeQuery(query));    }
 
     /**
      * Send.
@@ -367,32 +389,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      */
     protected Object manageQuery(GeodeQuery geodeQuery)
     {
-        switch (geodeQuery.getCategory())
-        {
-            case NORMAL:
-                return manageControlQuery(geodeQuery, Control.Type.CLASSIC);
-            case TOPIC_SUBSCRIBE:
-                return manageTopicSubscribeQuery(geodeQuery);
-            case TOPIC_UNSUBSCRIBE:
-                return manageTopicUnsubscribeQuery(geodeQuery);
-            case TOPIC_NOTIFY_OTHERS:
-                return manageTopicNotifyOthersQuery(geodeQuery);
-            case TOPIC_NOTIFY:
-                return manageTopicNotifyQuery(geodeQuery);
-            case NOTIFY:
-                return manageNotifyQuery(geodeQuery);
-            case QUEUE_SUBSCRIBE:
-                return manageQueueSubscribeQuery(geodeQuery);
-            case QUEUE_UNSUBSCRIBE:
-                return manageQueueUnsubscribeQuery(geodeQuery);
-            case QUEUE_CONSUME:
-                return manageQueueConsumeQuery(geodeQuery);
-            case QUEUE_PRODUCE:
-                return manageQueueProduceQuery(geodeQuery);
-            default:
-                logger.warning(geodeQuery.getCategory() + " are not allowed here");
-        }
-        return null;
+        return categoryHandlers.get(geodeQuery.getCategory()).manage(geodeQuery);
     }
 
 
