@@ -4,6 +4,8 @@ import com.geode.annotations.Control;
 import com.geode.annotations.Protocol;
 import com.geode.logging.Logger;
 import com.geode.net.GeodeQuery.Category;
+import com.geode.net.channels.ChannelsManager;
+import com.geode.net.channels.ChannelsManagerInfos;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -23,9 +25,10 @@ public class ClientProtocolHandler extends ProtocolHandler
      * @param socket        the socket
      * @param protocolClass the protocol class
      */
-    public ClientProtocolHandler(Socket socket, Class<?> protocolClass, boolean discovery)
+    public ClientProtocolHandler(Socket socket, Class<?> protocolClass, boolean discovery,
+        ChannelsManager channelsManager, ChannelsManagerInfos channelsManagerInfos)
     {
-        super(socket, discovery);
+        super(socket, discovery, channelsManager, channelsManagerInfos);
         this.protocolClass = protocolClass;
     }
 

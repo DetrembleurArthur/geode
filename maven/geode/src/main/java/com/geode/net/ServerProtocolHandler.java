@@ -4,6 +4,8 @@ import com.geode.annotations.Control;
 import com.geode.annotations.Protocol;
 import com.geode.logging.Logger;
 import com.geode.net.GeodeQuery.Category;
+import com.geode.net.channels.ChannelsManager;
+import com.geode.net.channels.ChannelsManagerInfos;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -30,9 +32,10 @@ public class ServerProtocolHandler extends ProtocolHandler
      * @param socket the socket
      * @param server the server
      */
-    public ServerProtocolHandler(Socket socket, Server server, boolean discovery)
+    public ServerProtocolHandler(Socket socket, Server server, boolean discovery,
+        ChannelsManager channelsManager, ChannelsManagerInfos channelsManagerInfos)
     {
-        super(socket, discovery);
+        super(socket, discovery, channelsManager, channelsManagerInfos);
         this.protocolClasses = server.getServerInfos().getProtocolClasses();
         this.server = server;
         subscribedQueues = new ArrayList<>();

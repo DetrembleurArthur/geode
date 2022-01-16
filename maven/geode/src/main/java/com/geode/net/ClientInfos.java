@@ -1,5 +1,7 @@
 package com.geode.net;
 
+import com.geode.net.channels.ChannelsManager;
+import com.geode.net.channels.ChannelsManagerInfos;
 import com.geode.net.tls.TLSInfos;
 
 /**
@@ -12,6 +14,8 @@ public class ClientInfos extends TLSInfos
     private int port;
     private Class<?> protocolClass;
     private boolean enableDiscovery;
+    private ChannelsManager channelsManager;
+    private ChannelsManagerInfos channelsManagerInfos = new ChannelsManagerInfos();
 
     /**
      * Instantiates a new Client infos.
@@ -114,6 +118,26 @@ public class ClientInfos extends TLSInfos
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    
+
+    public ChannelsManager getChannelsManager() {
+        return channelsManager;
+    }
+
+    public void setChannelsManager(ChannelsManager channelsManager) {
+        this.channelsManager = channelsManager;
+    }
+
+    
+
+    public ChannelsManagerInfos getChannelsManagerInfos() {
+        return channelsManagerInfos;
+    }
+
+    public void setChannelsManagerInfos(ChannelsManagerInfos channelsManagerInfos) {
+        this.channelsManagerInfos = channelsManagerInfos;
     }
 
     @Override

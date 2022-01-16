@@ -3,6 +3,8 @@ package com.geode.net;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.geode.net.channels.ChannelsManager;
+import com.geode.net.channels.ChannelsManagerInfos;
 import com.geode.net.tls.TLSInfos;
 
 /**
@@ -17,6 +19,8 @@ public class ServerInfos extends TLSInfos
     private boolean enableDiscovery;
     private ArrayList<Class<?>> protocolClasses;
     private int maxHandlers;
+    private ChannelsManager channelsManager;
+    private ChannelsManagerInfos channelsManagerInfos = new ChannelsManagerInfos();
 
     /**
      * Instantiates a new Server infos.
@@ -168,6 +172,22 @@ public class ServerInfos extends TLSInfos
     public void setMaxHandlers(int maxHandlers)
     {
         this.maxHandlers = maxHandlers;
+    }
+
+    public ChannelsManager getChannelsManager() {
+        return channelsManager;
+    }
+
+    public void setChannelsManager(ChannelsManager channelsManager) {
+        this.channelsManager = channelsManager;
+    }
+
+    public ChannelsManagerInfos getChannelsManagerInfos() {
+        return channelsManagerInfos;
+    }
+
+    public void setChannelsManagerInfos(ChannelsManagerInfos channelsManagerInfos) {
+        this.channelsManagerInfos = channelsManagerInfos;
     }
 
     @Override

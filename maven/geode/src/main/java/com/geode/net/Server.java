@@ -26,7 +26,6 @@ public class Server extends Thread implements Initializable
     private final HashMap<String, Queue> queuesMap;
     private ServerSocket serverSocket;
     private GState gState;
-    private Object chargeMonitor = new Object();
 
     /**
      * Instantiates a new Server.
@@ -88,7 +87,8 @@ public class Server extends Thread implements Initializable
                     waitChargeAvailability();
                     Socket socket = serverSocket.accept();
                     logger.info("client connection accepted: " + socket, getServerInfos().getName());
-                    ServerProtocolHandler handler = new ServerProtocolHandler(socket, this, serverInfos.isEnableDiscovery());
+                    ServerProtocolHandler handler = new ServerProtocolHandler(socket, this, serverInfos.isEnableDiscovery(),
+                        serverInfos.getChannelsManager(), serverInfos.getChannelsManagerInfos());
                     handler.start();
                     handlers.add(handler);
                 } catch (IOException e)

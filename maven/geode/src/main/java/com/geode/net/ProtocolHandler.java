@@ -5,6 +5,8 @@ import com.geode.annotations.Inject;
 import com.geode.annotations.OnEvent;
 import com.geode.annotations.Protocol;
 import com.geode.logging.Logger;
+import com.geode.net.channels.ChannelsManager;
+import com.geode.net.channels.ChannelsManagerInfos;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -58,13 +60,19 @@ public abstract class ProtocolHandler extends Thread implements Initializable
 
     protected boolean enableDiscovery;
 
+    private ChannelsManager channelsManager;
+    private ChannelsManagerInfos channelsManagerInfos;
+
     /**
      * Instantiates a new Protocol handler.
      *
      * @param socket the socket
      */
-    public ProtocolHandler(Socket socket, boolean discovery)
+    public ProtocolHandler(Socket socket, boolean discovery,
+        ChannelsManager channelsManager, ChannelsManagerInfos channelsManagerInfos)
     {
+        this.channelsManager = channelsManager;
+        this.channelsManagerInfos = channelsManagerInfos;
         dynamicControls = new HashMap<>();
         controls = new ArrayList<>();
         listeners = new HashMap<>();
@@ -124,6 +132,8 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         {
             protocol = enableDiscovery ? discovery() : createProtocol();
             if (protocol == null) return;
+            initChannelsManager();
+            if(gState == GState.BROKEN) return;
             initControls();
             initInjections();
             initListeners();
@@ -138,6 +148,26 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     }
 
     protected abstract Object createProtocol();
+
+    public void initChannelsManager()
+    {
+        logger.debug("channels manager: " + channelsManager);
+        logger.debug("channels manager infos: " + channelsManagerInfos);
+        if(channelsManagerInfos.isEnable())
+        {
+            try {
+                channelsManager.register(protocol, channelsManagerInfos);
+            } catch (Exception e) {
+                e.printStackTrace();
+                gState =  GState.BROKEN;
+                logger.error("can not initialize channels manager: " + e.getMessage());
+            }
+        }
+        else
+        {
+            logger.info("channels manager disabled");
+        }
+    }
 
     /**
      * Call listener.
@@ -404,6 +434,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                                 return control.invoke(protocol, args);
                             } catch (IllegalAccessException | InvocationTargetException e)
                             {
+                                e.printStackTrace();
                                 logger.error("error at control invocation: " + e.getMessage());
                             }
                         }

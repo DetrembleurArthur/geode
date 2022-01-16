@@ -9,6 +9,6 @@ public class TestServer
     {
         Geode geode = new Geode();
         geode.registerServer("testServer", new ServerInfos("127.0.0.1", 50000, Class.forName("com.geode.test.ServerProtocol")));
-        geode.launchClosableServer("testServer");
+        geode.launchServer("testServer");
     }
 }

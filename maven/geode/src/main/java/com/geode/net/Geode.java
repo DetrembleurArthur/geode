@@ -1,6 +1,8 @@
 package com.geode.net;
 
 import com.geode.logging.Logger;
+import com.geode.net.channels.ChannelsManager;
+import com.geode.net.channels.ChannelsManagerInfos;
 import com.geode.net.mqtt.MqttInfos;
 import com.geode.net.mqtt.MqttInstance;
 import com.geode.net.tls.TLSInfos;
@@ -32,6 +34,7 @@ public final class Geode
     private final ArrayList<MqttInstance> mqttInstances;
     private final ArrayList<LightClient> tcpLightClients;
     private boolean broken;
+    private ChannelsManager channelsManager;
 
     /**
      * Instantiates a new Geode.
@@ -53,6 +56,8 @@ public final class Geode
         mqttInfos = new HashMap<>();
         lightClientsInfos = new HashMap<>();
         tcpLightClients = new ArrayList<>();
+        channelsManager = new ChannelsManager();
+        channelsManager.createChannel("geode").set(this);
     }
 
     public static Geode load(String filename) throws Exception
@@ -88,6 +93,19 @@ public final class Geode
         }
     }
 
+    private ChannelsManagerInfos channelsManagerInfosInit(Map<String, Object> data)
+    {
+        if(data.containsKey("channels-manager"))
+        {
+            ChannelsManagerInfos infos = new ChannelsManagerInfos();
+            data = (Map<String, Object>) data.get("channels-manager");
+            infos.setEnable((boolean) data.getOrDefault("enable", true));
+            infos.setStrict((boolean) data.getOrDefault("strict", true));
+            return infos;
+        }
+        return new ChannelsManagerInfos();
+    }
+
     public void init(String yamlFilename) throws Exception
     {
         logger.info("load configuration file : " + yamlFilename);
@@ -117,6 +135,7 @@ public final class Geode
             ServerInfos serverInfos = new ServerInfos();
             serverInfos.setName(serverId);
             tlsInit(serverInfos, serverData);
+            serverInfos.setChannelsManagerInfos(channelsManagerInfosInit(serverData));
             serverInfos.setHost((String) serverData.getOrDefault("host", "127.0.0.1"));
             serverInfos.setPort((Integer) serverData.getOrDefault("port", 50000));
             serverInfos.setBacklog((Integer) serverData.getOrDefault("backlog", 10));
@@ -141,6 +160,7 @@ public final class Geode
             ClientInfos clientInfos = new ClientInfos();
             clientInfos.setName(clientId);
             tlsInit(clientInfos, clientData);
+            clientInfos.setChannelsManagerInfos(channelsManagerInfosInit(clientData));
             clientInfos.setHost((String) clientData.getOrDefault("host", "127.0.0.1"));
             clientInfos.setPort((Integer) clientData.getOrDefault("port", 50000));
             if((Boolean)clientData.getOrDefault("light", false))
@@ -198,6 +218,7 @@ public final class Geode
      */
     public Geode registerServer(String id, ServerInfos serverInfos)
     {
+        serverInfos.setChannelsManager(channelsManager);
         serversInfos.put(id, serverInfos);
         logger.info(id + " server registered: " + serverInfos);
         return this;
@@ -219,6 +240,7 @@ public final class Geode
      */
     public Geode registerClient(String id, ClientInfos clientInfos)
     {
+        clientInfos.setChannelsManager(channelsManager);
         clientsInfos.put(id, clientInfos);
         logger.info(id + " light client registered: " + clientInfos);
         return this;
@@ -353,5 +375,10 @@ public final class Geode
     public boolean isBroken()
     {
         return broken;
+    }
+
+    public ChannelsManager getChannelsManager()
+    {
+        return channelsManager;
     }
 }

@@ -39,7 +39,8 @@ public class Client extends AbstractClient implements Runnable
         {
             Socket socket = initSocket();
             logger.info("client connected : " + socket, getClientInfos().getName());
-            handler = new ClientProtocolHandler(socket, clientInfos.getProtocolClass(), clientInfos.isEnableDiscovery());
+            handler = new ClientProtocolHandler(socket, clientInfos.getProtocolClass(),
+                clientInfos.isEnableDiscovery(), clientInfos.getChannelsManager(), clientInfos.getChannelsManagerInfos());
             gState = GState.READY;
         } catch (Exception e)
         {
