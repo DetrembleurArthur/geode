@@ -1,5 +1,13 @@
 package com.geode.net;
 
+import com.geode.builders.ChannelsManagerInfosBuilder;
+import com.geode.builders.ClientInfosBuilder;
+import com.geode.builders.MqttInfosBuilder;
+import com.geode.builders.ServerInfosBuilder;
+import com.geode.builders.SettingsInfosBuilder;
+import com.geode.builders.TLSInfosBuilder;
+import com.geode.builders.UdpInfosBuilder;
+import com.geode.loaders.Loader;
 import com.geode.logging.Logger;
 import com.geode.net.channels.ChannelsManager;
 import com.geode.net.channels.ChannelsManagerInfos;
@@ -22,6 +30,24 @@ import java.util.Map;
 public final class Geode
 {
     private static final Logger logger = new Logger(Geode.class);
+
+    static
+    {
+        try
+        {
+            Class.forName("com.geode.builders.ChannelsManagerInfosBuilder");
+            Class.forName("com.geode.builders.ClientInfosBuilder");
+            Class.forName("com.geode.builders.ServerInfosBuilder");
+            Class.forName("com.geode.builders.TLSInfosBuilder");
+            Class.forName("com.geode.builders.UdpInfosBuilder");
+            Class.forName("com.geode.builders.MqttInfosBuilder");
+            Class.forName("com.geode.builders.SettingsInfosBuilder");
+        }
+        catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     private final HashMap<String, ServerInfos> serversInfos;
     private final HashMap<String, ClientInfos> clientsInfos;
@@ -72,40 +98,6 @@ public final class Geode
         return load("src/main/resources/geode.yaml");
     }
 
-    private void tlsInit(TLSInfos infos, Map<String, Object> data)
-    {
-        if(data.containsKey("tls"))
-        {
-            infos.setEnable(true);
-            data = (Map<String, Object>) data.get("tls");
-            if(data.containsKey("ksfile"))
-            {
-                infos.setKeystore((String)data.getOrDefault("ksfile", null));
-                infos.setKeystorePassword((String)data.getOrDefault("kspswd", null));
-                infos.setKeystoreKeyPassword((String)data.getOrDefault("kskeypswd", null));
-            }
-            else
-            {
-                infos.setCafile((String)data.getOrDefault("cafile", null));
-                infos.setCertfile((String)data.getOrDefault("certfile", null));
-                infos.setKeyfile((String)data.getOrDefault("keyfile", null));
-            }
-        }
-    }
-
-    private ChannelsManagerInfos channelsManagerInfosInit(Map<String, Object> data)
-    {
-        if(data.containsKey("channels-manager"))
-        {
-            ChannelsManagerInfos infos = new ChannelsManagerInfos();
-            data = (Map<String, Object>) data.get("channels-manager");
-            infos.setEnable((boolean) data.getOrDefault("enable", true));
-            infos.setStrict((boolean) data.getOrDefault("strict", true));
-            return infos;
-        }
-        return new ChannelsManagerInfos();
-    }
-
     public void init(String yamlFilename) throws Exception
     {
         logger.info("load configuration file : " + yamlFilename);
@@ -121,89 +113,45 @@ public final class Geode
         Map<String, Object> mqtt = (Map<String, Object>) data.get("mqtt");
         if(settings != null)
         {
-            boolean logging = (boolean) settings.getOrDefault("enable-logging", true);
-            Logger.setCmdOut(logging);
-            String loggingPath = (String) settings.getOrDefault("logging-file", null);
-            boolean loggingFileAppend = (boolean) settings.getOrDefault("logging-file-append", true);
-            Logger.setFile(loggingPath, loggingFileAppend);
+            Loader loader = new Loader(SettingsInfosBuilder.create());
+            SettingsInfos infos = (SettingsInfos) loader.load(settings).build();
+            Logger.setCmdOut(infos.isEnableLogging());
+            Logger.setFile(infos.getLoggingFile(), infos.isAppendLogging());
         }
         if(servers != null)
         for(String key : servers.keySet())
         {
             String serverId = key;
             Map<String, Object> serverData = (Map<String, Object>) servers.get(serverId);
-            ServerInfos serverInfos = new ServerInfos();
-            serverInfos.setName(serverId);
-            tlsInit(serverInfos, serverData);
-            serverInfos.setChannelsManagerInfos(channelsManagerInfosInit(serverData));
-            serverInfos.setHost((String) serverData.getOrDefault("host", "127.0.0.1"));
-            serverInfos.setPort((Integer) serverData.getOrDefault("port", 50000));
-            serverInfos.setBacklog((Integer) serverData.getOrDefault("backlog", 10));
-            serverInfos.setMaxHandlers((Integer) serverData.getOrDefault("max-handlers", Integer.MAX_VALUE));
-            serverInfos.setEnableDiscovery((Boolean) serverData.getOrDefault("discovery", true));
-            ArrayList<String> protocolNames = (ArrayList<String>) serverData.get("protocols");
-            if(protocolNames != null)
-            {
-                serverInfos.setProtocolClasses(new ArrayList<>());
-                for(String pName : protocolNames)
-                {
-                    serverInfos.getProtocolClasses().add(Class.forName(pName));
-                }
-            }
-            registerServer(serverId, serverInfos);
+            Loader loader = new Loader(ServerInfosBuilder.create());
+            ServerInfos infos = (ServerInfos) loader.load(serverData).build();
+            registerServer(serverId, infos);
         }
         if(clients != null)
         for(String key : clients.keySet())
         {
             String clientId = key;
             Map<String, Object> clientData = (Map<String, Object>) clients.get(clientId);
-            ClientInfos clientInfos = new ClientInfos();
-            clientInfos.setName(clientId);
-            tlsInit(clientInfos, clientData);
-            clientInfos.setChannelsManagerInfos(channelsManagerInfosInit(clientData));
-            clientInfos.setHost((String) clientData.getOrDefault("host", "127.0.0.1"));
-            clientInfos.setPort((Integer) clientData.getOrDefault("port", 50000));
-            if((Boolean)clientData.getOrDefault("light", false))
-            {
-                clientInfos.setEnableDiscovery(false);
-                registerLightClient(clientId, clientInfos);
-            }
-            else
-            {
-                clientInfos.setEnableDiscovery((Boolean) clientData.getOrDefault("discovery", true));
-                clientInfos.setProtocolClass(Class.forName((String) clientData.get("protocol")));
-                if(clientInfos.getProtocolClass() == null)
-                    throw new Exception("no protocols for '" + key + "' client...");
-                registerClient(clientId, clientInfos);
-            }
+            Loader loader = new Loader(ClientInfosBuilder.create());
+            ClientInfos infos = (ClientInfos) loader.load(clientData).build();
+            registerClient(clientId, infos);
         }
         if(udpHandlers != null)
         for(String key : udpHandlers.keySet())
         {
             String udpId = key;
             Map<String, Object> udpData = (Map<String, Object>) udpHandlers.get(udpId);
-            UdpInfos udpInfos = new UdpInfos();
-            udpInfos.setName(udpId);
-            udpInfos.setBind((Boolean) udpData.getOrDefault("bind", false));
-            udpInfos.setHost((String) udpData.getOrDefault("host", "127.0.0.1"));
-            udpInfos.setPort((Integer) udpData.getOrDefault("port", 50000));
-            registerUdpHandler(udpId, udpInfos);
+            Loader loader = new Loader(UdpInfosBuilder.create());
+            UdpInfos infos = (UdpInfos) loader.load(udpData).build();
+            registerUdpHandler(udpId, infos);
         }
         if(mqtt != null)
         for(String key : mqtt.keySet())
         {
             String mqttId = key;
             Map<String, Object> mqttData = (Map<String, Object>) mqtt.get(mqttId);
-            MqttInfos infos = new MqttInfos();
-            infos.setName(mqttId);
-            tlsInit(infos, mqttData);
-            infos.setProfile((String) mqttData.getOrDefault("profile", "pub-sub"));
-            infos.setBrokerIp((String) mqttData.getOrDefault("broker-ip", null));
-            infos.setBrokerPort((int) mqttData.getOrDefault("broker-port", 1883));
-            infos.setClientId((String) mqttData.getOrDefault("client-id", "geode-mqtt"));
-            infos.setDefaultQos((int) mqttData.getOrDefault("default-qos", 0));
-            if(mqttData.containsKey("topic-handler"))
-                infos.setTopicsClass(Class.forName((String) mqttData.get("topic-handler")));
+            Loader loader = new Loader(MqttInfosBuilder.create());
+            MqttInfos infos = (MqttInfos) loader.load(mqttData).build();
             registerMqtt(mqttId, infos);
         }
         logger.info("configuration file process end");

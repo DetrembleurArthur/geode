@@ -7,13 +7,15 @@ import com.geode.net.tls.TLSInfos;
 /**
  * The type Client infos.
  */
-public class ClientInfos extends TLSInfos
+public class ClientInfos
 {
+    private TLSInfos tlsInfos = new TLSInfos();
+    private boolean light = false;
     private String name;
-    private String host;
-    private int port;
+    private String host = "127.0.0.1";
+    private int port = 50000;
     private Class<?> protocolClass;
-    private boolean enableDiscovery;
+    private boolean enableDiscovery = true;
     private ChannelsManager channelsManager;
     private ChannelsManagerInfos channelsManagerInfos = new ChannelsManagerInfos();
 
@@ -107,7 +109,7 @@ public class ClientInfos extends TLSInfos
 
     public void setEnableDiscovery(boolean enableDiscovery)
     {
-        this.enableDiscovery = enableDiscovery;
+        this.enableDiscovery = light ? false : enableDiscovery;
     }
 
     public String getName()
@@ -140,10 +142,32 @@ public class ClientInfos extends TLSInfos
         this.channelsManagerInfos = channelsManagerInfos;
     }
 
+    
+
+    public TLSInfos getTlsInfos() {
+        return tlsInfos;
+    }
+
+    public void setTlsInfos(TLSInfos tlsInfos) {
+        this.tlsInfos = tlsInfos;
+    }
+
+    
+
+    public boolean isLight() {
+        return light;
+    }
+
+    public void setLight(boolean light) {
+        this.light = light;
+        setEnableDiscovery(false);
+    }
+
     @Override
     public String toString() {
-        return "ClientInfos [enableDiscovery=" + enableDiscovery + ", host=" + host + ", name=" + name + ", port="
-                + port + ", protocolClass=" + protocolClass + "]";
+        return "ClientInfos [channelsManager=" + channelsManager + ", channelsManagerInfos=" + channelsManagerInfos
+                + ", enableDiscovery=" + enableDiscovery + ", host=" + host + ", light=" + light + ", name=" + name
+                + ", port=" + port + ", protocolClass=" + protocolClass + ", tlsInfos=" + tlsInfos + "]";
     }
 
     

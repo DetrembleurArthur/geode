@@ -2,6 +2,7 @@ package com.geode.net;
 
 
 import com.geode.logging.Logger;
+import com.geode.misc.Banner;
 import com.geode.net.tls.TLSUtils;
 
 import javax.net.ssl.SSLServerSocketFactory;
@@ -43,10 +44,10 @@ public class Server extends Thread implements Initializable
 
     public ServerSocket initServerSocket() throws Exception
     {
-        if(serverInfos.isTLSEnable())
+        if(serverInfos.getTlsInfos().isTLSEnable())
         {
             logger.info("enabling TLS...", getServerInfos().getName());
-            SSLServerSocketFactory factory = TLSUtils.getServerSocketFactory(serverInfos);
+            SSLServerSocketFactory factory = TLSUtils.getServerSocketFactory(serverInfos.getTlsInfos());
             return factory.createServerSocket(
                 serverInfos.getPort(),
                 serverInfos.getBacklog(),
@@ -78,8 +79,10 @@ public class Server extends Thread implements Initializable
         init();
         if (gState == GState.READY)
         {
-            logger.info("server is running", getServerInfos().getName());
             gState = GState.RUNNING;
+            logger.info("server is running", getServerInfos().getName());
+            if(serverInfos.getBanner() != null)
+                Banner.show(serverInfos.getBanner());
             while (gState == GState.RUNNING)
             {
                 try

@@ -125,6 +125,7 @@ public class Logger
 
     public static void setFile(String pathFile, boolean append)
     {
+        if(pathFile == null) return;
         try
         {
             Logger.fileWriter = new FileWriter(new File(pathFile), append);

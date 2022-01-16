@@ -10,15 +10,17 @@ import com.geode.net.tls.TLSInfos;
 /**
  * The type Server infos.
  */
-public class ServerInfos extends TLSInfos
+public class ServerInfos
 {
+    private TLSInfos tlsInfos = new TLSInfos();
     private String name;
-    private String host;
-    private int backlog;
-    private int port;
-    private boolean enableDiscovery;
-    private ArrayList<Class<?>> protocolClasses;
-    private int maxHandlers;
+    private String host = "127.0.0.1";
+    private int backlog = 10;
+    private int port = 50000;
+    private boolean enableDiscovery = true;
+    private ArrayList<Class<?>> protocolClasses = new ArrayList<>();
+    private int maxHandlers = Integer.MAX_VALUE;
+    private String banner = null;
     private ChannelsManager channelsManager;
     private ChannelsManagerInfos channelsManagerInfos = new ChannelsManagerInfos();
 
@@ -190,12 +192,29 @@ public class ServerInfos extends TLSInfos
         this.channelsManagerInfos = channelsManagerInfos;
     }
 
-    @Override
-    public String toString() {
-        return "ServerInfos [backlog=" + backlog + ", enableDiscovery=" + enableDiscovery + ", host=" + host
-                + ", maxHandlers=" + maxHandlers + ", name=" + name + ", port=" + port + ", protocolClasses="
-                + protocolClasses + "]";
+    
+
+    public TLSInfos getTlsInfos() {
+        return tlsInfos;
     }
 
-    
+    public void setTlsInfos(TLSInfos tlsInfos) {
+        this.tlsInfos = tlsInfos;
+    }
+
+    public String getBanner() {
+        return banner;
+    }
+
+    public void setBanner(String banner) {
+        this.banner = banner;
+    }
+
+    @Override
+    public String toString() {
+        return "ServerInfos [backlog=" + backlog + ", banner=" + banner + ", channelsManager=" + channelsManager
+                + ", channelsManagerInfos=" + channelsManagerInfos + ", enableDiscovery=" + enableDiscovery + ", host="
+                + host + ", maxHandlers=" + maxHandlers + ", name=" + name + ", port=" + port + ", protocolClasses="
+                + protocolClasses + ", tlsInfos=" + tlsInfos + "]";
+    }
 }

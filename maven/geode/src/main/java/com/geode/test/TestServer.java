@@ -1,5 +1,6 @@
 package com.geode.test;
 
+import com.geode.builders.ServerInfosBuilder;
 import com.geode.net.Geode;
 import com.geode.net.ServerInfos;
 

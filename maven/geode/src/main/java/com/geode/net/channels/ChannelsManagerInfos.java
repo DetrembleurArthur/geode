@@ -17,4 +17,10 @@ public class ChannelsManagerInfos
     public void setStrict(boolean strict) {
         this.strict = strict;
     }
+    @Override
+    public String toString() {
+        return "ChannelsManagerInfos [enable=" + enable + ", strict=" + strict + "]";
+    }
+
+    
 }

@@ -46,7 +46,7 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
         logger.info("initialisation", getMqttInfos().getName());
         try
         {
-            String url = (mqttInfos.isTLSEnable() ? "ssl" : "tcp") + "://" + mqttInfos.getBrokerIp() + ":" + mqttInfos.getBrokerPort();
+            String url = (mqttInfos.getTlsInfos().isTLSEnable() ? "ssl" : "tcp") + "://" + mqttInfos.getBrokerIp() + ":" + mqttInfos.getBrokerPort();
             mqttClient = new MqttClient(url,
                     mqttInfos.getClientId(),
                     new MemoryPersistence()
@@ -55,7 +55,7 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
             MqttConnectOptions connectOptions = new MqttConnectOptions();
             connectOptions.setAutomaticReconnect(true);
             connectOptions.setCleanSession(true);
-            if (mqttInfos.isTLSEnable())
+            if (mqttInfos.getTlsInfos().isTLSEnable())
             {
                 configTLS(connectOptions);
             }
@@ -85,7 +85,7 @@ public class MqttInstance implements Initializable, AutoCloseable, MqttCallback
     {
         try
         {
-            SocketFactory socketFactory = TLSUtils.getSocketFactory(mqttInfos);
+            SocketFactory socketFactory = TLSUtils.getSocketFactory(mqttInfos.getTlsInfos());
             connectOptions.setSocketFactory(socketFactory);
         } catch (Exception e)
         {

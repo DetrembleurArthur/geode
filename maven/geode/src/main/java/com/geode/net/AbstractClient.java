@@ -20,10 +20,10 @@ public abstract class AbstractClient implements Initializable
 
     protected Socket initSocket() throws Exception
     {
-        if(clientInfos.isTLSEnable())
+        if(clientInfos.getTlsInfos().isTLSEnable())
         {
             logger.info("enabling TLS...", getClientInfos().getName());
-            SSLSocketFactory factory = TLSUtils.getSocketFactory(clientInfos);
+            SSLSocketFactory factory = TLSUtils.getSocketFactory(clientInfos.getTlsInfos());
             return factory.createSocket(
                 InetAddress.getByName(clientInfos.getHost()),
                 clientInfos.getPort()

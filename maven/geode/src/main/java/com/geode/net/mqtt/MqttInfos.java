@@ -2,8 +2,9 @@ package com.geode.net.mqtt;
 
 import com.geode.net.tls.TLSInfos;
 
-public class MqttInfos extends TLSInfos
+public class MqttInfos
 {
+    private TLSInfos tlsInfos = new TLSInfos();
     private String name;
     private String brokerIp;
     private int brokerPort;
@@ -104,6 +105,16 @@ public class MqttInfos extends TLSInfos
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    
+
+    public TLSInfos getTlsInfos() {
+        return tlsInfos;
+    }
+
+    public void setTlsInfos(TLSInfos tlsInfos) {
+        this.tlsInfos = tlsInfos;
     }
 
     @Override
