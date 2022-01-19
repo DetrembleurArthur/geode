@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.geode</groupId>
-    <artifactId>geode</artifactId>
+    <groupId>com.geode.net</groupId>
+    <artifactId>geode-net</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -60,7 +60,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.geode.test.TestServer</mainClass>
+                            <mainClass>com.geode.net.net.test.TestServer</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
