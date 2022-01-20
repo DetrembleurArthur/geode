@@ -1,0 +1,14 @@
+servers:
+  echo:
+    host: 0.0.0.0
+    port: 50000
+    banner: Blank
+    protocols:
+      - com.geode.net.protocols.EchoProtocol
+
+
+clients:
+  echo:
+    host: 0.0.0.0
+    port: 50000
+    protocol: com.geode.net.protocols.EchoProtocol
