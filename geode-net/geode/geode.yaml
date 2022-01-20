@@ -8,6 +8,15 @@ servers:
     protocols:
       - com.geode.net.protocols.EchoProtocol
 
+  py:
+    host: 0.0.0.0
+    port: 50000
+    banner: Py
+    com-mode: bytes
+    discovery: false
+    protocols:
+      - com.geode.net.test.PyProtocol
+
 
 clients:
   echo:
