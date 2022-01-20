@@ -25,7 +25,7 @@ public final class Geode
     private static final Logger logger = LogManager.getLogger(Geode.class);
 
     static
-    {
+    {/*
         try
         {
             Class.forName("com.geode.net.info.ChannelsManagerInfosBuilder");
@@ -44,7 +44,7 @@ public final class Geode
         catch (ClassNotFoundException e)
         {
             e.printStackTrace();
-        }
+        }*/
     }
 
     private final HashMap<String, ServerInfos> serversInfos;

@@ -4,36 +4,14 @@ servers:
     port: 50000
     banner: Echo
     #com-mode: bytes
-    discovery: false
+    discovery: true
     protocols:
       - com.geode.net.protocols.EchoProtocol
 
-  fw1:
-    host: 127.0.0.1
-    port: 50000
-    discovery: false
-    protocols:
-      - com.geode.net.test.FWServer1
-
-  fw2:
-    host: 127.0.0.1
-    port: 50001
-    discovery: false
-    protocols:
-      - com.geode.net.test.FWServer2
-
-
 clients:
   echo:
-    host: 0.0.0.0
+    host: ubusrv-arthur
     port: 50000
     protocol: com.geode.net.protocols.EchoProtocol
     #com-mode: bytes
-    discovery: false
-
-  fw:
-    host: 127.0.0.1
-    port: 50000
-    protocol: com.geode.net.test.FWClient1
-    #com-mode: bytes
-    discovery: false
+    discovery: true

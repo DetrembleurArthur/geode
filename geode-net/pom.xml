@@ -73,7 +73,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.geode.net.TestServer</mainClass>
+                            <mainClass>com.geode.net.test.ServerEcho</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -103,11 +103,11 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/${app.name}/src/main/resources
+                            <outputDirectory>${project.build.directory}/${app.name}/geode
                             </outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/src/main/resources/</directory>
+                                    <directory>${project.basedir}/geode</directory>
                                     <includes>
                                         <include>*/**</include>
                                     </includes>

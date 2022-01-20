@@ -1,5 +1,7 @@
 package com.geode.crypto;
 
+import org.bouncycastle.jcajce.provider.drbg.DRBG;
+
 import javax.crypto.SecretKey;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,7 +19,7 @@ public class Store
 
     public static Store jks()
     {
-        return new Store("JKS");
+        return new Store("BKS");
     }
 
     public static Store jce()
@@ -33,6 +35,11 @@ public class Store
     public static Store jceks()
     {
         return new Store("JCEKS");
+    }
+
+    public static Store def()
+    {
+        return new Store(KeyStore.getDefaultType());
     }
 
     public Store(String type)
@@ -68,7 +75,14 @@ public class Store
             this.password = password;
         } catch (IOException | NoSuchAlgorithmException | CertificateException e)
         {
-            e.printStackTrace();
+            try
+            {
+                keyStore.load(null, password.toCharArray());
+                this.password = password;
+            } catch (IOException | NoSuchAlgorithmException | CertificateException ex)
+            {
+                ex.printStackTrace();
+            }
         }
         return this;
     }
