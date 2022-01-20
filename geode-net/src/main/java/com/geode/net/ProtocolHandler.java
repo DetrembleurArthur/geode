@@ -6,7 +6,10 @@ import com.geode.net.annotations.OnEvent;
 import com.geode.net.annotations.Protocol;
 import com.geode.net.channels.ChannelsManager;
 import com.geode.net.info.ChannelsManagerInfos;
+import com.geode.net.info.ClientInfos;
+import com.geode.net.info.ClientInfosBuilder;
 import com.geode.net.info.CommunicationModes;
+import com.geode.net.queries.ForwardQuery;
 import com.geode.net.queries.GeodeQuery;
 import com.geode.net.queries.LowQuery;
 import com.geode.net.queries.SimpleQuery;
@@ -117,6 +120,35 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         categoryHandlers.put(GeodeQuery.Category.TOPIC_NOTIFY_OTHERS, (query) -> manageTopicNotifyOthersQuery(query));
         categoryHandlers.put(GeodeQuery.Category.TOPIC_SUBSCRIBE, (query) -> manageTopicSubscribeQuery(query));
         categoryHandlers.put(GeodeQuery.Category.TOPIC_UNSUBSCRIBE, (query) -> manageTopicUnsubscribeQuery(query));
+        categoryHandlers.put(GeodeQuery.Category.FORWARD, query -> manageForwardQuery((ForwardQuery) query));
+    }
+
+    protected Object manageForwardQuery(ForwardQuery query)
+    {
+        ForwardQuery.Forwarder forwarder = query.getForwarder();
+        ClientInfosBuilder builder = ClientInfosBuilder.create();
+        ClientInfos infos = builder
+                .light(true)
+                .host(forwarder.ip)
+                .port(forwarder.port).build();
+        LightClient client = new LightClient(infos);
+        client.init();
+        logger.info("send forward query");
+        query.getArgs().forEach(client::send);
+        if(forwarder.waitResponse)
+        {
+            logger.info("wait forward response");
+            GeodeQuery query1 = client.recv();
+            send(query1);
+        }
+        try
+        {
+            client.getTcpTunnel().getSocket().close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -355,9 +387,11 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                 {
                     logger.error("receive IO error: " + e.getMessage());
                     running = false;
+                    e.printStackTrace();
                 } catch (ClassNotFoundException e)
                 {
                     logger.error("receive CLASS error: " + e.getMessage());
+                    e.printStackTrace();
                 } catch (Exception e)
                 {
                     logger.error("unknown error: " + e.getMessage());

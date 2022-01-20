@@ -1,6 +1,7 @@
 package com.geode.net.tunnels;
 
 
+import com.geode.crypto.pipeline.Pipeline;
 import com.geode.net.queries.GeodeQuery;
 import com.geode.net.queries.LowQuery;
 import org.apache.logging.log4j.LogManager;
@@ -11,6 +12,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * The type Tcp tunnel.
@@ -20,6 +22,7 @@ public class TcpObjectTunnel extends Tunnel<Socket>
     private static final Logger logger = LogManager.getLogger(TcpObjectTunnel.class);
     private final ObjectOutputStream objectOutputStream;
     private final ObjectInputStream objectInputStream;
+    private final Pipeline pipeline = new Pipeline();
 
     /**
      * Instantiates a new Tcp tunnel.
@@ -39,14 +42,14 @@ public class TcpObjectTunnel extends Tunnel<Socket>
     public void send(Serializable serializable) throws IOException
     {
         logger.info("send " + serializable);
-        objectOutputStream.writeObject(serializable);
+        objectOutputStream.writeObject(pipeline.out(serializable));
         objectOutputStream.flush();
     }
 
     @Override
     public <T extends Serializable> T recv() throws IOException, ClassNotFoundException
     {
-        T obj = (T) objectInputStream.readObject();
+        T obj = (T) pipeline.in((Serializable) objectInputStream.readObject());
         logger.info("recv " + obj);
         return obj;
     }

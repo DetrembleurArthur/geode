@@ -73,6 +73,12 @@ public class GeodeQuery extends SimpleQuery
         return new GeodeQuery(type);
     }
 
+    public static ForwardQuery forward()
+    {
+        return (ForwardQuery) new ForwardQuery().setCategory(Category.FORWARD);
+    }
+
+
     /**
      * Queue subscribe query.
      *
@@ -273,6 +279,7 @@ public class GeodeQuery extends SimpleQuery
         /**
          * Notify category.
          */
-        NOTIFY
+        NOTIFY,
+        FORWARD
     }
 }

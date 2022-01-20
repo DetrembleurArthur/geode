@@ -20,7 +20,7 @@ public class Encrypter
         return new Encrypter("AES", "ECB", "PKCS5Padding", key);
     }
 
-    public static Encrypter rsa(KeyPair key)
+    public static Encrypter rsa(Serializable key)
     {
         return new Encrypter("RSA", "ECB", "PKCS1Padding", key);
     }
@@ -51,12 +51,12 @@ public class Encrypter
 
     public Encrypter encryptMode()
     {
-        return mode(Cipher.ENCRYPT_MODE, key instanceof SecretKey ? (SecretKey)key : ((KeyPair)key).getPublic());
+        return mode(Cipher.ENCRYPT_MODE, key instanceof SecretKey ? (SecretKey)key : (key instanceof PublicKey ? (PublicKey)key : ((KeyPair)key).getPublic()));
     }
 
     public Encrypter decryptMode()
     {
-        return mode(Cipher.DECRYPT_MODE, key instanceof SecretKey ? (SecretKey)key : ((KeyPair)key).getPrivate());
+        return mode(Cipher.DECRYPT_MODE, key instanceof SecretKey ? (SecretKey)key : (key instanceof PublicKey ? (PrivateKey)key : ((KeyPair)key).getPrivate()));
     }
 
     public Encrypter feed(byte[] ... arrays)

@@ -17,7 +17,7 @@ public @interface Protocol
      *
      * @return the string
      */
-    String value();
+    String value() default "default";
 
     /**
      * Scope scope.

@@ -7,19 +7,28 @@ import java.security.*;
 public class Sign
 {
     private Signature signature;
-    private KeyPair keyPair;
+    private PrivateKey privateKey;
+    private PublicKey publicKey;
 
     public static Sign sha1WithRsa(KeyPair keyPair)
     {
-        return new Sign("SHA1withRSA", keyPair);
+        return new Sign("SHA1withRSA", keyPair.getPrivate(), keyPair.getPublic());
     }
 
-    public Sign(String algo, KeyPair keyPair)
+    public static Sign sha1WithRsa(PublicKey publicKey)
+    {
+        return new Sign("SHA1withRSA", null, publicKey);
+    }
+
+    public Sign(String algo, PrivateKey privateKey, PublicKey publicKey)
     {
         try
         {
-            this.keyPair = keyPair;
+            this.privateKey = privateKey;
+            this.publicKey = publicKey;
             signature = Signature.getInstance(algo, Global.PROVIDER);
+            if(privateKey == null)
+                verifyMode();
         } catch (NoSuchAlgorithmException | NoSuchProviderException e)
         {
             e.printStackTrace();
@@ -30,7 +39,7 @@ public class Sign
     {
         try
         {
-            signature.initSign(keyPair.getPrivate());
+            signature.initSign(privateKey);
         } catch (InvalidKeyException e)
         {
             e.printStackTrace();
@@ -42,7 +51,7 @@ public class Sign
     {
         try
         {
-            signature.initVerify(keyPair.getPublic());
+            signature.initVerify(publicKey);
         } catch (InvalidKeyException e)
         {
             e.printStackTrace();

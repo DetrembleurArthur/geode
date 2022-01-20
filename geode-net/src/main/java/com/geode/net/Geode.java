@@ -38,6 +38,8 @@ public final class Geode
 
             Class.forName("com.geode.net.queries.LowQuery");
             Class.forName("com.geode.net.queries.ArgDto");
+
+            Class.forName("com.geode.crypto.Global");
         }
         catch (ClassNotFoundException e)
         {

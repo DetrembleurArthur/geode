@@ -3,19 +3,24 @@ servers:
     host: 0.0.0.0
     port: 50000
     banner: Echo
-    com-mode: bytes
+    #com-mode: bytes
     discovery: false
     protocols:
       - com.geode.net.protocols.EchoProtocol
 
-  py:
-    host: 0.0.0.0
+  fw1:
+    host: 127.0.0.1
     port: 50000
-    banner: Py
-    com-mode: bytes
     discovery: false
     protocols:
-      - com.geode.net.test.PyProtocol
+      - com.geode.net.test.FWServer1
+
+  fw2:
+    host: 127.0.0.1
+    port: 50001
+    discovery: false
+    protocols:
+      - com.geode.net.test.FWServer2
 
 
 clients:
@@ -23,5 +28,12 @@ clients:
     host: 0.0.0.0
     port: 50000
     protocol: com.geode.net.protocols.EchoProtocol
-    com-mode: bytes
+    #com-mode: bytes
+    discovery: false
+
+  fw:
+    host: 127.0.0.1
+    port: 50000
+    protocol: com.geode.net.test.FWClient1
+    #com-mode: bytes
     discovery: false
