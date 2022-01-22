@@ -28,9 +28,10 @@ public abstract class Application implements Scene
         init();
     }
 
-    public void buildWindowHints(WindowHints windowHints)
+    public String buildWindowAttributes(WindowHints windowHints, Vector2i size)
     {
         // to implement if needed
+        return Window.DEFAULT_TITLE;
     }
 
     private void init()
@@ -38,8 +39,9 @@ public abstract class Application implements Scene
         try
         {
             WindowHints windowHints = WindowHints.create();
-            buildWindowHints(windowHints);
-            window = Window.create(new Vector2i(1024, 800), "MyApplication", windowHints);
+            Vector2i winSize = Window.DEFAULT_SIZE;
+            String title = buildWindowAttributes(windowHints, winSize);
+            window = Window.create(winSize, title, windowHints);
             window.getEventsManager().initObject(this);
             window.makeCurrent();
             GL.createCapabilities();

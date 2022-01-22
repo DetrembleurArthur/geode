@@ -11,15 +11,36 @@ import java.util.HashMap;
 
 public class WindowEventsManager
 {
-    private final HashMap<Class<?>, WindowEvent<?>> eventsMap;
+    @Getter
+    private final WindowCloseEvent closeEvent;
+
+    @Getter
+    private final WindowSizeEvent sizeEvent;
+
+    @Getter
+    private final WindowFramebufferSizeEvent framebufferSizeEvent;
+
+    @Getter
+    private final WindowContentScaleEvent contentScaleEvent;
+
+    @Getter
+    private final WindowPosEvent posEvent;
+
+    @Getter
+    private final WindowIconifyEvent iconifyEvent;
+
     @Getter
     private final Window window;
 
     public WindowEventsManager(Window window)
     {
         this.window = window;
-        eventsMap = new HashMap<>();
-        setOnWindowClose();
+        closeEvent = new WindowCloseEvent(window.getId());
+        sizeEvent = new WindowSizeEvent(window.getId());
+        framebufferSizeEvent = new WindowFramebufferSizeEvent(window.getId());
+        contentScaleEvent = new WindowContentScaleEvent(window.getId());
+        posEvent = new WindowPosEvent(window.getId());
+        iconifyEvent = new WindowIconifyEvent(window.getId());
     }
 
     public void initObject(Object obj)
@@ -28,49 +49,28 @@ public class WindowEventsManager
         {
             if(method.isAnnotationPresent(WindowEvent.OnClose.class))
             {
-                window.getEventsManager().addOnWindowClose(() -> {
-                    try
-                    {
-                        method.invoke(obj);
-                    } catch (IllegalAccessException | InvocationTargetException e)
-                    {
-                        e.printStackTrace();
-                    }
-                });
+                closeEvent.getCallbacks().add(() -> {try {method.invoke(obj);} catch (IllegalAccessException | InvocationTargetException e) {e.printStackTrace();}});
+            }
+            else if(method.isAnnotationPresent(WindowEvent.OnSize.class))
+            {
+                sizeEvent.getCallbacks().add((w, h) -> {try {method.invoke(obj, w, h);} catch (IllegalAccessException | InvocationTargetException e) {e.printStackTrace();}});
+            }
+            else if(method.isAnnotationPresent(WindowEvent.OnFramebufferSize.class))
+            {
+                framebufferSizeEvent.getCallbacks().add((w, h) -> {try {method.invoke(obj, w, h);} catch (IllegalAccessException | InvocationTargetException e) {e.printStackTrace();}});
+            }
+            else if(method.isAnnotationPresent(WindowEvent.OnContentScale.class))
+            {
+                contentScaleEvent.getCallbacks().add((xs, xy) -> {try {method.invoke(obj, xs, xy);} catch (IllegalAccessException | InvocationTargetException e) {e.printStackTrace();}});
+            }
+            else if(method.isAnnotationPresent(WindowEvent.OnPos.class))
+            {
+                posEvent.getCallbacks().add((x, y) -> {try {method.invoke(obj, x, y);} catch (IllegalAccessException | InvocationTargetException e) {e.printStackTrace();}});
+            }
+            else if(method.isAnnotationPresent(WindowEvent.OnIconify.class))
+            {
+                iconifyEvent.getCallbacks().add((ic) -> {try {method.invoke(obj, ic);} catch (IllegalAccessException | InvocationTargetException e) {e.printStackTrace();}});
             }
         }
-    }
-
-    private WindowEvent<?> initEvent(Class<?> eventClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException
-    {
-        WindowEvent<?> windowEvent = (WindowEvent<?>) eventClass.getConstructor().newInstance();
-        eventsMap.put(eventClass, windowEvent);
-        return windowEvent;
-    }
-
-    private void setCallback(Class<?> eventClass) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException
-    {
-        GLFW.glfwSetWindowCloseCallback(window.getId(), (WindowCloseEvent) initEvent(eventClass));
-    }
-
-    @SneakyThrows
-    public void setOnWindowClose()
-    {
-        setCallback(WindowCloseEvent.class);
-    }
-
-    public void addOnWindowClose(WindowCloseI windowCloseI)
-    {
-        WindowCloseEvent windowCloseEvent = (WindowCloseEvent) eventsMap.get(WindowCloseEvent.class);
-        windowCloseEvent.getCallbacks().add(windowCloseI);
-    }
-
-    public void removeOnWindowClose(WindowCloseI windowCloseI)
-    {
-        WindowCloseEvent windowCloseEvent = (WindowCloseEvent) eventsMap.get(WindowCloseEvent.class);
-        if(windowCloseI != null)
-            windowCloseEvent.getCallbacks().remove(windowCloseI);
-        else
-            windowCloseEvent.getCallbacks().clear();
     }
 }
