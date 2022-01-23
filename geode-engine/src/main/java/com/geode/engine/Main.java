@@ -1,13 +1,11 @@
 package com.geode.engine;
 
+import com.geode.engine.system.*;
 import com.geode.engine.events.WindowEvent;
-import com.geode.engine.system.Application;
-import com.geode.engine.system.Monitor;
-import com.geode.engine.system.Window;
-import com.geode.engine.system.WindowHints;
 import com.geode.engine.utils.Colors;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.joml.Vector2i;
+import org.lwjgl.glfw.GLFW;
 
 
 public class Main extends Application
@@ -20,40 +18,22 @@ public class Main extends Application
         return "Demo Application";
     }
 
-    @WindowEvent.OnClose
-    public void onCloseCallback()
+    @WindowEvent.OnKey
+    public void onKey(int key, int scancode, int action, int mods)
     {
-        System.out.println("ok");
+        System.out.println("Key: " + key + " " + scancode + " " + action + " " + mods + " " + KeyManager.getChar(key));
     }
 
-    @WindowEvent.OnSize
-    public void onSizeCallback(int width, int height)
+    @WindowEvent.OnTextInput
+    public void onKey(char c)
     {
-        System.out.println("New size: " + width + " " + height);
+        System.out.println("Text: " + c);
     }
 
-    @WindowEvent.OnFramebufferSize
-    public void onFramebufferSizeCallback(int width, int height)
+    @WindowEvent.OnMouseButton
+    public void f(int btn, int action, int mods)
     {
-        System.out.println("New FB size: " + width + " " + height);
-    }
-
-    @WindowEvent.OnContentScale
-    public void onContentScaleCallback(float xs, float xy)
-    {
-        System.out.println("New content scale: " + xs + " " + xy);
-    }
-
-    @WindowEvent.OnPos
-    public void onPosCallback(float x, float y)
-    {
-        //System.out.println("New position: " + x + " " + y);
-    }
-
-    @WindowEvent.OnIconify
-    public void onIconifyCallback(boolean state)
-    {
-        System.out.println((state ? "iconified" : "restored => ") + getWindow().isIconified());
+        //System.out.println("cursor enter: " + btn);
     }
 
     @Override
@@ -63,13 +43,30 @@ public class Main extends Application
         getWindow().setClearColor(Colors.BLUE);
         getWindow().setAspectRatio(16, 9);
         getWindow().center();
-
+        getWindow().requestAttention();
+        getWindow().setCursor(Cursor.HAND);
+        /*getWindow().setCursor(new Cursor(4, 4, new int[]{
+                0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+                0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+                0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+                0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+        }));*/
     }
 
     @Override
     public void update(float dt)
     {
-
+        if(getKeyManager().isKeyModeRepeated(GLFW.GLFW_KEY_SPACE, KeyManager.Mods.ALT | KeyManager.Mods.CONTROL))
+            System.out.println("ok");
+        if(getMouseManager().isLeftButtonPressed())
+        {
+            System.out.println("pressed!");
+            getMouseManager().disableLeftButtonAction();
+        }
+        else if(getMouseManager().isLeftButtonReleased())
+        {
+            System.out.println("released!");
+        }
     }
 
     @Override

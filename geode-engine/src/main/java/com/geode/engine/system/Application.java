@@ -1,7 +1,7 @@
 package com.geode.engine.system;
 
 import com.geode.engine.exceptions.WindowException;
-import com.geode.engine.utils.Colors;
+import lombok.Builder;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL;
@@ -17,6 +17,12 @@ public abstract class Application implements Scene
 
     @Getter
     private Window window;
+
+    @Getter
+    private KeyManager keyManager;
+
+    @Getter
+    private MouseManager mouseManager;
 
     public static void setApplication(Application application)
     {
@@ -42,11 +48,15 @@ public abstract class Application implements Scene
             Vector2i winSize = Window.DEFAULT_SIZE;
             String title = buildWindowAttributes(windowHints, winSize);
             window = Window.create(winSize, title, windowHints);
+            keyManager = KeyManager.create();
+            KeyManager.setLockKeysMode(true);
+            mouseManager = MouseManager.create();
+            window.getEventsManager().getKeyEvent().getCallbacks().add(keyManager);
+            window.getEventsManager().getMouseButtonEvent().getCallbacks().add(mouseManager);
             window.getEventsManager().initObject(this);
             window.makeCurrent();
             GL.createCapabilities();
 
-            window.setClearColor(Colors.GREEN);
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glEnable(GL_MULTISAMPLE);
@@ -64,7 +74,7 @@ public abstract class Application implements Scene
         load();
         while (!window.shouldClose())
         {
-            window.pollEvents();
+            window.checkEvents();
             window.clear();
             update(0f);
             draw(window);

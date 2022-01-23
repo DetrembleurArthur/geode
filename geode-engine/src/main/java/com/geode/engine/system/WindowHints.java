@@ -75,4 +75,9 @@ public class WindowHints
     {
         return hint(GLFW_SCALE_TO_MONITOR, value ? GLFW_TRUE : GLFW_FALSE);
     }
+
+    public WindowHints transparent(boolean value)
+    {
+        return hint(GLFW_TRANSPARENT_FRAMEBUFFER, value ? GLFW_TRUE : GLFW_FALSE);
+    }
 }

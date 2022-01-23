@@ -32,6 +32,13 @@ public class Window
     private String title;
     private WindowEventsManager eventsManager;
     private Vector2i aspectRatio;
+    private Runnable eventRunner;
+    private Cursor cursor;
+
+    public static void postEmptyEvent()
+    {
+        glfwPostEmptyEvent();
+    }
 
     public static Window create(Vector2i size, String title, WindowHints hints) throws WindowException
     {
@@ -63,6 +70,7 @@ public class Window
                 if(isInitialized())
                 {
                     setEventsManager(new WindowEventsManager(this));
+                    pollEventsPolicy();
                     logger.info("glfw window initialized");
                     Window.setWindow(this);
                 }
@@ -115,6 +123,11 @@ public class Window
         glfwShowWindow(getId());
     }
 
+    public void hide()
+    {
+        glfwHideWindow(getId());
+    }
+
     public void clear()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -125,14 +138,46 @@ public class Window
         glfwSwapBuffers(getId());
     }
 
-    public void pollEvents()
+    private void pollEvents()
     {
         glfwPollEvents();
+    }
+
+    private void waitEvents()
+    {
+        glfwWaitEvents();
+    }
+
+    private void waitEventsTimeout(float sec)
+    {
+        glfwWaitEventsTimeout(sec);
+    }
+
+    public void pollEventsPolicy()
+    {
+        eventRunner = this::pollEvents;
+    }
+
+    public void waitEventsPolicy()
+    {
+        eventRunner = this::waitEvents;
+    }
+
+    public void waitEventsTimeoutPolicy(float sec)
+    {
+        eventRunner = () -> waitEventsTimeout(sec);
+    }
+
+    public void checkEvents()
+    {
+        eventRunner.run();
     }
 
     public void destroy()
     {
         logger.info("destroying glfw window");
+        if(cursor != null)
+            cursor.destroy();
         glfwFreeCallbacks(getId());
         GLFW.glfwDestroyWindow(getId());
     }
@@ -231,7 +276,7 @@ public class Window
 
     public void center()
     {
-        Vector2i monitorSize = Monitor.getDefault().getSize();
+        Vector2i monitorSize = Monitor.getPrimary().getSize();
         Vector2i windowSize = getSize();
         setPosition(monitorSize.div(2).sub(windowSize.div(2)));
     }
@@ -266,14 +311,95 @@ public class Window
         glfwIconifyWindow(getId());
     }
 
+    public void maximize()
+    {
+        glfwMaximizeWindow(getId());
+    }
+
     public void restore()
     {
         glfwRestoreWindow(getId());
     }
 
+    public void minimize()
+    {
+        restore();
+    }
+
     public boolean isIconified()
     {
         return glfwGetWindowAttrib(getId(), GLFW_ICONIFIED) == 1;
+    }
+
+    public boolean isMaximized()
+    {
+        return glfwGetWindowAttrib(getId(), GLFW_MAXIMIZED) == 1;
+    }
+
+    public boolean isVisible()
+    {
+        return glfwGetWindowAttrib(getId(), GLFW_VISIBLE) == 1;
+    }
+
+    public void focus()
+    {
+        glfwFocusWindow(getId());
+    }
+
+    public boolean isFocused()
+    {
+        return glfwGetWindowAttrib(getId(), GLFW_FOCUSED) == 1;
+    }
+
+    public void requestAttention()
+    {
+        glfwRequestWindowAttention(getId());
+    }
+
+    public boolean isFrameBufferTransparent()
+    {
+        return glfwGetWindowAttrib(getId(), GLFW_TRANSPARENT_FRAMEBUFFER) == 1;
+    }
+
+    public void setOpacity(float opacity)
+    {
+        if(opacity >= 0f && opacity <= 1f)
+        {
+            glfwSetWindowOpacity(getId(), opacity);
+        }
+    }
+
+    public float getOpacity()
+    {
+        return glfwGetWindowOpacity(getId());
+    }
+
+    public boolean isHovered()
+    {
+        return glfwGetWindowAttrib(getId(), GLFW_HOVERED) == 1;
+    }
+
+    public Vector2f getMousePosition()
+    {
+        double[] x = new double[1];
+        double[] y = new double[1];
+        glfwGetCursorPos(getId(), x, y);
+        return new Vector2f((float)x[0], (float)y[0]);
+    }
+
+    public void setCursor(Cursor cursor)
+    {
+        if(this.cursor != null)
+            this.cursor.destroy();
+        glfwSetCursor(getId(), cursor.getId());
+        this.cursor = cursor;
+    }
+
+    public void setDefaultCursor()
+    {
+        if(this.cursor != null)
+            this.cursor.destroy();
+        glfwSetCursor(getId(), NULL);
     }
 
     @Deprecated
