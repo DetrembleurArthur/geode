@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class WindowEventsManager
@@ -61,6 +62,11 @@ public class WindowEventsManager
     private final WindowJoystickEvent joystickEvent;
 
     @Getter
+    private final WindowDropEvent dropEvent;
+
+    private final ArrayList<WindowEvent<?>> events;
+
+    @Getter
     private final Window window;
 
     public WindowEventsManager(Window window)
@@ -83,6 +89,26 @@ public class WindowEventsManager
         mouseButtonEvent = new WindowMouseButtonEvent(window.getId());
         scrollEvent = new WindowScrollEvent(window.getId());
         joystickEvent = new WindowJoystickEvent();
+        dropEvent = new WindowDropEvent(window.getId());
+        events = new ArrayList<>();
+        events.add(closeEvent);
+        events.add(sizeEvent);
+        events.add(framebufferSizeEvent);
+        events.add(contentScaleEvent);
+        events.add(posEvent);
+        events.add(iconifyEvent);
+        events.add(maximizeEvent);
+        events.add(focusEvent);
+        events.add(refreshEvent);
+        events.add(monitorEvent);
+        events.add(keyEvent);
+        events.add(textInputEvent);
+        events.add(cursorPosEvent);
+        events.add(cursorEnterEvent);
+        events.add(mouseButtonEvent);
+        events.add(scrollEvent);
+        events.add(joystickEvent);
+        events.add(dropEvent);
     }
 
     public void initObject(Object obj)
@@ -157,6 +183,18 @@ public class WindowEventsManager
             {
                 joystickEvent.getCallbacks().add((a) -> {try {method.invoke(obj, a);} catch (IllegalAccessException | InvocationTargetException e) {e.printStackTrace();}});
             }
+            else if(method.isAnnotationPresent(WindowEvent.OnDrop.class))
+            {
+                dropEvent.getCallbacks().add((paths) -> {try {method.invoke(obj, (Object) paths);} catch (IllegalAccessException | InvocationTargetException e) {e.printStackTrace();}});
+            }
+        }
+    }
+
+    public void clearAllEvents()
+    {
+        for (WindowEvent<?> event : events)
+        {
+            event.getCallbacks().clear();
         }
     }
 }

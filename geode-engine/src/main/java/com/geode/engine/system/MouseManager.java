@@ -25,7 +25,7 @@ public class MouseManager implements WindowMouseButtonI
         public static final Button NULL_BUTTON = Button.builder().mods(-1).action(-1).build();
     }
 
-    public static MouseManager create()
+    public static MouseManager get()
     {
         if(mouseManager == null)
             MouseManager.mouseManager = new MouseManager();

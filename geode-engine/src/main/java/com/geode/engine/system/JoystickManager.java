@@ -1,7 +1,6 @@
 package com.geode.engine.system;
 
 import lombok.Builder;
-import lombok.Getter;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWGamepadState;
@@ -11,18 +10,6 @@ import java.nio.FloatBuffer;
 
 public class JoystickManager
 {
-    @Getter
-    private static JoystickManager joystickManager;
-
-    private Joystick[] joysticks;
-
-    @Builder
-    public static class Joystick
-    {
-        private int id;
-        private int event;
-    }
-
     public static class Xbox
     {
         public static final int A = 0;
@@ -39,27 +26,6 @@ public class JoystickManager
         public static final int RIGHT = 11;
         public static final int DOWN = 12;
         public static final int LEFT = 13;
-    }
-
-    public static class Hats
-    {
-        public static final int LEFT = 0;
-        public static final int RIGHT = 2;
-        public static final int LEFT_TRIGGER = 4;
-        public static final int RIGHT_TRIGGER = 5;
-        public static final int LEFT_RIGHT_TRIGGER = 6;
-    }
-
-    public static JoystickManager create()
-    {
-        if (joystickManager == null)
-            joystickManager = new JoystickManager();
-        return joystickManager;
-    }
-
-    private JoystickManager()
-    {
-        joysticks = new Joystick[GLFW.GLFW_JOYSTICK_LAST];
     }
 
     public static boolean isPresent(int jid)
@@ -96,6 +62,7 @@ public class JoystickManager
     public static boolean isHatsPressed(int jid, int hat)
     {
         ByteBuffer buffer = GLFW.glfwGetJoystickHats(jid);
+        assert buffer != null;
         return (buffer.get() & hat) == hat;
     }
 

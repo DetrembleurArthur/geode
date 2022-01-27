@@ -1,16 +1,18 @@
 package com.geode.engine.system;
 
 import com.geode.engine.exceptions.WindowException;
-import lombok.Builder;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13C.GL_MULTISAMPLE;
 
 
-public abstract class Application implements Scene
+public abstract class Application implements Manageable
 {
     @Getter
     private static Application application;
@@ -23,6 +25,12 @@ public abstract class Application implements Scene
 
     @Getter
     private MouseManager mouseManager;
+
+    @Getter
+    private Scene<?> currentScene;
+
+    @Getter
+    private float beginTime;
 
     public static void setApplication(Application application)
     {
@@ -40,6 +48,35 @@ public abstract class Application implements Scene
         return Window.DEFAULT_TITLE;
     }
 
+    private void initPrimariesEventManagers()
+    {
+        window.getEventsManager().clearAllEvents();
+        keyManager = KeyManager.get();
+        KeyManager.setLockKeysMode(true);
+        mouseManager = MouseManager.get();
+        window.getEventsManager().getKeyEvent().getCallbacks().add(keyManager);
+        window.getEventsManager().getMouseButtonEvent().getCallbacks().add(mouseManager);
+    }
+
+    private void initSceneReferences() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException
+    {
+        for(Field field : getClass().getFields())
+        {
+            SceneRef sceneRef = field.getAnnotation(SceneRef.class);
+            if(sceneRef != null)
+            {
+                if(Scene.class.isAssignableFrom(field.getType()))
+                {
+                    Scene<Application> scene = (Scene<Application>) field.getType().getConstructor().newInstance();
+                    scene.setParent(this);
+                    field.set(this, scene);
+                    if(sceneRef.initial())
+                        setScene(scene);
+                }
+            }
+        }
+    }
+
     private void init()
     {
         try
@@ -47,21 +84,20 @@ public abstract class Application implements Scene
             WindowHints windowHints = WindowHints.create();
             Vector2i winSize = Window.DEFAULT_SIZE;
             String title = buildWindowAttributes(windowHints, winSize);
-            window = Window.create(winSize, title, windowHints);
-            keyManager = KeyManager.create();
-            KeyManager.setLockKeysMode(true);
-            mouseManager = MouseManager.create();
-            window.getEventsManager().getKeyEvent().getCallbacks().add(keyManager);
-            window.getEventsManager().getMouseButtonEvent().getCallbacks().add(mouseManager);
-            window.getEventsManager().initObject(this);
+            window = Window.get(winSize, title, windowHints);
+            initPrimariesEventManagers();
+
             window.makeCurrent();
             GL.createCapabilities();
 
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glEnable(GL_MULTISAMPLE);
+
+            beginTime = Time.getTime();
+            initSceneReferences();
             Application.setApplication(this);
-        } catch (WindowException e)
+        } catch (WindowException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e)
         {
             e.printStackTrace();
             System.exit(1);
@@ -72,15 +108,52 @@ public abstract class Application implements Scene
     {
         window.show();
         load();
+        float frameTime = Time.getTime();
+        float dt = Time.getTime() - frameTime;
         while (!window.shouldClose())
         {
             window.checkEvents();
             window.clear();
-            update(0f);
+            update(dt);
             draw(window);
             window.flip();
+            dt = Time.getTime() - frameTime;
+            frameTime = Time.getTime();
         }
         destroy();
         window.close();
+    }
+
+    public void setScene(Scene<?> scene)
+    {
+        if(currentScene != null)
+        {
+            currentScene.disactive();
+        }
+        currentScene = scene;
+        initPrimariesEventManagers();
+        window.getEventsManager().initObject(currentScene);
+        currentScene.active();
+    }
+
+    @Override
+    public final void update(float dt)
+    {
+        if(currentScene != null)
+            currentScene.update(dt);
+    }
+
+    @Override
+    public final void draw(Window window)
+    {
+        if(currentScene != null)
+            currentScene.draw(window);
+    }
+
+    @Override
+    public final void destroy()
+    {
+        if(currentScene != null)
+            currentScene.destroy();
     }
 }

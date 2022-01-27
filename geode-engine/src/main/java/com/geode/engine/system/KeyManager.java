@@ -39,7 +39,7 @@ public class KeyManager implements WindowKeyI
         keys = new Key[GLFW.GLFW_KEY_LAST];
     }
 
-    public static KeyManager create()
+    public static KeyManager get()
     {
         if(keyManager == null)
             keyManager = new KeyManager();

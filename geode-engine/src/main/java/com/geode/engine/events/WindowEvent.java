@@ -132,4 +132,10 @@ public abstract class WindowEvent<T>
     public @interface OnJoystick
     {
     }
+
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface OnDrop
+    {
+    }
 }

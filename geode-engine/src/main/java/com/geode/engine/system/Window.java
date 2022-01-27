@@ -40,7 +40,7 @@ public class Window
         glfwPostEmptyEvent();
     }
 
-    public static Window create(Vector2i size, String title, WindowHints hints) throws WindowException
+    public static Window get(Vector2i size, String title, WindowHints hints) throws WindowException
     {
         return new Window(size, title, hints);
     }

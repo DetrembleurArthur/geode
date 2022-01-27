@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 public class Cursor
 {
     @Getter
-    private long id;
+    private final long id;
 
     public static final int PIXEL_SIZE = 4 * Byte.BYTES;
     public static final int ARROW = GLFW.GLFW_ARROW_CURSOR;
