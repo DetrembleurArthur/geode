@@ -30,10 +30,10 @@ public class Main extends Application
         System.out.println("Text: " + c);
     }
 
-    @WindowEvent.OnMouseButton
-    public void f(int btn, int action, int mods)
+    @WindowEvent.OnJoystick
+    public void f(boolean connected)
     {
-        //System.out.println("cursor enter: " + btn);
+        System.out.println("cursor enter: " + connected);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class Main extends Application
         getWindow().setAspectRatio(16, 9);
         getWindow().center();
         getWindow().requestAttention();
-        getWindow().setCursor(Cursor.HAND);
+        getWindow().setCursor(new Cursor(Cursor.HAND));
         /*getWindow().setCursor(new Cursor(4, 4, new int[]{
                 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
                 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
@@ -55,7 +55,7 @@ public class Main extends Application
 
     @Override
     public void update(float dt)
-    {
+    {/*
         if(getKeyManager().isKeyModeRepeated(GLFW.GLFW_KEY_SPACE, KeyManager.Mods.ALT | KeyManager.Mods.CONTROL))
             System.out.println("ok");
         if(getMouseManager().isLeftButtonPressed())
@@ -66,6 +66,10 @@ public class Main extends Application
         else if(getMouseManager().isLeftButtonReleased())
         {
             System.out.println("released!");
+        }*/
+        if(JoystickManager.isGamepad(GLFW.GLFW_JOYSTICK_1))
+        {
+            System.out.println(JoystickManager.isGamepadButtonPressed(GLFW.GLFW_JOYSTICK_1, GLFW.GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER));
         }
     }
 

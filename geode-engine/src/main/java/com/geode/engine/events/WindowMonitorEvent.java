@@ -5,6 +5,11 @@ import org.lwjgl.glfw.GLFWMonitorCallbackI;
 
 public class WindowMonitorEvent extends WindowEvent<WindowMonitorI> implements GLFWMonitorCallbackI
 {
+    public WindowMonitorEvent()
+    {
+        super(0L);
+    }
+
     @Override
     protected void register(long windowId)
     {

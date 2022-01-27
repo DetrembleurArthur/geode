@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 public class WindowEventsManager
 {
@@ -57,6 +58,9 @@ public class WindowEventsManager
     private final WindowScrollEvent scrollEvent;
 
     @Getter
+    private final WindowJoystickEvent joystickEvent;
+
+    @Getter
     private final Window window;
 
     public WindowEventsManager(Window window)
@@ -78,6 +82,7 @@ public class WindowEventsManager
         cursorEnterEvent = new WindowCursorEnterEvent(window.getId());
         mouseButtonEvent = new WindowMouseButtonEvent(window.getId());
         scrollEvent = new WindowScrollEvent(window.getId());
+        joystickEvent = new WindowJoystickEvent();
     }
 
     public void initObject(Object obj)
@@ -147,6 +152,10 @@ public class WindowEventsManager
             else if(method.isAnnotationPresent(WindowEvent.OnScroll.class))
             {
                 scrollEvent.getCallbacks().add((a, b) -> {try {method.invoke(obj, a, b);} catch (IllegalAccessException | InvocationTargetException e) {e.printStackTrace();}});
+            }
+            else if(method.isAnnotationPresent(WindowEvent.OnJoystick.class))
+            {
+                joystickEvent.getCallbacks().add((a) -> {try {method.invoke(obj, a);} catch (IllegalAccessException | InvocationTargetException e) {e.printStackTrace();}});
             }
         }
     }

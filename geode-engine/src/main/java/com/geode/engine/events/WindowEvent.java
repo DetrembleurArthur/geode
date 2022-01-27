@@ -126,4 +126,10 @@ public abstract class WindowEvent<T>
     public @interface OnScroll
     {
     }
+
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface OnJoystick
+    {
+    }
 }

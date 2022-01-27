@@ -13,12 +13,12 @@ public class Cursor
     private long id;
 
     public static final int PIXEL_SIZE = 4 * Byte.BYTES;
-    public static final Cursor ARROW = new Cursor(GLFW.GLFW_ARROW_CURSOR);
-    public static final Cursor IBEAM = new Cursor(GLFW.GLFW_IBEAM_CURSOR);
-    public static final Cursor CROSSHAIR = new Cursor(GLFW.GLFW_CROSSHAIR_CURSOR);
-    public static final Cursor HAND = new Cursor(GLFW.GLFW_HAND_CURSOR);
-    public static final Cursor HRESIZE = new Cursor(GLFW.GLFW_HRESIZE_CURSOR);
-    public static final Cursor VRESIZE = new Cursor(GLFW.GLFW_VRESIZE_CURSOR);
+    public static final int ARROW = GLFW.GLFW_ARROW_CURSOR;
+    public static final int IBEAM =GLFW.GLFW_IBEAM_CURSOR;
+    public static final int CROSSHAIR = GLFW.GLFW_CROSSHAIR_CURSOR;
+    public static final int HAND = GLFW.GLFW_HAND_CURSOR;
+    public static final int HRESIZE = GLFW.GLFW_HRESIZE_CURSOR;
+    public static final int VRESIZE = GLFW.GLFW_VRESIZE_CURSOR;
 
     public Cursor(int id)
     {
