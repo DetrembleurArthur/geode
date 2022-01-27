@@ -2,6 +2,7 @@ package com.geode.engine.graphics;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL15C;
 
 import java.nio.IntBuffer;
 
@@ -32,7 +33,9 @@ public class IndexBuffer
     {
         IntBuffer buffer = BufferUtils.createIntBuffer(indices.length);
         buffer.put(indices).flip();
+        bind();
         GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+        unbind();
         len = indices.length;
     }
 
@@ -41,5 +44,10 @@ public class IndexBuffer
         bind();
         glDrawElements(drawType, len, GL_UNSIGNED_INT, 0);
         unbind();
+    }
+
+    public void destroy()
+    {
+        GL15C.glDeleteBuffers(id);
     }
 }

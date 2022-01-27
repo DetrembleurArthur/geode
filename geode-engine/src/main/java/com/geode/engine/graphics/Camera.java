@@ -31,6 +31,7 @@ public class Camera
         view = new Matrix4f();
         this.orthoSettings = new Vector4f(left, right, bottom, up);
         zoom = new Vector3f();
+        updateProjection();
     }
 
     public Camera()

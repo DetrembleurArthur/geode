@@ -1,14 +1,30 @@
 package com.geode.engine.entity;
 
+import com.geode.engine.entity.components.Component;
+import com.geode.engine.graphics.Mesh;
+import com.geode.engine.graphics.Texture;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 
 public class GameObject implements Updatable
 {
-    private ArrayList<Component> components;
+    private final ArrayList<Component> components;
+
+    @Getter
+    private final Transform transform;
+
+    @Getter @Setter
+    private Mesh mesh;
+
+    @Getter @Setter
+    private Texture texture;
 
     public GameObject()
     {
         components = new ArrayList<>();
+        transform = new Transform();
     }
 
     public void addComponent(Component component)

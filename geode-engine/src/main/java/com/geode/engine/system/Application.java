@@ -1,6 +1,7 @@
 package com.geode.engine.system;
 
 import com.geode.engine.exceptions.WindowException;
+import com.geode.engine.graphics.Texture;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL;
@@ -58,23 +59,35 @@ public abstract class Application implements Manageable
         window.getEventsManager().getMouseButtonEvent().getCallbacks().add(mouseManager);
     }
 
-    private void initSceneReferences() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException
+    private void initDependencyInjections() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException
     {
+        Scene<?> init = null;
         for(Field field : getClass().getFields())
         {
-            SceneRef sceneRef = field.getAnnotation(SceneRef.class);
-            if(sceneRef != null)
+            if(field.isAnnotationPresent(SceneRef.class))
             {
+                SceneRef sceneRef = field.getAnnotation(SceneRef.class);
                 if(Scene.class.isAssignableFrom(field.getType()))
                 {
                     Scene<Application> scene = (Scene<Application>) field.getType().getConstructor().newInstance();
                     scene.setParent(this);
                     field.set(this, scene);
                     if(sceneRef.initial())
-                        setScene(scene);
+                        init = scene;
+                }
+            }
+            else if(field.isAnnotationPresent(TextureRef.class))
+            {
+                TextureRef textureRef = field.getAnnotation(TextureRef.class);
+                if(Texture.class.isAssignableFrom(field.getType()))
+                {
+                    Texture texture = new Texture(textureRef.value());
+                    field.set(this, texture);
                 }
             }
         }
+        if(init != null)
+            setScene(init);
     }
 
     private void init()
@@ -95,7 +108,7 @@ public abstract class Application implements Manageable
             glEnable(GL_MULTISAMPLE);
 
             beginTime = Time.getTime();
-            initSceneReferences();
+            initDependencyInjections();
             Application.setApplication(this);
         } catch (WindowException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e)
         {
@@ -156,5 +169,8 @@ public abstract class Application implements Manageable
     {
         if(currentScene != null)
             currentScene.destroy();
+        freeResources();
     }
+
+    protected abstract void freeResources();
 }

@@ -26,7 +26,6 @@ public class Shader
     private int vertexShader = -1;
     private int fragmentShader = -1;
     private int program = -1;
-    private final HashMap<String, Integer> uniforms = new HashMap<>();
 
     public Shader(String vertexSrc, String fragmentSrc, boolean areFile)
     {
@@ -39,9 +38,9 @@ public class Shader
         }
     }
 
-    private int loadShader(String src)
+    private int loadShader(String src, int type)
     {
-        int id = glCreateShader(GL_VERTEX_SHADER);
+        int id = glCreateShader(type);
         glShaderSource(id, src);
         glCompileShader(id);
 
@@ -57,8 +56,8 @@ public class Shader
 
     public void init(String vertexSrc, String fragmentSrc)
     {
-        vertexShader = loadShader(vertexSrc);
-        fragmentShader = loadShader(fragmentSrc);
+        vertexShader = loadShader(vertexSrc, GL_VERTEX_SHADER);
+        fragmentShader = loadShader(fragmentSrc, GL_FRAGMENT_SHADER);
         program = glCreateProgram();
         glAttachShader(program, vertexShader);
         glAttachShader(program, fragmentShader);
@@ -70,7 +69,6 @@ public class Shader
             System.out.println(glGetProgramInfoLog(program, len));
             System.exit(1);
         }
-        loadUniforms();
     }
 
     private String loadFromFile(String filename) throws IOException
@@ -116,29 +114,19 @@ public class Shader
         return program;
     }
 
-    private void addUniform(String name)
-    {
-        uniforms.put(name, -1);
-    }
-
-    private void loadUniforms()
-    {
-        uniforms.replaceAll((k, v) -> glGetUniformLocation(program, k));
-    }
-
     public void setUniformf1(String name, float value)
     {
-        glUniform1f(uniforms.get(name), value);
+        glUniform1f(glGetUniformLocation(program, name), value);
     }
 
     public void setUniformf4(String name, Vector4f value)
     {
-        glUniform4f(uniforms.get(name), value.x, value.y, value.z, value.w);
+        glUniform4f(glGetUniformLocation(program, name), value.x, value.y, value.z, value.w);
     }
 
     public void setUniform1i(String name, int value)
     {
-        glUniform1i(uniforms.get(name), value);
+        glUniform1i(glGetUniformLocation(program, name), value);
     }
 
     public void destroy()
@@ -154,34 +142,34 @@ public class Shader
     {
         FloatBuffer buffer = MemoryUtil.memAllocFloat(16); //4 x 4
         matrix.get(buffer);
-        glUniformMatrix4fv(uniforms.get(name), false, buffer);
+        glUniformMatrix4fv(glGetUniformLocation(program, name), false, buffer);
         memFree(buffer);
     }
 
     public void uploadTexture(String name, int slot)
     {
-        var variable = uniforms.get(name);
-        if (variable != null)
+        var variable = glGetUniformLocation(program, name);
+        if (variable != 0)
             glUniform1i(variable, slot);
     }
 
     public void setUniformf2(String name, Vector2f dimension)
     {
-        glUniform2f(uniforms.get(name), dimension.x, dimension.y);
+        glUniform2f(glGetUniformLocation(program, name), dimension.x, dimension.y);
     }
 
     public void setUniform2fv(String name, float[] array)
     {
-        glUniform2fv(uniforms.get(name), array);
+        glUniform2fv(glGetUniformLocation(program, name), array);
     }
 
     public void setUniform4fv(String name, float[] array)
     {
-        glUniform4fv(uniforms.get(name), array);
+        glUniform4fv(glGetUniformLocation(program, name), array);
     }
 
     public void setUniform1fv(String name, float[] array)
     {
-        glUniform1fv(uniforms.get(name), array);
+        glUniform1fv(glGetUniformLocation(program, name), array);
     }
 }
