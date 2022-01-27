@@ -8,6 +8,12 @@ import org.lwjgl.glfw.GLFW;
 
 public class MainScene extends Scene<Main>
 {
+    float[] vertex = new float[]{
+        0.5f, -0.5f, 0.0f,        1.0f, 0.0f, 0.0f, 1.0f,
+        -0.5f, 0.5f, 0.0f,        0.0f, 1.0f, 0.0f, 1.0f,
+        0.5f, 0.5f, 0.0f,        0.0f, 0.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f, 0.0f,        1.0f, 1.0f, 0.0f, 1.0f,
+    };
 
     @Override
     public void load()
@@ -19,7 +25,7 @@ public class MainScene extends Scene<Main>
     @Override
     public void update(float dt)
     {
-        if(getParent().getKeyManager().isKeyMode(GLFW.GLFW_KEY_SPACE, KeyManager.Mods.ALT))
+        if (getParent().getKeyManager().isKeyMode(GLFW.GLFW_KEY_SPACE, KeyManager.Mods.ALT))
         {
             getParent().secondaryScene.asCurrent();
         }

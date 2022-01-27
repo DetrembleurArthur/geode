@@ -1,10 +1,14 @@
 package com.geode.engine.system;
 
+import com.geode.engine.graphics.Camera;
 import lombok.Getter;
 import lombok.Setter;
 
 public abstract class Scene<T extends Application> implements Manageable
 {
+    @Getter
+    private Camera camera;
+
     @Getter @Setter
     private boolean keepState = false;
 
@@ -26,6 +30,7 @@ public abstract class Scene<T extends Application> implements Manageable
     {
         if(!loaded)
         {
+            camera = new Camera();
             load();
             loaded = true;
         }
@@ -33,6 +38,7 @@ public abstract class Scene<T extends Application> implements Manageable
         {
             if(!keepState)
             {
+                camera = new Camera();
                 load();
             }
         }

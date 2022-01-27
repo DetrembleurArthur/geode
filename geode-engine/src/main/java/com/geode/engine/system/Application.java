@@ -109,16 +109,17 @@ public abstract class Application implements Manageable
         window.show();
         load();
         float frameTime = Time.getTime();
-        float dt = Time.getTime() - frameTime;
+        float dt;
         while (!window.shouldClose())
         {
+            dt = Time.getTime() - frameTime;
+            Time.setDt(dt);
+            frameTime = Time.getTime();
             window.checkEvents();
             window.clear();
             update(dt);
             draw(window);
             window.flip();
-            dt = Time.getTime() - frameTime;
-            frameTime = Time.getTime();
         }
         destroy();
         window.close();
