@@ -63,6 +63,8 @@ public class MainScene extends Scene<Main>
         object.getTransform().setSize(new Vector3f(100, 100, 0));
         object.getTransform().setPosition(new Vector3f(0,0,0));
 
+        //Monitor.setSelected(Monitor.getMonitors().get(1));
+
     }
 
     @Override
@@ -74,7 +76,10 @@ public class MainScene extends Scene<Main>
 
 
         if(KeyManager.keyManager.isKeyReleased(GLFW.GLFW_KEY_SPACE))
-            getCamera().focus(new Vector2f(mp.x, mp.y));
+            getParent().getWindow().fullscreen();
+            //getCamera().focus(new Vector2f(mp.x, mp.y));
+        if(KeyManager.keyManager.isKeyReleased(GLFW.GLFW_KEY_ENTER))
+            getParent().getWindow().noFullscreen();
     }
 
     @Override

@@ -289,9 +289,10 @@ public class Window
 
     public void center()
     {
-        Vector2i monitorSize = Monitor.getPrimary().getSize();
+        Vector2i monitorPosition = Monitor.getSelected().getPosition();
+        Vector2i monitorSize = Monitor.getSelected().getSize();
         Vector2i windowSize = getSize();
-        setPosition(monitorSize.div(2).sub(windowSize.div(2)));
+        setPosition(monitorPosition.add(monitorSize.div(2).sub(windowSize.div(2))));
     }
 
     public Vector2i getPosition()
@@ -412,6 +413,18 @@ public class Window
         glViewport(x, y, w, h);
         viewportPos = new Vector2f(x, y);
         viewportSize = new Vector2f(w, h);
+    }
+
+    public void fullscreen()
+    {
+        setAssociatedMonitor(Monitor.getSelected());
+    }
+
+    public void noFullscreen()
+    {
+        Vector2i size = getSize().div(2);
+        glfwSetWindowMonitor(getId(), NULL, 0, 0, size.x, size.y, 0);
+        center();
     }
 
     @Deprecated

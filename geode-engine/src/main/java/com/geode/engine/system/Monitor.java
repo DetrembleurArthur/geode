@@ -20,6 +20,18 @@ public class Monitor
 
     private Long id;
 
+    private static Monitor SELECTED = getPrimary();
+
+    public static Monitor getSelected()
+    {
+        return SELECTED;
+    }
+
+    public static void setSelected(Monitor monitor)
+    {
+        SELECTED = monitor;
+    }
+
     public static Monitor getPrimary()
     {
         return new Monitor(GLFW.glfwGetPrimaryMonitor());

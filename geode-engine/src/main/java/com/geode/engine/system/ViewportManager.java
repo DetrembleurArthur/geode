@@ -7,6 +7,7 @@ public class ViewportManager implements WindowSizeI
     @Override
     public void onWindowSize(int w, int h)
     {
+        System.out.println("size changed: " + w + " " + h);
         Window window = Window.getWindow();
         int aspectWidth = w;
         int aspectHeight = (int)((float)aspectWidth / window.getAspectRatio());

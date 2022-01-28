@@ -1,10 +1,7 @@
 package com.geode.engine;
 
 import com.geode.engine.graphics.Texture;
-import com.geode.engine.system.Application;
-import com.geode.engine.system.SceneRef;
-import com.geode.engine.system.TextureRef;
-import com.geode.engine.system.WindowHints;
+import com.geode.engine.system.*;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.joml.Vector2i;
 
@@ -20,6 +17,12 @@ public class Main extends Application
 
     @TextureRef("assets/img.png")
     public Texture texture;
+
+    @Override
+    public String buildWindowAttributes(WindowHints windowHints, Vector2i size)
+    {
+        return super.buildWindowAttributes(windowHints, size);
+    }
 
     @Override
     public void load()
