@@ -58,6 +58,7 @@ public abstract class Application implements Manageable
         mouseManager = MouseManager.get();
         window.getEventsManager().getKeyEvent().getCallbacks().add(keyManager);
         window.getEventsManager().getMouseButtonEvent().getCallbacks().add(mouseManager);
+        window.getEventsManager().getSizeEvent().getCallbacks().add(new ViewportManager());
     }
 
     private void initDependencyInjections() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException
@@ -107,6 +108,8 @@ public abstract class Application implements Manageable
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glEnable(GL_MULTISAMPLE);
+
+            window.applyViewport(0, 0, winSize.x, winSize.y);
 
             beginTime = Time.getTime();
             initDependencyInjections();

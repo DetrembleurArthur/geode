@@ -4,7 +4,9 @@ import com.geode.engine.graphics.Texture;
 import com.geode.engine.system.Application;
 import com.geode.engine.system.SceneRef;
 import com.geode.engine.system.TextureRef;
+import com.geode.engine.system.WindowHints;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.joml.Vector2i;
 
 
 public class Main extends Application
@@ -16,16 +18,13 @@ public class Main extends Application
     @SceneRef
     public SecondaryScene secondaryScene;
 
-    @TextureRef("assets/icon.png")
+    @TextureRef("assets/img.png")
     public Texture texture;
-
 
     @Override
     public void load()
     {
         getWindow().setTitle("Hello world!");
-        /*getWindow().setSize(1024, 900);
-        getWindow().setAspectRatio(16, 9);*/
         getWindow().center();
     }
 

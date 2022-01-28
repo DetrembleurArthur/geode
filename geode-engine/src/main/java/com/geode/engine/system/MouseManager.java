@@ -1,8 +1,12 @@
 package com.geode.engine.system;
 
 import com.geode.engine.events.WindowMouseButtonI;
+import com.geode.engine.graphics.Camera;
+import com.geode.engine.utils.MathUtils;
 import lombok.Builder;
 import lombok.Getter;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -144,5 +148,20 @@ public class MouseManager implements WindowMouseButtonI
     public static void setStickyMouse(boolean state)
     {
         glfwSetInputMode(Window.getWindow().getId(), GLFW_STICKY_MOUSE_BUTTONS, state ? GLFW_TRUE : GLFW_FALSE);
+    }
+
+    public static Vector2i getMousePosition()
+    {
+        double[] x = new double[1];
+        double[] y = new double[1];
+        glfwGetCursorPos(Window.getWindow().getId(), x, y);
+        return new Vector2i((int)x[0], (int)y[0]);
+    }
+
+    public static Vector2i getMousePosition(Camera camera)
+    {
+        Vector2i mp = getMousePosition();
+        Vector2f mpf = MathUtils.screenCoordsToWorldCoords(new Vector2f(mp.x, mp.y), camera);
+        return new Vector2i((int)mpf.x, (int)mpf.y);
     }
 }

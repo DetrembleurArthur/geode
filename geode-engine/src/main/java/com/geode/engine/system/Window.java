@@ -25,15 +25,18 @@ public class Window
     public static final long NO_WINDOW = -1L;
     private static final Logger logger = LogManager.getLogger(Window.class);
     private static Window window;
-    public static final Vector2i DEFAULT_SIZE = new Vector2i(1024, 900);
+    public static final Vector2i DEFAULT_SIZE = new Vector2i(16*100, 9*100);
     public static final String DEFAULT_TITLE = "Geode Application";
 
     private Long id = NO_WINDOW;
     private String title;
     private WindowEventsManager eventsManager;
-    private Vector2i aspectRatio;
+    private Vector2i aspect;
+    private float aspectRatio;
     private Runnable eventRunner;
     private Cursor cursor;
+    private Vector2f viewportPos;
+    private Vector2f viewportSize;
 
     public static void postEmptyEvent()
     {
@@ -71,6 +74,8 @@ public class Window
                 {
                     setEventsManager(new WindowEventsManager(this));
                     pollEventsPolicy();
+                    aspectRatio = (float)size.x / size.y;
+                    setAspect(size.x, size.y);
                     logger.info("glfw window initialized");
                     Window.setWindow(this);
                 }
@@ -207,6 +212,7 @@ public class Window
     public void setSize(int width, int height)
     {
         glfwSetWindowSize(getId(), width, height);
+        aspectRatio = (float)width / height;
     }
 
     public void setSize(Vector2i size)
@@ -220,6 +226,12 @@ public class Window
         int[] height = new int[1];
         glfwGetWindowSize(getId(), width, height);
         return new Vector2i(width[0], height[0]);
+    }
+
+    public Vector2f getSizef()
+    {
+        Vector2i size = getSize();
+        return new Vector2f(size.x, size.y);
     }
 
     public Vector4i getFrameSize()
@@ -258,10 +270,11 @@ public class Window
         setSizeLimits(GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE);
     }
 
-    public void setAspectRatio(int numer, int denom)
+    public void setAspect(int numer, int denom)
     {
+        if(aspect != null) return;
         glfwSetWindowAspectRatio(getId(), numer, denom);
-        aspectRatio = new Vector2i(numer, denom);
+        aspect = new Vector2i(numer, denom);
     }
 
     public void setPosition(int x, int y)
@@ -379,14 +392,6 @@ public class Window
         return glfwGetWindowAttrib(getId(), GLFW_HOVERED) == 1;
     }
 
-    public Vector2f getMousePosition()
-    {
-        double[] x = new double[1];
-        double[] y = new double[1];
-        glfwGetCursorPos(getId(), x, y);
-        return new Vector2f((float)x[0], (float)y[0]);
-    }
-
     public void setCursor(Cursor cursor)
     {
         if(this.cursor != null)
@@ -400,6 +405,13 @@ public class Window
         if(this.cursor != null)
             this.cursor.destroy();
         glfwSetCursor(getId(), NULL);
+    }
+
+    public void applyViewport(int x, int y, int w, int h)
+    {
+        glViewport(x, y, w, h);
+        viewportPos = new Vector2f(x, y);
+        viewportSize = new Vector2f(w, h);
     }
 
     @Deprecated

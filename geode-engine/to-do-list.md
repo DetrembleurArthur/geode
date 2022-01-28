@@ -1,5 +1,5 @@
 # Geode-engine
-
+inverser les uvs et inversion le bottom et le up pour changer le y de la caméra
 1. window
 2. window events
 3. key inputs

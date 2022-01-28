@@ -5,7 +5,6 @@ import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL14;
 
-import java.awt.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
@@ -22,40 +21,15 @@ public class Texture
 
     public Texture(String path)
     {
-        boolean rgba = path.toLowerCase().endsWith(".png");
         this.path = path;
         id = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, id);
-        init(path, rgba);
+        init(path);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    public Texture(int id, boolean rgba, Vector2i size)
-    {
-        this.id = id;
-        glBindTexture(GL_TEXTURE_2D, id);
-        init(size, rgba, 0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
 
-    public Texture(boolean rgba, Vector2i size)
-    {
-        this.id = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, id);
-        init(size, rgba, 0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
-    public Texture(Vector2i size, boolean rgba, ByteBuffer image)
-    {
-        this.id = glGenTextures();
-        bind();
-        init(size, rgba, image);
-        unbind();
-    }
-
-
-    public void init(String path, boolean rgba)
+    public void init(String path)
     {
         IntBuffer width = BufferUtils.createIntBuffer(1);
         IntBuffer height = BufferUtils.createIntBuffer(1);
@@ -63,27 +37,14 @@ public class Texture
         ByteBuffer image = stbi_load(path, width, height, channels, 0);
         if (image != null)
         {
-            init(new Vector2i(width.get(0), height.get(0)), rgba, image);
+            glTexImage2D(GL_TEXTURE_2D, 0, channels.get(0) == 4 ? GL_RGBA : GL_RGB, width.get(0), height.get(0), 0, channels.get(0) == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, image);
+            initParameters();
+            dimension = new Vector2f(width.get(0), height.get(0));
             stbi_image_free(image);
-        }
-        else
+        } else
         {
             System.err.println("image " + path + " can not be loaded");
         }
-    }
-
-    public void init(Vector2i size, boolean rgba, ByteBuffer image)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, rgba ? GL_RGBA : GL_RGB, size.x, size.y, 0, rgba ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, image);
-        initParameters();
-        dimension = new Vector2f(size.x, size.y);
-    }
-
-    public void init(Vector2i size, boolean rgba, int rid)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, rgba ? GL_RGBA : GL_RGB, size.x, size.y, 0, rgba ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, rid);
-        initParameters();
-        dimension = new Vector2f(size.x, size.y);
     }
 
     private void initParameters()
@@ -103,8 +64,8 @@ public class Texture
     private void enableFilterParameter(int param)
     {
         bind();
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, param);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, param);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, param);
         unbind();
     }
 
@@ -171,6 +132,11 @@ public class Texture
     public float getHeight()
     {
         return dimension.y;
+    }
+
+    public String getPath()
+    {
+        return path;
     }
 
     public Vector2f[] getUV2D(float x, float y, float w, float h)

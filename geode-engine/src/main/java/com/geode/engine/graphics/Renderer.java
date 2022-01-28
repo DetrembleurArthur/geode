@@ -17,7 +17,14 @@ public class Renderer
 	public void render(GameObject go)
 	{
 		shader.start();
+		shader.uploadMat4f("uModel", go.getTransform().getModel());
+		shader.uploadMat4f("uView", camera.updateViewMatrix());
+		shader.uploadMat4f("uProjection", camera.getProjection());
+		shader.uploadTexture("TEX_SAMPLER", 0);
+		go.getTexture().active();
+		go.getTexture().bind();
 		go.getMesh().active();
+		go.getTexture().unbind();
 		shader.stop();
 	}
 /*
