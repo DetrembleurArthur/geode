@@ -25,7 +25,7 @@ public class Window
     public static final long NO_WINDOW = -1L;
     private static final Logger logger = LogManager.getLogger(Window.class);
     private static Window window;
-    public static final Vector2i DEFAULT_SIZE = new Vector2i(300, 300);
+    public static final Vector2i DEFAULT_SIZE = new Vector2i(1024, 900);
     public static final String DEFAULT_TITLE = "Geode Application";
 
     private Long id = NO_WINDOW;

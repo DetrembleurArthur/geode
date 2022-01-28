@@ -24,8 +24,8 @@ public class Main extends Application
     public void load()
     {
         getWindow().setTitle("Hello world!");
-        getWindow().setSize(1024, 900);
-        getWindow().setAspectRatio(16, 9);
+        /*getWindow().setSize(1024, 900);
+        getWindow().setAspectRatio(16, 9);*/
         getWindow().center();
     }
 

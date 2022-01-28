@@ -1,6 +1,7 @@
 package com.geode.engine.system;
 
 import com.geode.engine.exceptions.WindowException;
+import com.geode.engine.graphics.Shader;
 import com.geode.engine.graphics.Texture;
 import lombok.Getter;
 import org.joml.Vector2i;
@@ -170,6 +171,7 @@ public abstract class Application implements Manageable
         if(currentScene != null)
             currentScene.destroy();
         freeResources();
+        Shader.destroyDefault();
     }
 
     protected abstract void freeResources();

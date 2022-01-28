@@ -23,6 +23,11 @@ public class Shader
             true
     );
 
+    public static void destroyDefault()
+    {
+        DEFAULT.destroy();
+    }
+
     private int vertexShader = -1;
     private int fragmentShader = -1;
     private int program = -1;

@@ -17,6 +17,13 @@ public class Renderer
 	public void render(GameObject go)
 	{
 		shader.start();
+		go.getMesh().active();
+		shader.stop();
+	}
+/*
+	public void render_(GameObject go)
+	{
+		shader.start();
 		shader.uploadMat4f("uModel", go.getTransform().getModel());
 		shader.uploadMat4f("uView", camera.updateViewMatrix());
 		shader.uploadMat4f("uProjection", camera.getProjection());
@@ -40,5 +47,5 @@ public class Renderer
 		mesh.getVertexArray().unbind();
 		go.getTexture().unbind();
 		shader.stop();
-	}
+	}*/
 }
