@@ -24,7 +24,7 @@ public class GameObject implements Updatable
     private Texture texture;
 
     @Getter @Setter
-    private Vector4f color = Colors.WHITE;
+    private Vector4f color = new Vector4f(Colors.WHITE);
 
     public GameObject()
     {
@@ -70,5 +70,10 @@ public class GameObject implements Updatable
             transform.getSize().x = texture.getWidth();
             transform.getSize().y = texture.getHeight();
         }
+    }
+
+    public void setColor(Vector4f color)
+    {
+        this.color = new Vector4f(color);
     }
 }

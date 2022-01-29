@@ -7,4 +7,7 @@ public class MainResourceHolder
 {
     @ResourceRef("blob.png")
     public Texture blob;
+
+    @ResourceRef("bg.png")
+    public Texture bg;
 }

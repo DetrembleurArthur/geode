@@ -24,9 +24,9 @@ public class Renderer
 		shader.uploadMat4f("uModel", go.getTransform().getModel());
 		shader.uploadMat4f("uView", camera.updateViewMatrix());
 		shader.uploadMat4f("uProjection", camera.getProjection());
-		shader.uploadTexture("TEX_SAMPLER", 0);
 		if(go.getTexture() != null)
 		{
+			shader.uploadTexture("TEX_SAMPLER", 0);
 			go.getTexture().active();
 			go.getTexture().bind();
 		}
