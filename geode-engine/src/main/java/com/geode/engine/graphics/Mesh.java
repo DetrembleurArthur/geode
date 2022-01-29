@@ -23,14 +23,14 @@ public class Mesh
     private int elementLen = 0;
     private final MeshContext context;
 
-    public Mesh(MeshContext context, int[] indices)
+    public Mesh(MeshContext context, int[] indices, int dataDrawPolicy)
     {
         this.context = context;
         setTriangleRenderMode();
-        init(indices);
+        init(indices, dataDrawPolicy);
     }
 
-    private void init(int[] indices)
+    private void init(int[] indices, int dataDrawPolicy)
     {
         elementLen = indices.length;
         vao = GL30.glGenVertexArrays();
@@ -41,7 +41,7 @@ public class Mesh
         FloatBuffer vertexBuffer = context.buildVertices();
 
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexBuffer, GL15.GL_STATIC_DRAW);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexBuffer, dataDrawPolicy);
 
         IntBuffer elementBuffer = BufferUtils.createIntBuffer(indices.length);
         elementBuffer.put(indices).flip();

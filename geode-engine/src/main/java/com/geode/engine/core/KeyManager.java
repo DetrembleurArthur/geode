@@ -106,6 +106,11 @@ public class KeyManager implements WindowKeyI
         return GLFW.glfwGetKey(Window.getWindow().getId(), key);
     }
 
+    public static boolean isKeyAlwaysPressed(int key)
+    {
+        return getStateKey(key) == GLFW.GLFW_PRESS;
+    }
+
     public static String getChar(int key)
     {
         return GLFW.glfwGetKeyName(key, getScanCode(key));

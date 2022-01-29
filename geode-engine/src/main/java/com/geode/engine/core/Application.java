@@ -90,6 +90,7 @@ public abstract class Application implements Manageable
 
     private void init()
     {
+        Application.setApplication(this);
         try
         {
             Configurations.load();
@@ -109,7 +110,6 @@ public abstract class Application implements Manageable
             window.applyViewport(0, 0, winSize.x, winSize.y);
 
             initDependencyInjections();
-            Application.setApplication(this);
         } catch (WindowException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e)
         {
             e.printStackTrace();
@@ -121,20 +121,24 @@ public abstract class Application implements Manageable
     {
         window.show();
         load();
-        float frameTime = Time.getTime();
-        float dt;
+        float dt = 0;
         while (!window.shouldClose())
         {
-            dt = Time.getTime() - frameTime;
-            Time.setDt(dt);
-            frameTime = Time.getTime();
+            float frameTime = Time.getTime();
             window.checkEvents();
             window.clear();
             update(dt);
             window.flip();
+            dt = Time.getTime() - frameTime;
+            Time.setDt(dt);
         }
         destroy();
         window.close();
+    }
+
+    public int getFps()
+    {
+        return (int) (1/Time.getDt());
     }
 
     public void setScene(Scene<?> scene)

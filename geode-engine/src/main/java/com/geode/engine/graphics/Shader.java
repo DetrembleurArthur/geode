@@ -11,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.FloatBuffer;
-import java.util.HashMap;
 
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
@@ -19,6 +18,12 @@ import static org.lwjgl.system.MemoryUtil.memFree;
 
 public class Shader implements Resource
 {
+    public static final Shader DEFAULT_TEXTURED = new Shader(
+            "default-textured.vertex.glsl",
+            "default-textured.fragment.glsl",
+            true
+    );
+
     public static final Shader DEFAULT = new Shader(
             "default.vertex.glsl",
             "default.fragment.glsl",
@@ -28,6 +33,7 @@ public class Shader implements Resource
     public static void destroyDefault()
     {
         DEFAULT.destroy();
+        DEFAULT_TEXTURED.destroy();
     }
 
     private int vertexShader = -1;

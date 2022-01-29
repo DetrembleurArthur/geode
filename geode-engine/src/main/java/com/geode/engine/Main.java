@@ -13,8 +13,6 @@ public class Main extends Application
     @SceneRef(initial = true)
     public MainScene mainScene;
 
-    @SceneRef()
-    public SecondaryScene secondaryScene;
 
     @Override
     public String buildWindowAttributes(WindowHints windowHints, Vector2i size)

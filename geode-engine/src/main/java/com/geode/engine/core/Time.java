@@ -14,7 +14,7 @@ public class Time
 
     public static float getTime()
     {
-        return (float) GLFW.glfwGetTime() * 1000f;
+        return (float) GLFW.glfwGetTime();
     }
 
     public static void setBaseTime(float sec)

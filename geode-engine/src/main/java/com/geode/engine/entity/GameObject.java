@@ -3,8 +3,10 @@ package com.geode.engine.entity;
 import com.geode.engine.entity.components.Component;
 import com.geode.engine.graphics.Mesh;
 import com.geode.engine.graphics.Texture;
+import com.geode.engine.utils.Colors;
 import lombok.Getter;
 import lombok.Setter;
+import org.joml.Vector4f;
 
 import java.util.ArrayList;
 
@@ -18,8 +20,11 @@ public class GameObject implements Updatable
     @Getter @Setter
     private Mesh mesh;
 
-    @Getter @Setter
+    @Getter
     private Texture texture;
+
+    @Getter @Setter
+    private Vector4f color = Colors.WHITE;
 
     public GameObject()
     {
@@ -52,10 +57,18 @@ public class GameObject implements Updatable
         }
     }
 
+    public boolean isTextured()
+    {
+        return texture != null;
+    }
+
     public void setTexture(Texture texture)
     {
         this.texture = texture;
-        transform.getSize().x = texture.getWidth();
-        transform.getSize().y = texture.getHeight();
+        if(texture != null)
+        {
+            transform.getSize().x = texture.getWidth();
+            transform.getSize().y = texture.getHeight();
+        }
     }
 }

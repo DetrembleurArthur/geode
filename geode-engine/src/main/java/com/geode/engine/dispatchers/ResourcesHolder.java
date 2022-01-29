@@ -1,6 +1,5 @@
 package com.geode.engine.dispatchers;
 
-import com.geode.engine.conf.Configurations;
 import com.geode.engine.graphics.Shader;
 import com.geode.engine.graphics.Texture;
 import org.apache.logging.log4j.LogManager;
