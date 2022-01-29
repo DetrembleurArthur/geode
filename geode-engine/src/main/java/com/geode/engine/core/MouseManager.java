@@ -1,4 +1,4 @@
-package com.geode.engine.system;
+package com.geode.engine.core;
 
 import com.geode.engine.events.WindowMouseButtonI;
 import com.geode.engine.graphics.Camera;
@@ -163,5 +163,12 @@ public class MouseManager implements WindowMouseButtonI
         Vector2i mp = getMousePosition();
         Vector2f mpf = MathUtils.screenCoordsToWorldCoords(new Vector2f(mp.x, mp.y), camera);
         return new Vector2i((int)mpf.x, (int)mpf.y);
+    }
+
+    public static Vector2f getMousePositionf(Camera camera)
+    {
+        Vector2i mp = getMousePosition();
+        Vector2f mpf = MathUtils.screenCoordsToWorldCoords(new Vector2f(mp.x, mp.y), camera);
+        return mpf;
     }
 }

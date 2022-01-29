@@ -1,7 +1,7 @@
 package com.geode.engine;
 
 import com.geode.engine.graphics.Texture;
-import com.geode.engine.system.*;
+import com.geode.engine.core.*;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.joml.Vector2i;
 
@@ -15,7 +15,7 @@ public class Main extends Application
     @SceneRef
     public SecondaryScene secondaryScene;
 
-    @TextureRef("assets/icon.png")
+    @TextureRef("img.png")
     public Texture texture;
 
     @Override

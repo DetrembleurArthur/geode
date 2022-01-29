@@ -1,11 +1,12 @@
 package com.geode.engine.graphics;
 
-import com.geode.engine.system.Window;
+import com.geode.engine.core.MouseManager;
+import com.geode.engine.core.Window;
 import lombok.Getter;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 public class Camera
 {
@@ -19,7 +20,7 @@ public class Camera
     private Vector2f position;
 
     @Getter
-    private final Vector4f orthoSettings;
+    private final OrthoSettings ortho;
 
     @Getter
     private final Vector3f zoom;
@@ -29,8 +30,8 @@ public class Camera
         position = new Vector2f();
         projection = new Matrix4f();
         view = new Matrix4f();
-        this.orthoSettings = new Vector4f(left, right, bottom, up);
-        zoom = new Vector3f(1,1,1);
+        this.ortho = new OrthoSettings(left, right, bottom, up);
+        zoom = new Vector3f(1, 1, 1);
         updateProjection();
     }
 
@@ -41,7 +42,7 @@ public class Camera
 
     public void updateProjection()
     {
-        projection.identity().ortho(orthoSettings.x, orthoSettings.y, orthoSettings.z, orthoSettings.w, 0f, 100f);
+        projection.identity().ortho(ortho.getLeft(), ortho.getRight(), ortho.getBottom(), ortho.getUp(), 0f, 100f);
     }
 
     public Matrix4f updateViewMatrix()
@@ -50,12 +51,12 @@ public class Camera
                         new Vector3f(position.x, position.y, 20f),
                         new Vector3f(0f, 0f, -1f).add(position.x, position.y, 0f),
                         new Vector3f(0f, 1f, 0f))
-                .scaleAround(zoom.x, zoom.y, zoom.z, position.x + getRight() / 2, position.y + getBottom() / 2, 0);
+                .scaleAround(zoom.x, zoom.y, zoom.z, position.x + ortho.getRight() / 2, position.y + ortho.getBottom() / 2, 0);
     }
 
     public void focus(Vector2f position)
     {
-        this.position = new Vector2f(position).sub(getRight() / 2, getBottom() / 2);
+        this.position = new Vector2f(position).sub(ortho.getRight() / 2, ortho.getBottom() / 2);
     }
 
     public Matrix4f getInvProjection()
@@ -68,23 +69,19 @@ public class Camera
         return new Matrix4f(view).invert();
     }
 
-    public float getLeft()
+    public void setZoom(float zoom)
     {
-        return orthoSettings.x;
+        this.zoom.x = zoom;
+        this.zoom.y = zoom;
     }
 
-    public float getRight()
+    public Vector2i getMousePosition()
     {
-        return orthoSettings.y;
+        return MouseManager.getMousePosition(this);
     }
 
-    public float getBottom()
+    public Vector2f getMousePositionf()
     {
-        return orthoSettings.z;
-    }
-
-    public float getUp()
-    {
-        return orthoSettings.w;
+        return MouseManager.getMousePositionf(this);
     }
 }

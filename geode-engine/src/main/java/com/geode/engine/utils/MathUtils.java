@@ -1,7 +1,7 @@
 package com.geode.engine.utils;
 
 import com.geode.engine.graphics.Camera;
-import com.geode.engine.system.Window;
+import com.geode.engine.core.Window;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 

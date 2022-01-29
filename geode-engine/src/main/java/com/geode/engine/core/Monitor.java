@@ -1,4 +1,4 @@
-package com.geode.engine.system;
+package com.geode.engine.core;
 
 import lombok.Getter;
 import org.joml.Vector2f;

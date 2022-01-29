@@ -1,4 +1,4 @@
-package com.geode.engine.system;
+package com.geode.engine.core;
 
 import com.geode.engine.graphics.Camera;
 import lombok.Getter;

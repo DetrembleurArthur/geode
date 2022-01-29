@@ -1,10 +1,8 @@
-package com.geode.engine.system;
+package com.geode.engine.core;
 
 import com.geode.engine.events.WindowKeyI;
 import lombok.Builder;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.HashMap;
 
 public class KeyManager implements WindowKeyI
 {
@@ -30,7 +28,7 @@ public class KeyManager implements WindowKeyI
 
     public static KeyManager keyManager;
 
-    private static Key.KeyBuilder builder = Key.builder();
+    private static final Key.KeyBuilder builder = Key.builder();
 
     private Key[] keys;
 

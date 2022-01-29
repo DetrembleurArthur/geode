@@ -6,7 +6,7 @@ import com.geode.engine.graphics.Mesh;
 import com.geode.engine.graphics.MeshContext;
 import com.geode.engine.graphics.Renderer;
 import com.geode.engine.graphics.Shader;
-import com.geode.engine.system.*;
+import com.geode.engine.core.*;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -16,10 +16,10 @@ import org.lwjgl.glfw.GLFW;
 public class MainScene extends Scene<Main>
 {
     float[] positions = new float[]{
-        1f, 0f, 0f,
+        0f, 0f, 0f,
         0f, 1f, 0f,
         1f, 1f, 0f,
-        0f, 0f, 0f,
+        1f, 0f, 0f,
     };
 
     float[] colors = new float[]{
@@ -30,15 +30,15 @@ public class MainScene extends Scene<Main>
     };
 
     float[] uvs = new float[]{
-            1, 0,
+            0, 0,
             0, 1,
             1, 1,
-            0, 0,
+            1, 0,
     };
 
     int[] indices = new int[]{
-            2, 1, 0,
-            0, 1, 3
+            0, 1, 2,
+            0, 2, 3
     };
 
     GameObject object;
@@ -61,7 +61,8 @@ public class MainScene extends Scene<Main>
         object.addComponent(new RenderComponent(object, renderer));
 
         object.getTransform().setSize(new Vector3f(100, 100, 0));
-        object.getTransform().setPosition(new Vector3f(0,0,0));
+        object.getTransform().setPosition(new Vector3f(500,500,0));
+        //object.getMesh().setLineLoopRenderMode();
 
         //Monitor.setSelected(Monitor.getMonitors().get(1));
 
@@ -72,15 +73,16 @@ public class MainScene extends Scene<Main>
     {
         Vector2i mp = MouseManager.getMousePosition(getCamera());
         object.update();
-        //object.getTransform().getPosition().y += 100 * (dt/1000);
         object.getTransform().setPosition(new Vector3f(mp.x, mp.y, 0));
 
 
+
+
         if(KeyManager.keyManager.isKeyReleased(GLFW.GLFW_KEY_SPACE))
-            getParent().getWindow().fullscreen();
-            //getCamera().focus(new Vector2f(mp.x, mp.y));
-        if(KeyManager.keyManager.isKeyReleased(GLFW.GLFW_KEY_ENTER))
-            getParent().getWindow().noFullscreen();
+            //getParent().getWindow().fullscreen();
+            getCamera().focus(new Vector2f(mp.x, mp.y));
+        /*if(KeyManager.keyManager.isKeyReleased(GLFW.GLFW_KEY_ENTER))
+            getParent().getWindow().noFullscreen();*/
     }
 
     @Override

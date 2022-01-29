@@ -1,4 +1,4 @@
-package com.geode.engine.system;
+package com.geode.engine.core;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +8,9 @@ public class Time
 {
     @Getter @Setter
     private static float dt;
+
+    @Getter
+    private static final float startTime = Time.getTime();
 
     public static float getTime()
     {
@@ -27,5 +30,10 @@ public class Time
     public static long getTimerFrequency()
     {
         return GLFW.glfwGetTimerFrequency();
+    }
+
+    public static float getElapsedTime()
+    {
+        return Time.getTime() - startTime;
     }
 }

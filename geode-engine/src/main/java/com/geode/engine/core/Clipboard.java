@@ -1,4 +1,4 @@
-package com.geode.engine.system;
+package com.geode.engine.core;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.MemoryUtil;

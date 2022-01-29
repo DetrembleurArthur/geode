@@ -1,8 +1,8 @@
 package com.geode.engine;
 
-import com.geode.engine.system.KeyManager;
-import com.geode.engine.system.Scene;
-import com.geode.engine.system.Window;
+import com.geode.engine.core.KeyManager;
+import com.geode.engine.core.Scene;
+import com.geode.engine.core.Window;
 import com.geode.engine.utils.Colors;
 import org.lwjgl.glfw.GLFW;
 

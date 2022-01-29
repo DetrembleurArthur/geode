@@ -1,4 +1,4 @@
-package com.geode.engine.system;
+package com.geode.engine.core;
 
 import com.geode.engine.events.WindowEventsManager;
 import com.geode.engine.exceptions.WindowException;

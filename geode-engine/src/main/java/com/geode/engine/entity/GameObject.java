@@ -35,6 +35,7 @@ public class GameObject implements Updatable
                 return;
         }
         components.add(component);
+        components.sort((o1, o2) -> o1.getPriority() < o2.getPriority() ? -1 : 1);
     }
 
     public void removeComponent(Class<? extends Component> componentClass)

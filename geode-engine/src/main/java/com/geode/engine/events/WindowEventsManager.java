@@ -1,12 +1,11 @@
 package com.geode.engine.events;
 
-import com.geode.engine.system.Window;
+import com.geode.engine.core.Window;
 import lombok.Getter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class WindowEventsManager
 {

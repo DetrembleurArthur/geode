@@ -1,6 +1,5 @@
-package com.geode.engine.system;
+package com.geode.engine.core;
 
-import lombok.Builder;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWGamepadState;

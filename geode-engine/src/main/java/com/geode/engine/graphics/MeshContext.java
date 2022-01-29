@@ -18,7 +18,7 @@ public class MeshContext
         public float[] data;
     }
 
-    private ArrayList<Attribute> attributes;
+    private final ArrayList<Attribute> attributes;
 
     public MeshContext()
     {

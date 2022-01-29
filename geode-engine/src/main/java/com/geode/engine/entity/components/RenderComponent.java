@@ -12,7 +12,7 @@ public class RenderComponent extends Component
 
     public RenderComponent(GameObject parent, Renderer renderer)
     {
-        super(parent);
+        super(parent, Component.MIN_PRIORITY);
         this.renderer = renderer;
     }
 

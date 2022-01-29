@@ -1,5 +1,6 @@
-package com.geode.engine.system;
+package com.geode.engine.core;
 
+import com.geode.engine.conf.Configurations;
 import com.geode.engine.exceptions.WindowException;
 import com.geode.engine.graphics.Shader;
 import com.geode.engine.graphics.Texture;
@@ -29,10 +30,7 @@ public abstract class Application implements Manageable
     private MouseManager mouseManager;
 
     @Getter
-    private Scene<?> currentScene;
-
-    @Getter
-    private float beginTime;
+    private Scene<?> scene;
 
     public static void setApplication(Application application)
     {
@@ -83,7 +81,7 @@ public abstract class Application implements Manageable
                 TextureRef textureRef = field.getAnnotation(TextureRef.class);
                 if(Texture.class.isAssignableFrom(field.getType()))
                 {
-                    Texture texture = new Texture(textureRef.value());
+                    Texture texture = new Texture(Configurations.assetsPath + textureRef.value());
                     field.set(this, texture);
                 }
             }
@@ -96,6 +94,7 @@ public abstract class Application implements Manageable
     {
         try
         {
+            Configurations.load();
             WindowHints windowHints = WindowHints.create();
             Vector2i winSize = Window.DEFAULT_SIZE;
             String title = buildWindowAttributes(windowHints, winSize);
@@ -111,7 +110,6 @@ public abstract class Application implements Manageable
 
             window.applyViewport(0, 0, winSize.x, winSize.y);
 
-            beginTime = Time.getTime();
             initDependencyInjections();
             Application.setApplication(this);
         } catch (WindowException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e)
@@ -144,35 +142,35 @@ public abstract class Application implements Manageable
 
     public void setScene(Scene<?> scene)
     {
-        if(currentScene != null)
+        if(this.scene != null)
         {
-            currentScene.disactive();
+            this.scene.disactive();
         }
-        currentScene = scene;
+        this.scene = scene;
         initPrimariesEventManagers();
-        window.getEventsManager().initObject(currentScene);
-        currentScene.active();
+        window.getEventsManager().initObject(this.scene);
+        this.scene.active();
     }
 
     @Override
     public final void update(float dt)
     {
-        if(currentScene != null)
-            currentScene.update(dt);
+        if(scene != null)
+            scene.update(dt);
     }
 
     @Override
     public final void draw(Window window)
     {
-        if(currentScene != null)
-            currentScene.draw(window);
+        if(scene != null)
+            scene.draw(window);
     }
 
     @Override
     public final void destroy()
     {
-        if(currentScene != null)
-            currentScene.destroy();
+        if(scene != null)
+            scene.destroy();
         freeResources();
         Shader.destroyDefault();
     }
