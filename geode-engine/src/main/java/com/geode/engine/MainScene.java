@@ -72,6 +72,7 @@ public class MainScene extends Scene<Main>
     {
         Vector2i mp = MouseManager.getMousePosition(getCamera());
         object.update();
+        //object.getTransform().getPosition().y += 100 * (dt/1000);
         object.getTransform().setPosition(new Vector3f(mp.x, mp.y, 0));
 
 

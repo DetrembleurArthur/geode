@@ -15,7 +15,7 @@ public class Main extends Application
     @SceneRef
     public SecondaryScene secondaryScene;
 
-    @TextureRef("assets/img.png")
+    @TextureRef("assets/icon.png")
     public Texture texture;
 
     @Override

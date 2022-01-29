@@ -36,7 +36,7 @@ public class Camera
 
     public Camera()
     {
-        this(0, Window.getWindow().getSize().x, 0, Window.getWindow().getSize().y);
+        this(0, Window.getWindow().getSize().x, Window.getWindow().getSize().y, 0);
     }
 
     public void updateProjection()
@@ -50,12 +50,12 @@ public class Camera
                         new Vector3f(position.x, position.y, 20f),
                         new Vector3f(0f, 0f, -1f).add(position.x, position.y, 0f),
                         new Vector3f(0f, 1f, 0f))
-                .scaleAround(zoom.x, zoom.y, zoom.z, position.x + getRight() / 2, position.y + getUp() / 2, 0);
+                .scaleAround(zoom.x, zoom.y, zoom.z, position.x + getRight() / 2, position.y + getBottom() / 2, 0);
     }
 
     public void focus(Vector2f position)
     {
-        this.position = new Vector2f(position).sub(getRight() / 2, getUp() / 2);
+        this.position = new Vector2f(position).sub(getRight() / 2, getBottom() / 2);
     }
 
     public Matrix4f getInvProjection()

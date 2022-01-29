@@ -12,8 +12,8 @@ public class MathUtils
         screen.sub(Window.getWindow().getViewportPos());
         Vector2f norm = screen.div(Window.getWindow().getViewportSize()).mul(2).sub(1, 1);
         //inversion of Y coords
-        norm.y = -norm.y;
-        Vector4f world4f = new Vector4f(norm.x, norm.y, 0, 1).mul(camera.getInvProjection()).mul(camera.getInvView());
+        //norm.y = -norm.y;
+        Vector4f world4f = new Vector4f(norm.x, -norm.y, 0, 1).mul(camera.getInvProjection()).mul(camera.getInvView());
         return new Vector2f(world4f.x, world4f.y);
     }
 }
