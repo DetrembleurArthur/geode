@@ -1,6 +1,7 @@
 package com.geode.engine.core;
 
 import com.geode.engine.conf.Configurations;
+import com.geode.engine.dispatchers.ResourcesDispatcher;
 import com.geode.engine.exceptions.WindowException;
 import com.geode.engine.graphics.Shader;
 import com.geode.engine.graphics.Texture;
@@ -32,6 +33,9 @@ public abstract class Application implements Manageable
     @Getter
     private Scene<?> scene;
 
+    @Getter
+    private ResourcesDispatcher resourcesDispatcher;
+
     public static void setApplication(Application application)
     {
         Application.application = application;
@@ -61,6 +65,8 @@ public abstract class Application implements Manageable
 
     private void initDependencyInjections() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException
     {
+        resourcesDispatcher = new ResourcesDispatcher();
+        resourcesDispatcher.dispatch(this);
         Scene<?> init = null;
         for(Field field : getClass().getFields())
         {
@@ -70,19 +76,11 @@ public abstract class Application implements Manageable
                 if(Scene.class.isAssignableFrom(field.getType()))
                 {
                     Scene<Application> scene = (Scene<Application>) field.getType().getConstructor().newInstance();
+                    scene.setKeepState(sceneRef.keep());
                     scene.setParent(this);
                     field.set(this, scene);
                     if(sceneRef.initial())
                         init = scene;
-                }
-            }
-            else if(field.isAnnotationPresent(TextureRef.class))
-            {
-                TextureRef textureRef = field.getAnnotation(TextureRef.class);
-                if(Texture.class.isAssignableFrom(field.getType()))
-                {
-                    Texture texture = new Texture(Configurations.assetsPath + textureRef.value());
-                    field.set(this, texture);
                 }
             }
         }
@@ -133,7 +131,6 @@ public abstract class Application implements Manageable
             window.checkEvents();
             window.clear();
             update(dt);
-            draw(window);
             window.flip();
         }
         destroy();
@@ -160,20 +157,18 @@ public abstract class Application implements Manageable
     }
 
     @Override
-    public final void draw(Window window)
-    {
-        if(scene != null)
-            scene.draw(window);
-    }
-
-    @Override
     public final void destroy()
     {
         if(scene != null)
+        {
             scene.destroy();
+        }
         freeResources();
         Shader.destroyDefault();
     }
 
-    protected abstract void freeResources();
+    private void freeResources()
+    {
+        resourcesDispatcher.destroy(this);
+    }
 }

@@ -1,7 +1,8 @@
 package com.geode.engine;
 
-import com.geode.engine.graphics.Texture;
-import com.geode.engine.core.*;
+import com.geode.engine.core.Application;
+import com.geode.engine.core.SceneRef;
+import com.geode.engine.core.WindowHints;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.joml.Vector2i;
 
@@ -12,11 +13,8 @@ public class Main extends Application
     @SceneRef(initial = true)
     public MainScene mainScene;
 
-    @SceneRef
+    @SceneRef()
     public SecondaryScene secondaryScene;
-
-    @TextureRef("img.png")
-    public Texture texture;
 
     @Override
     public String buildWindowAttributes(WindowHints windowHints, Vector2i size)
@@ -29,12 +27,6 @@ public class Main extends Application
     {
         getWindow().setTitle("Hello world!");
         getWindow().center();
-    }
-
-    @Override
-    protected void freeResources()
-    {
-        texture.destroy();
     }
 
 

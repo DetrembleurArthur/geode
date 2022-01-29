@@ -18,8 +18,13 @@ public abstract class Scene<T extends Application> implements Manageable
     @Getter
     private boolean loaded = false;
 
+    public abstract void resume();
+    public abstract void pause();
+    public abstract void unload();
+
     public void disactive()
     {
+        pause();
         if(!keepState)
         {
             destroy();
@@ -31,6 +36,7 @@ public abstract class Scene<T extends Application> implements Manageable
         if(!loaded)
         {
             camera = new Camera();
+            getParent().getResourcesDispatcher().dispatch(this);
             load();
             loaded = true;
         }
@@ -39,13 +45,22 @@ public abstract class Scene<T extends Application> implements Manageable
             if(!keepState)
             {
                 camera = new Camera();
+                getParent().getResourcesDispatcher().dispatch(this);
                 load();
             }
         }
+        resume();
     }
 
     public void asCurrent()
     {
         getParent().setScene(this);
+    }
+
+    @Override
+    public final void destroy()
+    {
+        unload();
+        getParent().getResourcesDispatcher().destroy(this);
     }
 }

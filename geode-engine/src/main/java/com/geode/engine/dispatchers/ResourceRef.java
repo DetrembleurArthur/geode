@@ -1,4 +1,4 @@
-package com.geode.engine.core;
+package com.geode.engine.dispatchers;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,8 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SceneRef
+public @interface ResourceRef
 {
-    boolean initial() default false;
-    boolean keep() default false;
+    String value() default "";
 }

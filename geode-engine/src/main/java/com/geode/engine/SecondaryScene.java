@@ -11,8 +11,25 @@ public class SecondaryScene extends Scene<Main>
     @Override
     public void load()
     {
+
+    }
+
+    @Override
+    public void resume()
+    {
         getParent().getWindow().setClearColor(Colors.RED);
-        System.out.println("loaded");
+    }
+
+    @Override
+    public void pause()
+    {
+
+    }
+
+    @Override
+    public void unload()
+    {
+
     }
 
     @Override
@@ -22,17 +39,5 @@ public class SecondaryScene extends Scene<Main>
         {
             getParent().mainScene.asCurrent();
         }
-    }
-
-    @Override
-    public void draw(Window window)
-    {
-
-    }
-
-    @Override
-    public void destroy()
-    {
-
     }
 }

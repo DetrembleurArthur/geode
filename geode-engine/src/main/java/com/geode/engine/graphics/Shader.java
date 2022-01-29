@@ -1,5 +1,7 @@
 package com.geode.engine.graphics;
 
+import com.geode.engine.conf.Configurations;
+import com.geode.engine.dispatchers.Resource;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -15,11 +17,11 @@ import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryUtil.memFree;
 
-public class Shader
+public class Shader implements Resource
 {
     public static final Shader DEFAULT = new Shader(
-            "assets/default.vertex.glsl",
-            "assets/default.fragment.glsl",
+            "default.vertex.glsl",
+            "default.fragment.glsl",
             true
     );
 
@@ -80,7 +82,7 @@ public class Shader
     {
         StringBuilder masterBuf = new StringBuilder();
         String buf;
-        BufferedReader br = new BufferedReader(new FileReader(filename));
+        BufferedReader br = new BufferedReader(new FileReader(Configurations.assetsPath + Configurations.shadersSubPath + filename));
         while ((buf = br.readLine()) != null)
         {
             masterBuf.append(buf).append("\n");
@@ -134,6 +136,7 @@ public class Shader
         glUniform1i(glGetUniformLocation(program, name), value);
     }
 
+    @Override
     public void destroy()
     {
         glDetachShader(program, vertexShader);

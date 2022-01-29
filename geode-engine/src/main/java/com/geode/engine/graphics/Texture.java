@@ -1,5 +1,7 @@
 package com.geode.engine.graphics;
 
+import com.geode.engine.conf.Configurations;
+import com.geode.engine.dispatchers.Resource;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
@@ -13,7 +15,7 @@ import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.stb.STBImage.stbi_image_free;
 import static org.lwjgl.stb.STBImage.stbi_load;
 
-public class Texture
+public class Texture implements Resource
 {
     private String path;
     private final int id;
@@ -21,10 +23,10 @@ public class Texture
 
     public Texture(String path)
     {
-        this.path = path;
+        this.path = Configurations.assetsPath + Configurations.imageSubPath + path;
         id = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, id);
-        init(path);
+        init(this.path);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
@@ -114,6 +116,7 @@ public class Texture
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    @Override
     public void destroy()
     {
         glDeleteTextures(id);

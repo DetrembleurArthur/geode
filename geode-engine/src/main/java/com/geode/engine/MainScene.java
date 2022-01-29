@@ -1,11 +1,9 @@
 package com.geode.engine;
 
+import com.geode.engine.dispatchers.Repository;
 import com.geode.engine.entity.GameObject;
 import com.geode.engine.entity.components.RenderComponent;
-import com.geode.engine.graphics.Mesh;
-import com.geode.engine.graphics.MeshContext;
-import com.geode.engine.graphics.Renderer;
-import com.geode.engine.graphics.Shader;
+import com.geode.engine.graphics.*;
 import com.geode.engine.core.*;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
@@ -43,14 +41,17 @@ public class MainScene extends Scene<Main>
 
     GameObject object;
 
+    @Repository
+    public MainResourceHolder resourceHolder;
+
     @Override
     public void load()
     {
         System.out.println("load scene");
-        getParent().getWindow().setClearColor(new Vector4f(0f, 1f, 1f, 1f));
+
 
         object = new GameObject();
-        object.setTexture(getParent().texture);
+        object.setTexture(resourceHolder.blob);
 
         MeshContext context = new MeshContext();
         MeshContext.Attribute positionsAttr = MeshContext.Attribute.builder().data(positions).size(3).build();
@@ -60,11 +61,25 @@ public class MainScene extends Scene<Main>
         Renderer renderer = new Renderer(Shader.DEFAULT, getCamera());
         object.addComponent(new RenderComponent(object, renderer));
 
-        object.getTransform().setSize(new Vector3f(100, 100, 0));
+        object.getTransform().getSize().mul(10);
         object.getTransform().setPosition(new Vector3f(500,500,0));
-        //object.getMesh().setLineLoopRenderMode();
+    }
 
-        //Monitor.setSelected(Monitor.getMonitors().get(1));
+    @Override
+    public void resume()
+    {
+        getParent().getWindow().setClearColor(new Vector4f(0f, 1f, 1f, 1f));
+    }
+
+    @Override
+    public void pause()
+    {
+
+    }
+
+    @Override
+    public void unload()
+    {
 
     }
 
@@ -75,25 +90,10 @@ public class MainScene extends Scene<Main>
         object.update();
         object.getTransform().setPosition(new Vector3f(mp.x, mp.y, 0));
 
-
-
-
         if(KeyManager.keyManager.isKeyReleased(GLFW.GLFW_KEY_SPACE))
             //getParent().getWindow().fullscreen();
             getCamera().focus(new Vector2f(mp.x, mp.y));
-        /*if(KeyManager.keyManager.isKeyReleased(GLFW.GLFW_KEY_ENTER))
-            getParent().getWindow().noFullscreen();*/
-    }
-
-    @Override
-    public void draw(Window window)
-    {
-
-    }
-
-    @Override
-    public void destroy()
-    {
-        System.out.println("destroy");
+        if(KeyManager.keyManager.isKeyReleased(GLFW.GLFW_KEY_ENTER))
+            getParent().secondaryScene.asCurrent();
     }
 }

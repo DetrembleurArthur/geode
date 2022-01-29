@@ -161,14 +161,14 @@ public class MouseManager implements WindowMouseButtonI
     public static Vector2i getMousePosition(Camera camera)
     {
         Vector2i mp = getMousePosition();
-        Vector2f mpf = MathUtils.screenCoordsToWorldCoords(new Vector2f(mp.x, mp.y), camera);
+        Vector2f mpf = MathUtils.screenToWorld(new Vector2f(mp.x, mp.y), camera);
         return new Vector2i((int)mpf.x, (int)mpf.y);
     }
 
     public static Vector2f getMousePositionf(Camera camera)
     {
         Vector2i mp = getMousePosition();
-        Vector2f mpf = MathUtils.screenCoordsToWorldCoords(new Vector2f(mp.x, mp.y), camera);
+        Vector2f mpf = MathUtils.screenToWorld(new Vector2f(mp.x, mp.y), camera);
         return mpf;
     }
 }

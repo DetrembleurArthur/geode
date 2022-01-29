@@ -51,4 +51,11 @@ public class GameObject implements Updatable
             component.update();
         }
     }
+
+    public void setTexture(Texture texture)
+    {
+        this.texture = texture;
+        transform.getSize().x = texture.getWidth();
+        transform.getSize().y = texture.getHeight();
+    }
 }

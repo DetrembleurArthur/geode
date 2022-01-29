@@ -14,6 +14,8 @@ public class Configurations
     private static Properties properties;
 
     public static String assetsPath;
+    public static String imageSubPath;
+    public static String shadersSubPath;
 
     public static void load()
     {
@@ -29,6 +31,8 @@ public class Configurations
         finally
         {
             assetsPath = properties.getProperty("assets-dir", "assets/");
+            imageSubPath = properties.getProperty("images-dir", "images/");
+            shadersSubPath = properties.getProperty("shaders-dir", "shaders/");
         }
     }
 }
