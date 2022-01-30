@@ -1,7 +1,9 @@
 package com.geode.engine.graphics;
 
 import lombok.Builder;
+import lombok.Getter;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 
 import java.nio.FloatBuffer;
@@ -9,7 +11,7 @@ import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 
-public class MeshContext
+public class MeshStructure
 {
     @Builder
     public static class Attribute
@@ -18,14 +20,15 @@ public class MeshContext
         public float[] data;
     }
 
+    @Getter
     private final ArrayList<Attribute> attributes;
 
-    public MeshContext()
+    public MeshStructure()
     {
         attributes = new ArrayList<>();
     }
 
-    public MeshContext addAttribute(Attribute attribute)
+    public MeshStructure addAttribute(Attribute attribute)
     {
         attributes.add(attribute);
         return this;

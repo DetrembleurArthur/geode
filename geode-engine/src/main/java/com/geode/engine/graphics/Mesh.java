@@ -12,18 +12,21 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 
+@Getter
 public class Mesh
 {
-    @Getter
+
     @Setter
     private int primitive;
     private int vao = 0;
     private int vbo = 0;
     private int ebo = 0;
     private int elementLen = 0;
-    private final MeshContext context;
+    @Setter
+    private int lineWeight = 0;
+    private final MeshStructure context;
 
-    public Mesh(MeshContext context, int[] indices, int dataDrawPolicy)
+    public Mesh(MeshStructure context, int[] indices, int dataDrawPolicy)
     {
         this.context = context;
         setTriangleRenderMode();
@@ -47,7 +50,7 @@ public class Mesh
         elementBuffer.put(indices).flip();
 
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ebo);
-        GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, elementBuffer, GL15.GL_STATIC_DRAW);
+        GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, elementBuffer, dataDrawPolicy);
 
         context.setupAttribPointers();
         context.enableAttribs();
@@ -100,6 +103,8 @@ public class Mesh
 
     public void active()
     {
+        if(lineWeight > 0)
+            glLineWidth(lineWeight);
         GL30.glBindVertexArray(vao);
         context.enableAttribs();
 
@@ -107,5 +112,57 @@ public class Mesh
 
         context.disableAttribs();
         GL30.glBindVertexArray(0);
+        if(lineWeight > 0)
+            glLineWidth(0);
+    }
+
+    public int getVertexNumber()
+    {
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+        int size = GL15.glGetBufferParameteri(GL15.GL_ARRAY_BUFFER, GL15.GL_BUFFER_SIZE);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        return size / context.getVertexSize();
+    }
+
+    public int getIndicesNumber()
+    {
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ebo);
+        int size = GL15.glGetBufferParameteri(GL15.GL_ELEMENT_ARRAY_BUFFER, GL15.GL_BUFFER_SIZE);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+        return size / Integer.BYTES;
+    }
+
+    public void setVertex(FloatBuffer buffer, int i)
+    {
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+        GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (long) i * context.getVertexSize(), buffer);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+    }
+
+    public void show()
+    {
+        System.out.print("Attribute sizes:\t");
+        for(MeshStructure.Attribute attribute : context.getAttributes())
+            System.out.print(attribute.size + " ");
+        System.out.println();
+
+        int n = getVertexNumber();
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(n * (context.getVertexSize() / Float.BYTES));
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+        GL15.glGetBufferSubData(GL15.GL_ARRAY_BUFFER, 0, buffer);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        System.out.println("Vertices: " + n);
+        for(int i = 0; i < n; i++)
+        {
+            for(MeshStructure.Attribute attribute : context.getAttributes())
+            {
+                for(int j = 0; j < attribute.size; j++)
+                {
+                    System.out.print(buffer.get() + " ");
+                }
+                System.out.print("\t");
+            }
+            System.out.println();
+        }
     }
 }

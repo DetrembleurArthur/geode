@@ -32,7 +32,7 @@ public class Camera
         view = new Matrix4f();
         this.ortho = new OrthoSettings(left, right, bottom, up);
         zoom = new Vector3f(1, 1, 1);
-        updateProjection();
+        getProjection();
     }
 
     public Camera()
@@ -40,9 +40,10 @@ public class Camera
         this(0, Window.getWindow().getSize().x, Window.getWindow().getSize().y, 0);
     }
 
-    public void updateProjection()
+    public Matrix4f getProjection()
     {
         projection.identity().ortho(ortho.getLeft(), ortho.getRight(), ortho.getBottom(), ortho.getUp(), 0f, 100f);
+        return projection;
     }
 
     public Matrix4f updateViewMatrix()

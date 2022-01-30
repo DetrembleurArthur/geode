@@ -18,6 +18,9 @@ public class GameObject implements Updatable
     private final Transform transform;
 
     @Getter @Setter
+    private boolean dirty = false;
+
+    @Getter @Setter
     private Mesh mesh;
 
     @Getter
@@ -57,6 +60,11 @@ public class GameObject implements Updatable
         }
     }
 
+    public void destroy()
+    {
+
+    }
+
     public boolean isTextured()
     {
         return texture != null;
@@ -75,5 +83,12 @@ public class GameObject implements Updatable
     public void setColor(Vector4f color)
     {
         this.color = new Vector4f(color);
+    }
+
+    public static boolean destroyIfDirty(GameObject gameObject)
+    {
+        if(gameObject.isDirty())
+            gameObject.destroy();
+        return gameObject.isDirty();
     }
 }
