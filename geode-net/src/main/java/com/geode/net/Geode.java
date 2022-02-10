@@ -1,5 +1,6 @@
 package com.geode.net;
 
+import com.geode.crypto.Global;
 import com.geode.net.channels.ChannelsManager;
 import com.geode.net.info.*;
 import com.geode.net.loaders.Loader;
@@ -25,7 +26,7 @@ public final class Geode
     private static final Logger logger = LogManager.getLogger(Geode.class);
 
     static
-    {/*
+    {
         try
         {
             Class.forName("com.geode.net.info.ChannelsManagerInfosBuilder");
@@ -35,6 +36,7 @@ public final class Geode
             Class.forName("com.geode.net.info.UdpInfosBuilder");
             Class.forName("com.geode.net.info.MqttInfosBuilder");
             Class.forName("com.geode.net.info.SettingsInfosBuilder");
+            Class.forName("com.geode.net.info.FiltersInfosBuilder");
 
             Class.forName("com.geode.net.queries.LowQuery");
             Class.forName("com.geode.net.queries.ArgDto");
@@ -44,7 +46,7 @@ public final class Geode
         catch (ClassNotFoundException e)
         {
             e.printStackTrace();
-        }*/
+        }
     }
 
     private final HashMap<String, ServerInfos> serversInfos;

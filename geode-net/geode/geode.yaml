@@ -3,15 +3,21 @@ servers:
     host: 0.0.0.0
     port: 50000
     banner: Echo
-    #com-mode: bytes
     discovery: true
     protocols:
       - com.geode.net.protocols.EchoProtocol
+    filters:
+      allow-query-categories:
+        - normal
+      bundle: com.geode.net.test.TestFilters
+    
 
 clients:
   echo:
-    host: ubusrv-arthur
+    host: 0.0.0.0
     port: 50000
     protocol: com.geode.net.protocols.EchoProtocol
-    #com-mode: bytes
     discovery: true
+    filters:
+      allow-query-categories:
+        - normal

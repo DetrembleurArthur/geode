@@ -119,4 +119,11 @@ public class ServerInfosBuilder extends Builder<ServerInfos>
         object.setCommunicationMode(CommunicationModes.valueOf(communicationMode.toUpperCase()));
         return this;
     }
+
+    @Attribute("filters")
+    public ServerInfosBuilder filtersInfos(FiltersInfos filtersInfos)
+    {
+        object.setFiltersInfos(filtersInfos);
+        return this;
+    }
 }

@@ -94,6 +94,13 @@ public class ClientInfosBuilder extends Builder<ClientInfos>
         return this;
     }
 
+    @Attribute("filters")
+    public ClientInfosBuilder filtersInfos(FiltersInfos filtersInfos)
+    {
+        object.setFiltersInfos(filtersInfos);
+        return this;
+    }
+
     @Attribute("com-mode")
     public ClientInfosBuilder communicationMode(String communicationMode)
     {

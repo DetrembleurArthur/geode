@@ -22,6 +22,7 @@ public class ServerInfos
     private String banner = null;
     private ChannelsManager channelsManager;
     private ChannelsManagerInfos channelsManagerInfos = new ChannelsManagerInfos();
+    private FiltersInfos filtersInfos = new FiltersInfos();
     private CommunicationModes modes = CommunicationModes.OBJECT;
 
     /**
@@ -218,6 +219,14 @@ public class ServerInfos
     public void setCommunicationMode(CommunicationModes modes)
     {
         this.modes = modes;
+    }
+
+    public FiltersInfos getFiltersInfos() {
+        return filtersInfos;
+    }
+
+    public void setFiltersInfos(FiltersInfos filtersInfos) {
+        this.filtersInfos = filtersInfos;
     }
 
     @Override

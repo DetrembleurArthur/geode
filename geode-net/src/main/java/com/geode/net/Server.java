@@ -95,6 +95,8 @@ public class Server extends Thread implements Initializable
                     logger.info("client connection accepted: " + socket, getServerInfos().getName());
                     ServerProtocolHandler handler = new ServerProtocolHandler(socket, this, serverInfos.isEnableDiscovery(),
                         serverInfos.getChannelsManager(), serverInfos.getChannelsManagerInfos(), serverInfos.getCommunicationMode());
+                    handler.getFilters().add(Filter.createCategoryFilter(serverInfos.getFiltersInfos().getQueryCategories()));
+                    handler.setBundleFilter(serverInfos.getFiltersInfos().getBundle());
                     handler.start();
                     handlers.add(handler);
                 } catch (IOException e)

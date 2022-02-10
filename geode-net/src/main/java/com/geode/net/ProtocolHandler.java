@@ -1,6 +1,7 @@
 package com.geode.net;
 
 import com.geode.net.annotations.Control;
+import com.geode.net.annotations.Filtering;
 import com.geode.net.annotations.Inject;
 import com.geode.net.annotations.OnEvent;
 import com.geode.net.annotations.Protocol;
@@ -78,6 +79,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
 
     private ChannelsManager channelsManager;
     private ChannelsManagerInfos channelsManagerInfos;
+    private ArrayList<Filter> filters;
 
     /**
      * Instantiates a new Protocol handler.
@@ -85,7 +87,9 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      * @param socket the socket
      */
     public ProtocolHandler(Socket socket, boolean discovery,
-                           ChannelsManager channelsManager, ChannelsManagerInfos channelsManagerInfos, CommunicationModes mode)
+                           ChannelsManager channelsManager,
+                           ChannelsManagerInfos channelsManagerInfos,
+                           CommunicationModes mode)
     {
         this.channelsManager = channelsManager;
         this.channelsManagerInfos = channelsManagerInfos;
@@ -94,6 +98,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         initCatgegoryHandlers();
         controls = new ArrayList<>();
         listeners = new HashMap<>();
+        filters = new ArrayList<>();
         running = false;
         gState = GState.DOWN;
         this.enableDiscovery = discovery;
@@ -207,6 +212,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             initChannelsManager();
             if (gState == GState.BROKEN) return;
             initControls();
+            initFilters();
             initInjections();
             initListeners();
             callListener(OnEvent.Event.INIT, new Object[0]);
@@ -361,6 +367,24 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         }
     }
 
+    private void initFilters()
+    {
+        for (Method method : protocol.getClass().getDeclaredMethods())
+        {
+            if(method.isAnnotationPresent(Filtering.class))
+            {
+                filters.add(query -> {
+                    try {
+                        return (boolean) method.invoke(protocol, query);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return false;
+                });
+            }
+        }
+    }
+
     /**
      * End.
      */
@@ -380,6 +404,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                 {
                     logger.info("wait for query...");
                     GeodeQuery geodeQuery = tunnel.recvQuery();
+                    if(!filterIncommingQuery(geodeQuery)) continue;
                     callListener(OnEvent.Event.QUERY_IN, new Object[]{geodeQuery});
                     Object result = manageQuery(geodeQuery);
                     manageQueryResult(geodeQuery, result);
@@ -410,6 +435,41 @@ public abstract class ProtocolHandler extends Thread implements Initializable
             logger.fatal("handler " + gState + " can not run");
         }
         end();
+    }
+
+    public void setBundleFilter(Class<?> bundleClass)
+    {
+        if(bundleClass == null) return;
+        try {
+            Object bundle = bundleClass.getConstructor().newInstance();
+            for(Method method : bundleClass.getMethods())
+            {
+                if(method.isAnnotationPresent(Filtering.class))
+                    filters.add(query -> {
+                        try {
+                            return (boolean) method.invoke(bundle, query);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        return false;
+                    });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean filterIncommingQuery(GeodeQuery query)
+    {
+        for(Filter filter : filters)
+        {
+            if(!filter.evaluate(query))
+            {
+                logger.error("Query of category " + query.getCategory() + " droped");
+                return false;
+            }
+        }
+        return true;
     }
 
     private void manageQueryResult(GeodeQuery geodeQuery, Object result) throws IOException
@@ -779,5 +839,13 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     public void setProtocolState(String protocolState)
     {
         this.protocolState = protocolState;
+    }
+
+    public ArrayList<Filter> getFilters() {
+        return filters;
+    }
+
+    public void setFilters(ArrayList<Filter> filters) {
+        this.filters = filters;
     }
 }

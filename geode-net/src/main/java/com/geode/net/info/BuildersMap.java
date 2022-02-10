@@ -17,6 +17,7 @@ public class BuildersMap
 
     public static <T> void register(Class<?> objectClass, Class<T> builderClass)
     {
+        logger.info("register " + builderClass.getSimpleName() + " builder");
         buildersMap.put(objectClass, (Class<Builder<?>>) builderClass);
     }
 

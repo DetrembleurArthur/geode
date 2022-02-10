@@ -2,6 +2,7 @@ package com.geode.net.protocols;
 
 import com.geode.net.queries.GeodeQuery;
 import com.geode.net.annotations.Control;
+import com.geode.net.annotations.Filtering;
 import com.geode.net.annotations.Protocol;
 
 import java.io.Serializable;
@@ -15,5 +16,12 @@ public class EchoProtocol
         System.out.println("" + object + " ttl: " + ttl);
         ttl--;
         return ttl > 0 ? GeodeQuery.simple("echo").pack(object, ttl) : GeodeQuery.NO_QUERY;
+    }
+
+    @Filtering
+    public boolean filter(GeodeQuery query)
+    {
+        System.out.println("filtering");
+        return true;
     }
 }

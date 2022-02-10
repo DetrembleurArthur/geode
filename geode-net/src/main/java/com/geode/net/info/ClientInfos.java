@@ -17,6 +17,7 @@ public class ClientInfos
     private boolean enableDiscovery = true;
     private ChannelsManager channelsManager;
     private ChannelsManagerInfos channelsManagerInfos = new ChannelsManagerInfos();
+    private FiltersInfos filtersInfos = new FiltersInfos();
     private CommunicationModes communicationMode = CommunicationModes.OBJECT;
 
     /**
@@ -171,6 +172,14 @@ public class ClientInfos
     public void setCommunicationMode(CommunicationModes communicationMode)
     {
         this.communicationMode = communicationMode;
+    }
+
+    public FiltersInfos getFiltersInfos() {
+        return filtersInfos;
+    }
+
+    public void setFiltersInfos(FiltersInfos filtersInfos) {
+        this.filtersInfos = filtersInfos;
     }
 
     @Override
