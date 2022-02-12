@@ -48,9 +48,11 @@ public abstract class Tunnel<T extends Closeable>
             switch (mode)
             {
                 case BYTES:
-                    return new TcpBytesTunnel((Socket) socket);
+                    return new TcpStringTunnel((Socket) socket);
                 case OBJECT:
                     return new TcpObjectTunnel((Socket) socket);
+                case STRINGS:
+                    return new TcpStringTunnel((Socket) socket);
             }
 
         } else if (socket instanceof DatagramSocket)

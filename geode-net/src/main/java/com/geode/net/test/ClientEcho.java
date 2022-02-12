@@ -16,6 +16,5 @@ public class ClientEcho
             client.getHandlerSafe().send(GeodeQuery.simple("echo").pack("Hello world!", 10));
             Thread.sleep(1000);
         }
-
     }
 }

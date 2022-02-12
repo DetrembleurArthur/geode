@@ -224,7 +224,6 @@ public class GeodeQuery extends SimpleQuery
         return new LowQuery(this);
     }
 
-
     @Override
     public String toString()
     {

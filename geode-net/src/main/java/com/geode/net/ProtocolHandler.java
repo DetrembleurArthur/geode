@@ -14,7 +14,7 @@ import com.geode.net.queries.ForwardQuery;
 import com.geode.net.queries.GeodeQuery;
 import com.geode.net.queries.LowQuery;
 import com.geode.net.queries.SimpleQuery;
-import com.geode.net.tunnels.TcpBytesTunnel;
+import com.geode.net.tunnels.TcpStringTunnel;
 import com.geode.net.tunnels.Tunnel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -478,7 +478,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         {
             if (result instanceof GeodeQuery)
             {
-                tunnel.send(tunnel instanceof TcpBytesTunnel ? new LowQuery((SimpleQuery) result) : (GeodeQuery) result);
+                tunnel.send((GeodeQuery) result);
             } else if (result instanceof String)
             {
                 tunnel.send(GeodeQuery.simple((String) result));
