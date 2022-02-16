@@ -53,6 +53,8 @@ public abstract class Tunnel<T extends Closeable>
                     return new TcpObjectTunnel((Socket) socket);
                 case STRINGS:
                     return new TcpStringTunnel((Socket) socket);
+                case JSON:
+                    return new TcpJsonTunnel((Socket) socket);
             }
 
         } else if (socket instanceof DatagramSocket)

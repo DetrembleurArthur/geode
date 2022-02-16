@@ -4,5 +4,6 @@ public enum CommunicationModes
 {
     OBJECT,
     BYTES,
-    STRINGS
+    STRINGS,
+    JSON
 }

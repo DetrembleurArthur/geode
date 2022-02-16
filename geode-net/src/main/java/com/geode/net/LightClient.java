@@ -2,6 +2,8 @@ package com.geode.net;
 
 import com.geode.net.info.ClientInfos;
 import com.geode.net.tunnels.TcpObjectTunnel;
+import com.geode.net.tunnels.Tunnel;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,7 +14,7 @@ import java.net.Socket;
 public class LightClient extends AbstractClient
 {
     private static final Logger logger = LogManager.getLogger(LightClient.class);
-    private TcpObjectTunnel tcpObjectTunnel;
+    private Tunnel<?> tunnel;
 
     public LightClient(ClientInfos infos)
     {
@@ -27,7 +29,7 @@ public class LightClient extends AbstractClient
         {
             Socket socket = initSocket();
             logger.info("client connected : " + socket, getClientInfos().getName());
-            tcpObjectTunnel = new TcpObjectTunnel(socket);
+            tunnel = Tunnel.build(socket, getClientInfos().getCommunicationMode());
         } catch (Exception e)
         {
             logger.fatal("client connection error: " + e.getMessage(), getClientInfos().getName());
@@ -38,7 +40,7 @@ public class LightClient extends AbstractClient
     {
         try
         {
-            tcpObjectTunnel.send(serializable);
+            tunnel.send(serializable);
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -51,7 +53,7 @@ public class LightClient extends AbstractClient
     {
         try
         {
-            return tcpObjectTunnel.recv();
+            return tunnel.recv();
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -59,8 +61,8 @@ public class LightClient extends AbstractClient
         }
     }
 
-    public TcpObjectTunnel getTcpTunnel()
+    public Tunnel<?> getTunnel()
     {
-        return tcpObjectTunnel;
+        return tunnel;
     }
 }

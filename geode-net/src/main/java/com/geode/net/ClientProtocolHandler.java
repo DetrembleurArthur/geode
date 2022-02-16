@@ -39,17 +39,17 @@ public class ClientProtocolHandler extends ProtocolHandler
         logger.info("start discovery protocol");
         try
         {
-            GeodeQuery geodeQuery = tunnel.recv();
+            GeodeQuery geodeQuery = tunnel.recvQuery();
             if (geodeQuery.getType().equalsIgnoreCase("protocol"))
             {
                 geodeQuery.setType("protocol_send");
                 geodeQuery.pack(protocolClass.getAnnotation(Protocol.class).value());
                 tunnel.send(geodeQuery);
-                geodeQuery = tunnel.recv();
+                geodeQuery = tunnel.recvQuery();
                 if (geodeQuery.getType().equalsIgnoreCase("protocol_ok"))
                 {
                     logger.info("protocol discovery success");
-                    identifier = (int) geodeQuery.getArgs().get(0);
+                    identifier = (int)(long) geodeQuery.getArgs().get(0);
                     return createProtocol();
                 }
             }

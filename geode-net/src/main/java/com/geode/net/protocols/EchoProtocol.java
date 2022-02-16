@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class EchoProtocol
 {
     @Control
-    public Object echo(Serializable object, Integer ttl)
+    public Object echo(Serializable object, Long ttl)
     {
         System.out.println("" + object + " ttl: " + ttl);
         ttl--;

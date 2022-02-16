@@ -11,6 +11,7 @@ public class ForwardQuery extends GeodeQuery
         public String ip;
         public int port;
         public boolean waitResponse;
+        public String comMode;
     }
 
     private Forwarder forwarder;

@@ -4,6 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.geode.net.json.JSONSerializable;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 /**
  * The type Query.
  */
@@ -222,6 +227,31 @@ public class GeodeQuery extends SimpleQuery
     public LowQuery low()
     {
         return new LowQuery(this);
+    }
+
+    @Override
+    public JSONObject toJson()
+    {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type", getType());
+        jsonObject.put("category", getCategory().name());
+        JSONArray array = new JSONArray();
+        getArgs().forEach(array::add);
+        jsonObject.put("args", array);
+        return jsonObject;
+    }
+
+    @Override
+    public void fromJson(JSONObject jsonObject)
+    {
+        setType((String)jsonObject.get("type"));
+        setCategory(Category.valueOf((String)jsonObject.get("category")));
+        JSONArray array = (JSONArray)jsonObject.get("args");
+        for(Object obj : array.toArray())
+        {
+            System.out.println(obj.getClass().getName());
+            getArgs().add((Serializable) obj);
+        }
     }
 
     @Override

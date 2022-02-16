@@ -52,7 +52,7 @@ public class ServerProtocolHandler extends ProtocolHandler
         try
         {
             tunnel.send(GeodeQuery.simple("protocol").setCategory(GeodeQuery.Category.DISCOVERY));
-            GeodeQuery geodeQuery = tunnel.recv();
+            GeodeQuery geodeQuery = tunnel.recvQuery();
             if (geodeQuery.getType().equals("protocol_send"))
             {
                 if (geodeQuery.getCategory() == GeodeQuery.Category.DISCOVERY)

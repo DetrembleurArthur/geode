@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.geode.net.json.JSONSerializable;
+
 /**
  * The type Simple query.
  */
-public class SimpleQuery implements Serializable
+public abstract class SimpleQuery implements JSONSerializable
 {
     /**
      * The Type.

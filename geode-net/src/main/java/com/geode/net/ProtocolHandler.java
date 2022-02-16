@@ -135,7 +135,9 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         ClientInfos infos = builder
                 .light(true)
                 .host(forwarder.ip)
-                .port(forwarder.port).build();
+                .port(forwarder.port)
+                .communicationMode(forwarder.comMode.toUpperCase())
+                .build();
         LightClient client = new LightClient(infos);
         client.init();
         logger.info("send forward query");
@@ -148,7 +150,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         }
         try
         {
-            client.getTcpTunnel().getSocket().close();
+            client.getTunnel().getSocket().close();
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -421,6 +423,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                 {
                     logger.error("unknown error: " + e.getMessage());
                     e.printStackTrace();
+                    running = false;
                 }
                 if (protocol.getClass().getAnnotation(Protocol.class).scope() == Protocol.Scope.QUERY)
                 {
