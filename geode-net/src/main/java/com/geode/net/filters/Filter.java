@@ -1,4 +1,4 @@
-package com.geode.net;
+package com.geode.net.filters;
 
 import java.util.ArrayList;
 
@@ -9,7 +9,7 @@ public interface Filter
 {
     boolean evaluate(GeodeQuery query);
 
-    public static Filter createCategoryFilter(ArrayList<Category> categories)
+    static Filter createCategoryFilter(ArrayList<Category> categories)
     {
         return query -> !categories.contains(query.getCategory());
     }

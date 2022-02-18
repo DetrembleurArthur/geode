@@ -229,6 +229,7 @@ public class ServerInfos
         this.filtersInfos = filtersInfos;
     }
 
+
     @Override
     public String toString() {
         return "ServerInfos [backlog=" + backlog + ", banner=" + banner + ", channelsManager=" + channelsManager

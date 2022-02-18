@@ -1,6 +1,7 @@
 package com.geode.net.info;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.geode.net.queries.GeodeQuery.Category;
 
@@ -8,12 +9,13 @@ public class FiltersInfos
 {
     private ArrayList<Category> queryCategories;
     private Class<?> bundle;
+    private boolean checksum;
 
     public FiltersInfos()
     {
         queryCategories = new ArrayList<>();
-        for(Category category : Category.values())
-            queryCategories.add(category);
+        queryCategories.addAll(Arrays.asList(Category.values()));
+        checksum = false;
     }
 
     public ArrayList<Category> getQueryCategories()
@@ -32,5 +34,15 @@ public class FiltersInfos
 
     public void setBundle(Class<?> bundle) {
         this.bundle = bundle;
+    }
+
+    public boolean isChecksum()
+    {
+        return checksum;
+    }
+
+    public void setChecksum(boolean checksum)
+    {
+        this.checksum = checksum;
     }
 }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.geode.crypto.Hash;
 import com.geode.net.json.JSONSerializable;
 
 import org.json.simple.JSONArray;
@@ -76,6 +77,11 @@ public class GeodeQuery extends SimpleQuery
     public static GeodeQuery simple(String type)
     {
         return new GeodeQuery(type);
+    }
+
+    public static GeodeQuery alert(String type)
+    {
+        return new GeodeQuery(type).setCategory(Category.ALERT);
     }
 
     public static ForwardQuery forward()
@@ -305,6 +311,7 @@ public class GeodeQuery extends SimpleQuery
          * Notify category.
          */
         NOTIFY,
-        FORWARD
+        FORWARD,
+        ALERT
     }
 }

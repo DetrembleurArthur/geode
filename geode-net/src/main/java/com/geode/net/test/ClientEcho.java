@@ -13,6 +13,8 @@ public class ClientEcho
         for(int i = 0; i < 1; i++)
         {
             Client client = Geode.load().launchClient("scenario");
+            assert client != null;
+            client.getHandlerSafe().send(GeodeQuery.simple("echo").pack("Hello world!", 10));
         }
     }
 }

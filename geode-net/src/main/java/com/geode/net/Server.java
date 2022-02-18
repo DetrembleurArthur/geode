@@ -1,6 +1,7 @@
 package com.geode.net;
 
 
+import com.geode.net.filters.Filter;
 import com.geode.net.info.ServerInfos;
 import com.geode.net.misc.Banner;
 import com.geode.net.queries.GeodeQuery;
@@ -97,6 +98,7 @@ public class Server extends Thread implements Initializable
                         serverInfos.getChannelsManager(), serverInfos.getChannelsManagerInfos(), serverInfos.getCommunicationMode());
                     handler.getFilters().add(Filter.createCategoryFilter(serverInfos.getFiltersInfos().getQueryCategories()));
                     handler.setBundleFilter(serverInfos.getFiltersInfos().getBundle());
+                    handler.enableChecksumFilter(serverInfos.getFiltersInfos().isChecksum());
                     handler.start();
                     handlers.add(handler);
                 } catch (IOException e)

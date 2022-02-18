@@ -182,6 +182,7 @@ public class ClientInfos
         this.filtersInfos = filtersInfos;
     }
 
+
     @Override
     public String toString() {
         return "ClientInfos [channelsManager=" + channelsManager + ", channelsManagerInfos=" + channelsManagerInfos

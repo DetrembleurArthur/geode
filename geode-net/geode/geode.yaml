@@ -2,24 +2,27 @@ servers:
   scenario:
     host: 0.0.0.0
     port: 50000
-    banner: Scenario
+    banner: Echo
     discovery: true
     com-mode: OBJECT
     protocols:
-      - com.geode.net.protocols.ServerScenarioProtocol
+      - com.geode.net.protocols.EchoProtocol
     filters:
       allow-query-categories:
         - normal
       bundle: com.geode.net.test.TestFilters
+      checksum: true
+
     
 
 clients:
   scenario:
     host: 0.0.0.0
     port: 50000
-    protocol: com.geode.net.protocols.ClientScenarioProtocol
+    protocol: com.geode.net.protocols.EchoProtocol
     com-mode: OBJECT
     discovery: true
     filters:
       allow-query-categories:
         - normal
+      checksum: true

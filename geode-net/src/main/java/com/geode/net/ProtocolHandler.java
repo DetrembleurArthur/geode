@@ -1,11 +1,10 @@
 package com.geode.net;
 
-import com.geode.net.annotations.Control;
-import com.geode.net.annotations.Filtering;
-import com.geode.net.annotations.Inject;
-import com.geode.net.annotations.OnEvent;
-import com.geode.net.annotations.Protocol;
+import com.geode.net.annotations.*;
 import com.geode.net.channels.ChannelsManager;
+import com.geode.net.filters.AlertFilter;
+import com.geode.net.filters.ChecksumFilter;
+import com.geode.net.filters.Filter;
 import com.geode.net.info.ChannelsManagerInfos;
 import com.geode.net.info.ClientInfos;
 import com.geode.net.info.ClientInfosBuilder;
@@ -77,6 +76,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     private ChannelsManager channelsManager;
     private ChannelsManagerInfos channelsManagerInfos;
     private ArrayList<Filter> filters;
+    private boolean checksumEnable = false;
 
     /**
      * Instantiates a new Protocol handler.
@@ -92,7 +92,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         this.channelsManagerInfos = channelsManagerInfos;
         dynamicControls = new HashMap<>();
         categoryHandlers = new HashMap<>();
-        initCatgegoryHandlers();
+        initCategoryHandlers();
         controls = new ArrayList<>();
         listeners = new HashMap<>();
         filters = new ArrayList<>();
@@ -110,7 +110,21 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         }
     }
 
-    public void initCatgegoryHandlers()
+
+    private Object filterViolationAlert(GeodeQuery query)
+    {
+        logger.fatal("FILTER VIOLATION: " + query.getType());
+        return null;
+    }
+
+    public void enableChecksumFilter(boolean checksum)
+    {
+        checksumEnable = checksum;
+        if(checksum)
+            filters.add(new ChecksumFilter());
+    }
+
+    public void initCategoryHandlers()
     {
         categoryHandlers.put(GeodeQuery.Category.NORMAL, (query) -> manageControlQuery(query, Control.Type.CLASSIC));
         categoryHandlers.put(GeodeQuery.Category.NOTIFY, this::manageNotifyQuery);
@@ -122,7 +136,14 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         categoryHandlers.put(GeodeQuery.Category.TOPIC_NOTIFY_OTHERS, this::manageTopicNotifyOthersQuery);
         categoryHandlers.put(GeodeQuery.Category.TOPIC_SUBSCRIBE, this::manageTopicSubscribeQuery);
         categoryHandlers.put(GeodeQuery.Category.TOPIC_UNSUBSCRIBE, this::manageTopicUnsubscribeQuery);
+        categoryHandlers.put(GeodeQuery.Category.ALERT, this::manageAlertQuery);
         categoryHandlers.put(GeodeQuery.Category.FORWARD, query -> manageForwardQuery((ForwardQuery) query));
+    }
+
+    protected Object manageAlertQuery(GeodeQuery query)
+    {
+        logger.fatal("ALERT: " + query.getType());
+        return null;
     }
 
     protected Object manageForwardQuery(ForwardQuery query)
@@ -139,7 +160,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         client.init();
         logger.info("send forward query");
         query.getArgs().forEach(client::send);
-        if(forwarder.waitResponse)
+        if (forwarder.waitResponse)
         {
             logger.info("wait forward response");
             GeodeQuery query1 = client.recv();
@@ -164,6 +185,8 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     {
         try
         {
+            if(checksumEnable)
+                ChecksumFilter.addChecksum(geodeQuery);
             tunnel.send(geodeQuery);
         } catch (Exception e)
         {
@@ -360,12 +383,14 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     {
         for (Method method : protocol.getClass().getDeclaredMethods())
         {
-            if(method.isAnnotationPresent(Filtering.class))
+            if (method.isAnnotationPresent(Filtering.class))
             {
                 filters.add(query -> {
-                    try {
+                    try
+                    {
                         return (boolean) method.invoke(protocol, query);
-                    } catch (Exception e) {
+                    } catch (Exception e)
+                    {
                         e.printStackTrace();
                     }
                     return false;
@@ -393,7 +418,7 @@ public abstract class ProtocolHandler extends Thread implements Initializable
                 {
                     logger.info("wait for query...");
                     GeodeQuery geodeQuery = tunnel.recvQuery();
-                    if(!filterIncommingQuery(geodeQuery)) continue;
+                    if (!filterIncommingQuery(geodeQuery)) continue;
                     callListener(OnEvent.Event.QUERY_IN, new Object[]{geodeQuery});
                     Object result = manageQuery(geodeQuery);
                     manageQueryResult(geodeQuery, result);
@@ -429,33 +454,39 @@ public abstract class ProtocolHandler extends Thread implements Initializable
 
     public void setBundleFilter(Class<?> bundleClass)
     {
-        if(bundleClass == null) return;
-        try {
+        if (bundleClass == null) return;
+        try
+        {
             Object bundle = bundleClass.getConstructor().newInstance();
-            for(Method method : bundleClass.getMethods())
+            for (Method method : bundleClass.getMethods())
             {
-                if(method.isAnnotationPresent(Filtering.class))
+                if (method.isAnnotationPresent(Filtering.class))
                     filters.add(query -> {
-                        try {
+                        try
+                        {
                             return (boolean) method.invoke(bundle, query);
-                        } catch (Exception e) {
+                        } catch (Exception e)
+                        {
                             e.printStackTrace();
                         }
                         return false;
                     });
             }
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             e.printStackTrace();
         }
     }
 
     private boolean filterIncommingQuery(GeodeQuery query)
     {
-        for(Filter filter : filters)
+        for (Filter filter : filters)
         {
-            if(!filter.evaluate(query))
+            if (!filter.evaluate(query))
             {
                 logger.error("Query of category " + query.getCategory() + " droped");
+                if(filter instanceof AlertFilter)
+                    send(GeodeQuery.alert(((AlertFilter)filter).getAlert()));
                 return false;
             }
         }
@@ -468,19 +499,19 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         {
             if (result instanceof GeodeQuery)
             {
-                tunnel.send((GeodeQuery) result);
+                send((GeodeQuery) result);
             } else if (result instanceof String)
             {
-                tunnel.send(GeodeQuery.simple((String) result));
+                send(GeodeQuery.simple((String) result));
             } else if (result == GeodeQuery.SUCCESS)
             {
-                tunnel.send(GeodeQuery.success(geodeQuery.getType()));
+                send(GeodeQuery.success(geodeQuery.getType()));
             } else if (result == GeodeQuery.FAILED)
             {
-                tunnel.send(GeodeQuery.failed(geodeQuery.getType()));
+                send(GeodeQuery.failed(geodeQuery.getType()));
             } else if (result instanceof Serializable)
             {
-                tunnel.send(GeodeQuery.simple(geodeQuery.getType()).pack((Serializable) result));
+                send(GeodeQuery.simple(geodeQuery.getType()).pack((Serializable) result));
             }
         }
     }
@@ -832,11 +863,13 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         this.protocolState = protocolState;
     }
 
-    public ArrayList<Filter> getFilters() {
+    public ArrayList<Filter> getFilters()
+    {
         return filters;
     }
 
-    public void setFilters(ArrayList<Filter> filters) {
+    public void setFilters(ArrayList<Filter> filters)
+    {
         this.filters = filters;
     }
 }

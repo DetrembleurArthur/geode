@@ -48,4 +48,11 @@ public class FiltersInfosBuilder extends Builder<FiltersInfos>
         }
         return this;
     }
+
+    @Attribute("checksum")
+    public FiltersInfosBuilder checksum(boolean checksum)
+    {
+        object.setChecksum(checksum);
+        return this;
+    }
 }

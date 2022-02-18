@@ -1,5 +1,6 @@
 package com.geode.net;
 
+import com.geode.net.filters.Filter;
 import com.geode.net.info.ClientInfos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,6 +47,7 @@ public class Client extends AbstractClient implements Runnable
                     clientInfos.getChannelsManagerInfos(), clientInfos.getCommunicationMode());
                 handler.getFilters().add(Filter.createCategoryFilter(clientInfos.getFiltersInfos().getQueryCategories()));
                 handler.setBundleFilter(clientInfos.getFiltersInfos().getBundle());
+            handler.enableChecksumFilter(clientInfos.getFiltersInfos().isChecksum());
                 gState = GState.READY;
         } catch (Exception e)
         {
