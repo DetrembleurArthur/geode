@@ -3,7 +3,6 @@ package com.geode.net.tunnels;
 
 import com.geode.crypto.pipeline.Pipeline;
 import com.geode.net.queries.GeodeQuery;
-import com.geode.net.queries.LowQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,7 +11,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
-import java.util.ArrayList;
 
 /**
  * The type Tcp tunnel.

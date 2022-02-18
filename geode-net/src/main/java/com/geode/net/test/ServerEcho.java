@@ -9,6 +9,6 @@ public class ServerEcho
         if(System.getProperty("log4j.configurationFile") == null)
             System.setProperty("log4j.configurationFile", "geode/log4j.xml");
         Geode geode = Geode.load();
-        geode.launchServer("echo");
+        geode.launchServer("scenario");
     }
 }

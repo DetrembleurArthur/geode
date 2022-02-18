@@ -2,14 +2,12 @@ package com.geode.net.tunnels;
 
 import com.geode.net.info.CommunicationModes;
 import com.geode.net.queries.GeodeQuery;
-import com.geode.net.queries.LowQuery;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.DatagramSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 
 /**
  * The type Tunnel.
@@ -48,11 +46,9 @@ public abstract class Tunnel<T extends Closeable>
             switch (mode)
             {
                 case BYTES:
-                    return new TcpStringTunnel((Socket) socket);
+                    return new TcpBytesTunnel((Socket) socket);
                 case OBJECT:
                     return new TcpObjectTunnel((Socket) socket);
-                case STRINGS:
-                    return new TcpStringTunnel((Socket) socket);
                 case JSON:
                     return new TcpJsonTunnel((Socket) socket);
             }
@@ -81,6 +77,11 @@ public abstract class Tunnel<T extends Closeable>
      * @throws IOException the io exception
      */
     public abstract void send(Serializable serializable) throws IOException;
+
+    public void sendQuery(GeodeQuery query) throws IOException
+    {
+        send(query);
+    }
 
     /**
      * Recv t.

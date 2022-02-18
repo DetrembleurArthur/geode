@@ -38,9 +38,6 @@ public final class Geode
             Class.forName("com.geode.net.info.SettingsInfosBuilder");
             Class.forName("com.geode.net.info.FiltersInfosBuilder");
 
-            Class.forName("com.geode.net.queries.LowQuery");
-            Class.forName("com.geode.net.queries.ArgDto");
-
             Class.forName("com.geode.crypto.Global");
         }
         catch (ClassNotFoundException e)
@@ -104,7 +101,6 @@ public final class Geode
         InputStream stream = new FileInputStream(new File(yamlFilename));
         Yaml yaml = new Yaml();
         Map<String, Object> data = yaml.load(stream);
-        logger.info("data loaded : " + data);
 
         Map<String, Object> settings = (Map<String, Object>) data.get("settings");
         Map<String, Object> servers = (Map<String, Object>) data.get("servers");

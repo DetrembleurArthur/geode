@@ -84,6 +84,7 @@ public class GeodeQuery extends SimpleQuery
     }
 
 
+
     /**
      * Queue subscribe query.
      *
@@ -222,11 +223,6 @@ public class GeodeQuery extends SimpleQuery
     {
         this.category = category;
         return this;
-    }
-
-    public LowQuery low()
-    {
-        return new LowQuery(this);
     }
 
     @Override

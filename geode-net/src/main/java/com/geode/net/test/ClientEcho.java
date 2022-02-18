@@ -12,9 +12,7 @@ public class ClientEcho
             System.setProperty("log4j.configurationFile", "geode/log4j.xml");
         for(int i = 0; i < 1; i++)
         {
-            Client client = Geode.load().launchClient("echo");
-            client.getHandlerSafe().send(GeodeQuery.simple("echo").pack("Hello world!", 10));
-            Thread.sleep(1000);
+            Client client = Geode.load().launchClient("scenario");
         }
     }
 }

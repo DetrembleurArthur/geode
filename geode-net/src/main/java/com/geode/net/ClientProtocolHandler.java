@@ -49,7 +49,8 @@ public class ClientProtocolHandler extends ProtocolHandler
                 if (geodeQuery.getType().equalsIgnoreCase("protocol_ok"))
                 {
                     logger.info("protocol discovery success");
-                    identifier = (int)(long) geodeQuery.getArgs().get(0);
+                    Object id = geodeQuery.getArgs().get(0);
+                    identifier = id instanceof Integer ? (int)id : (int) (long) id;
                     return createProtocol();
                 }
             }

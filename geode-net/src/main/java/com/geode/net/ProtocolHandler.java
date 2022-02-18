@@ -12,9 +12,6 @@ import com.geode.net.info.ClientInfosBuilder;
 import com.geode.net.info.CommunicationModes;
 import com.geode.net.queries.ForwardQuery;
 import com.geode.net.queries.GeodeQuery;
-import com.geode.net.queries.LowQuery;
-import com.geode.net.queries.SimpleQuery;
-import com.geode.net.tunnels.TcpStringTunnel;
 import com.geode.net.tunnels.Tunnel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -116,15 +113,15 @@ public abstract class ProtocolHandler extends Thread implements Initializable
     public void initCatgegoryHandlers()
     {
         categoryHandlers.put(GeodeQuery.Category.NORMAL, (query) -> manageControlQuery(query, Control.Type.CLASSIC));
-        categoryHandlers.put(GeodeQuery.Category.NOTIFY, (query) -> manageNotifyQuery(query));
-        categoryHandlers.put(GeodeQuery.Category.QUEUE_CONSUME, (query) -> manageQueueConsumeQuery(query));
-        categoryHandlers.put(GeodeQuery.Category.QUEUE_PRODUCE, (query) -> manageQueueProduceQuery(query));
-        categoryHandlers.put(GeodeQuery.Category.QUEUE_SUBSCRIBE, (query) -> manageQueueSubscribeQuery(query));
-        categoryHandlers.put(GeodeQuery.Category.QUEUE_UNSUBSCRIBE, (query) -> manageQueueUnsubscribeQuery(query));
-        categoryHandlers.put(GeodeQuery.Category.TOPIC_NOTIFY, (query) -> manageTopicNotifyQuery(query));
-        categoryHandlers.put(GeodeQuery.Category.TOPIC_NOTIFY_OTHERS, (query) -> manageTopicNotifyOthersQuery(query));
-        categoryHandlers.put(GeodeQuery.Category.TOPIC_SUBSCRIBE, (query) -> manageTopicSubscribeQuery(query));
-        categoryHandlers.put(GeodeQuery.Category.TOPIC_UNSUBSCRIBE, (query) -> manageTopicUnsubscribeQuery(query));
+        categoryHandlers.put(GeodeQuery.Category.NOTIFY, this::manageNotifyQuery);
+        categoryHandlers.put(GeodeQuery.Category.QUEUE_CONSUME, this::manageQueueConsumeQuery);
+        categoryHandlers.put(GeodeQuery.Category.QUEUE_PRODUCE, this::manageQueueProduceQuery);
+        categoryHandlers.put(GeodeQuery.Category.QUEUE_SUBSCRIBE, this::manageQueueSubscribeQuery);
+        categoryHandlers.put(GeodeQuery.Category.QUEUE_UNSUBSCRIBE, this::manageQueueUnsubscribeQuery);
+        categoryHandlers.put(GeodeQuery.Category.TOPIC_NOTIFY, this::manageTopicNotifyQuery);
+        categoryHandlers.put(GeodeQuery.Category.TOPIC_NOTIFY_OTHERS, this::manageTopicNotifyOthersQuery);
+        categoryHandlers.put(GeodeQuery.Category.TOPIC_SUBSCRIBE, this::manageTopicSubscribeQuery);
+        categoryHandlers.put(GeodeQuery.Category.TOPIC_UNSUBSCRIBE, this::manageTopicUnsubscribeQuery);
         categoryHandlers.put(GeodeQuery.Category.FORWARD, query -> manageForwardQuery((ForwardQuery) query));
     }
 
@@ -164,17 +161,6 @@ public abstract class ProtocolHandler extends Thread implements Initializable
      * @param geodeQuery the query
      */
     public synchronized void send(GeodeQuery geodeQuery)
-    {
-        try
-        {
-            tunnel.send(geodeQuery);
-        } catch (Exception e)
-        {
-            callListener(OnEvent.Event.SEND_ERROR, new Object[0]);
-        }
-    }
-
-    public synchronized void send(LowQuery geodeQuery)
     {
         try
         {
@@ -345,9 +331,10 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         {
             if (method.isAnnotationPresent(Control.class))
             {
-                if (testControl(method.getAnnotation(Control.class)))
+                Control control = method.getAnnotation(Control.class);
+                if (testControl(control))
                 {
-                    Control.Type type = method.getAnnotation(Control.class).type();
+                    Control.Type type = control.type();
                     if (type == Control.Type.DIRECT || type == Control.Type.TOPIC)
                     {
                         if (method.getParameterTypes().length >= 1)
@@ -522,12 +509,13 @@ public abstract class ProtocolHandler extends Thread implements Initializable
         String type = geodeQuery.getType();
         for (Method control : controls)
         {
-            if (control.getAnnotation(Control.class).type() != ctype) continue;
-            String controlType = control.getAnnotation(Control.class).value().isEmpty() ?
-                    control.getName() : control.getAnnotation(Control.class).value();
+            Control controlAnnotation = control.getAnnotation(Control.class);
+            if (controlAnnotation.type() != ctype) continue;
+            String controlType = controlAnnotation.value().isEmpty() ?
+                    control.getName() : controlAnnotation.value();
             if (type.equals(controlType.toLowerCase()))
             {
-                if (control.getAnnotation(Control.class).state().equals(protocolState))
+                if (controlAnnotation.state().equals(protocolState))
                 {
                     Serializable[] args = geodeQuery.getArgsArray();
                     if (args.length == control.getParameterCount())

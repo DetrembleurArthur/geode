@@ -1,9 +1,8 @@
 package com.geode.net.tunnels;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import com.geode.net.queries.GeodeQuery;
@@ -17,15 +16,19 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 
-public class TcpJsonTunnel extends TcpStringTunnel
+public class TcpJsonTunnel extends Tunnel<Socket>
 {
     private final static Logger logger = LogManager.getLogger(TcpJsonTunnel.class);
 
-    private JSONParser parser;
+    private final JSONParser parser;
+    private final BufferedWriter writer;
+    private final BufferedReader reader;
 
     public TcpJsonTunnel(Socket socket) throws IOException
     {
         super(socket);
+        writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
+        reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         parser = new JSONParser();
     }
 
@@ -61,5 +64,20 @@ public class TcpJsonTunnel extends TcpStringTunnel
         jsonObject.writeJSONString(getWriter());
         getWriter().newLine();
         getWriter().flush();
+    }
+
+    public JSONParser getParser()
+    {
+        return parser;
+    }
+
+    public BufferedWriter getWriter()
+    {
+        return writer;
+    }
+
+    public BufferedReader getReader()
+    {
+        return reader;
     }
 }
