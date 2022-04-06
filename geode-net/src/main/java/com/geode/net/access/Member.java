@@ -1,8 +1,7 @@
-package com.geode.net;
+package com.geode.net.access;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
+import com.geode.net.access.Unconnection;
+
 import java.net.MulticastSocket;
 
 public class Member extends Unconnection

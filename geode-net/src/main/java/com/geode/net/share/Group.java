@@ -1,4 +1,6 @@
-package com.geode.net;
+package com.geode.net.share;
+
+import com.geode.net.access.Member;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

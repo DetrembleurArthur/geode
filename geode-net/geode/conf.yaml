@@ -1,6 +1,11 @@
-# connection (socket)
-# stream manager (input - output)
-# access control (filters)
-#
 
 
+servers:
+  test:
+    host: 127.0.0.1
+    port: 50000
+    backlog: 5
+  test2:
+    host: 127.0.0.1
+    port: 50000
+    backlog: 5

@@ -1,4 +1,4 @@
-package com.geode.net;
+package com.geode.net.access;
 
 import java.io.IOException;
 import java.net.InetAddress;

@@ -1,11 +1,10 @@
-package com.geode.net;
+package com.geode.net.share;
 
+import com.geode.net.access.Connection;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class JsonTunnel extends Tunnel<JSONObject, BufferedReader, BufferedWriter>
