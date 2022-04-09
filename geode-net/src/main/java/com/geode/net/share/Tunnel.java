@@ -1,16 +1,27 @@
 package com.geode.net.share;
 
 import com.geode.net.access.Connection;
+import com.geode.net.mgmt.Handshake;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Objects;
 
 public abstract class Tunnel<T, I, O>
 {
     protected I inputStream;
     protected O outputStream;
+
+    public static Tunnel<?, ?, ?> create(Byte mode, Connection connection) throws IOException
+    {
+        if(Objects.equals(mode, Handshake.JSON_MODE))
+            return new JsonTunnel(connection);
+        else if(Objects.equals(mode, Handshake.OBJECT_MODE))
+            return new ObjectTunnel(connection);
+        return null;
+    }
 
     public Tunnel(final Connection connection) throws IOException
     {

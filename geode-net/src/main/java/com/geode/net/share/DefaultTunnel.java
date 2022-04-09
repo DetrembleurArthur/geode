@@ -8,6 +8,8 @@ import java.io.OutputStream;
 
 public class DefaultTunnel extends Tunnel<byte[], InputStream, OutputStream>
 {
+    private int size = 1;
+
     public DefaultTunnel(Connection connection) throws IOException
     {
         super(connection);
@@ -24,11 +26,22 @@ public class DefaultTunnel extends Tunnel<byte[], InputStream, OutputStream>
     public void send(byte[] data) throws Exception
     {
         outputStream.write(data);
+        outputStream.flush();
     }
 
     @Override
     public byte[] recv() throws Exception
     {
-        return inputStream.readAllBytes();
+        return inputStream.readNBytes(size);
+    }
+
+    public int getSize()
+    {
+        return size;
+    }
+
+    public void setSize(int size)
+    {
+        this.size = size;
     }
 }

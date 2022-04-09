@@ -4,6 +4,7 @@ import com.geode.net.access.Connection;
 import com.geode.net.access.ConnectionListener;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Server implements Runnable, AutoCloseable
@@ -23,51 +24,71 @@ public class Server implements Runnable, AutoCloseable
 
     private final ConnectionListener connectionListener;
     private final HashMap<Integer, ErrorHandler> errorHandlerHashMap = new HashMap<>();
-    private final ConnectionHandler connectionHandler;
     private int state;
+    private Thread thread;
+    private final ArrayList<ConnectionHandler> connectionHandlers = new ArrayList<>();
 
-    public Server(ConnectionListener connectionListener, ConnectionHandler connectionHandler)
+    public Server(ConnectionListener connectionListener)
     {
-        this.connectionHandler = connectionHandler;
         this.state = State.STOPPED;
         this.connectionListener = connectionListener;
     }
 
-    protected void init()
+    protected synchronized void init()
     {
-        this.state = State.READY;
+        setState(State.READY);
+    }
+
+    public Thread runAsThread()
+    {
+        thread = new Thread(this);
+        thread.start();
+        return thread;
     }
 
     @Override
     public void run()
     {
         init();
-        if(this.state == State.READY)
+        if(getState() == State.READY)
         {
-            this.state = State.RUNNING;
-            while(this.state == State.RUNNING)
+            setState(State.RUNNING);
+            while(getState() == State.RUNNING)
             {
                 try
                 {
                     Connection connection = connectionListener.getConnection();
-                    connectionHandler.handleConnection(connection);
+                    handleConnection(connection);
                 } catch (IOException e)
                 {
-                    this.state = State.BROKEN;
+                    setState(State.BROKEN);
                     callErrorHandler(Error.LISTEN_CONNECTION_ERROR, e);
                 }
             }
         }
     }
 
-    @Override
-    public void close() throws Exception
+    private synchronized void handleConnection(Connection connection) throws IOException
     {
-        connectionHandler.close();
+        ConnectionHandler handler = new ConnectionHandler(connection, this);
+        connectionHandlers.add(handler);
+        handler.runAsThread();
+    }
+
+    @Override
+    public synchronized void close() throws Exception
+    {
+        connectionHandlers.forEach(ConnectionHandler::close);
         connectionListener.close();
     }
 
-    protected void callErrorHandler(int errcode, Throwable e)
+    public synchronized void removeConnectionHandler(ConnectionHandler handler)
+    {
+        System.out.println("Remove handler");
+        connectionHandlers.remove(handler);
+    }
+
+    protected synchronized void callErrorHandler(int errcode, Throwable e)
     {
         e.printStackTrace();
         ErrorHandler handler = errorHandlerHashMap.get(errcode);
@@ -75,18 +96,28 @@ public class Server implements Runnable, AutoCloseable
             handler.handle(e);
     }
 
-    public void onError(int errcode, ErrorHandler handler)
+    public synchronized void onError(int errcode, ErrorHandler handler)
     {
         errorHandlerHashMap.put(errcode, handler);
     }
 
-    public int getState()
+    public synchronized int getState()
     {
         return state;
     }
 
-    public ConnectionListener getConnectionListener()
+    public synchronized void setState(int state)
+    {
+        this.state = state;
+    }
+
+    public synchronized ConnectionListener getConnectionListener()
     {
         return connectionListener;
+    }
+
+    public Thread getThread()
+    {
+        return thread;
     }
 }
