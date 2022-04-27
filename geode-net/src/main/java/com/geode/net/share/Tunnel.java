@@ -16,6 +16,7 @@ public abstract class Tunnel<T, I, O>
 
     public static Tunnel<?, ?, ?> create(Byte mode, Connection connection) throws IOException
     {
+        System.out.println("Mode: " + mode);
         if(Objects.equals(mode, Handshake.JSON_MODE))
             return new JsonTunnel(connection);
         else if(Objects.equals(mode, Handshake.OBJECT_MODE))

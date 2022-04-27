@@ -7,14 +7,23 @@ import com.geode.net.share.ObjectTunnel;
 import com.geode.net.share.Tunnel;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConnectionHandler implements Runnable, AutoCloseable
 {
+    public static class State
+    {
+        public static int STOPPED = 0;
+        public static int INIT = 1;
+        public static int RUNNING = 2;
+    }
+
     private final Connection connection;
     private final Server server;
     private final Thread thread;
     private Tunnel<?, ?, ?> tunnel;
     private Byte tunnelMode;
+    private final AtomicInteger state = new AtomicInteger(State.STOPPED);
 
     public ConnectionHandler(Connection connection, Server server) throws IOException
     {
@@ -23,6 +32,7 @@ public class ConnectionHandler implements Runnable, AutoCloseable
         tunnel = new DefaultTunnel(connection);
         thread = new Thread(this);
         tunnelMode = Handshake.OBJECT_MODE;
+        state.set(State.INIT);
     }
 
     public ConnectionHandler(Connection connection) throws IOException
@@ -41,13 +51,14 @@ public class ConnectionHandler implements Runnable, AutoCloseable
         try
         {
             handshake();
+            state.set(State.RUNNING);
         } catch (Exception e)
         {
             e.printStackTrace();
         }
     }
 
-    private void handshake() throws Exception
+    private synchronized void handshake() throws Exception
     {
         System.out.println("Handshake");
         if(server == null)
@@ -61,7 +72,6 @@ public class ConnectionHandler implements Runnable, AutoCloseable
             {
                 if(data[0] == Handshake.OK)
                 {
-                    System.out.println(data[0]);
                     tunnel = Tunnel.create(tunnelMode, connection);
                 }
             }
@@ -72,7 +82,6 @@ public class ConnectionHandler implements Runnable, AutoCloseable
             byte[] data = ((DefaultTunnel)tunnel).recv();
             if(data.length >= 1)
             {
-                System.out.println(data[0]);
                 if(data[0] >= Handshake.OBJECT_MODE && data[0] <= Handshake.JSON_MODE)
                 {
                     tunnelMode = data[0];
@@ -83,16 +92,32 @@ public class ConnectionHandler implements Runnable, AutoCloseable
                 }
             }
         }
+        notify();
+    }
+
+    public synchronized Tunnel<?, ?, ?> getTunnel()
+    {
+        while(state.get() != State.RUNNING)
+        {
+            try
+            {
+                wait(1000);
+            } catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        return tunnel;
     }
 
     public JsonTunnel json()
     {
-        return (JsonTunnel) tunnel;
+        return (JsonTunnel) getTunnel();
     }
 
     public ObjectTunnel obj()
     {
-        return (ObjectTunnel) tunnel;
+        return (ObjectTunnel) getTunnel();
     }
 
     @Override
