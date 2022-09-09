@@ -5,9 +5,8 @@ import com.geode.engine.core.Scene;
 import com.geode.engine.dispatchers.Repository;
 import com.geode.engine.entity.Square;
 import com.geode.engine.entity.components.MovementsComponent;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
+
 
 public class MainScene extends Scene<Main>
 {
@@ -15,6 +14,7 @@ public class MainScene extends Scene<Main>
     public MainResourceHolder resourceHolder;
     public Square object;
     public MovementsComponent move_c;
+
 
 
     @Override
