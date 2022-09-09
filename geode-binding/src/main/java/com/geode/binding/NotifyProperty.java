@@ -1,5 +1,7 @@
 package com.geode.binding;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class NotifyProperty <T> extends Property<T>
@@ -59,6 +61,18 @@ public class NotifyProperty <T> extends Property<T>
         triggers.removeIf(trigger -> trigger.getDest() == property);
     }
 
+    public void addCallback(Callback<T> callback)
+    {
+        Trigger trigger = new Trigger();
+        trigger.setRunnable(() -> callback.call(get()));
+        triggers.add(trigger);
+    }
+
+    public void clearCallbacks()
+    {
+        unbind(null);
+    }
+
     @Override
     public void set(T value)
     {
@@ -89,5 +103,29 @@ public class NotifyProperty <T> extends Property<T>
     public static <U> NotifyProperty<U> create(U value)
     {
         return new NotifyProperty<>(value);
+    }
+    public static <U> NotifyProperty<U> createForField(Object obj, String fieldName)
+    {
+        try
+        {
+            String field = fieldName.substring(0,1).toUpperCase() + fieldName.substring(1).toLowerCase();
+            Method getterm = obj.getClass().getDeclaredMethod("get" + field);
+            Method setterm = obj.getClass().getDeclaredMethod("set" + field, getterm.getReturnType());
+            NotifyProperty<U> property = new NotifyProperty<>((U)getterm.invoke(obj));
+            property.addCallback(value -> {
+                try
+                {
+                    setterm.invoke(obj, value);
+                } catch (IllegalAccessException | InvocationTargetException e)
+                {
+                    e.printStackTrace();
+                }
+            });
+            return property;
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e)
+        {
+            e.printStackTrace();
+        }
+        return new NotifyProperty<>(null);
     }
 }
