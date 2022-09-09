@@ -15,7 +15,7 @@ public class MouseManager implements WindowMouseButtonI
 {
     @Getter
     private static MouseManager mouseManager;
-    private Button[] buttons;
+    private final Button[] buttons;
 
     @Builder
     static class Button

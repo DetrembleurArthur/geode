@@ -33,6 +33,7 @@ public class Configurations
             assetsPath = properties.getProperty("assets-dir", "assets/");
             imageSubPath = properties.getProperty("images-dir", "images/");
             shadersSubPath = properties.getProperty("shaders-dir", "shaders/");
+            logger.info("default configuration loaded");
         }
     }
 }

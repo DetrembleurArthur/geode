@@ -4,7 +4,6 @@ import com.geode.engine.conf.Configurations;
 import com.geode.engine.dispatchers.ResourcesDispatcher;
 import com.geode.engine.exceptions.WindowException;
 import com.geode.engine.graphics.Shader;
-import com.geode.engine.graphics.Texture;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL;
@@ -68,23 +67,23 @@ public abstract class Application implements Manageable
         resourcesDispatcher = new ResourcesDispatcher();
         resourcesDispatcher.dispatch(this);
         Scene<?> init = null;
-        for(Field field : getClass().getFields())
+        for (Field field : getClass().getFields())
         {
-            if(field.isAnnotationPresent(SceneRef.class))
+            if (field.isAnnotationPresent(SceneRef.class))
             {
                 SceneRef sceneRef = field.getAnnotation(SceneRef.class);
-                if(Scene.class.isAssignableFrom(field.getType()))
+                if (Scene.class.isAssignableFrom(field.getType()))
                 {
                     Scene<Application> scene = (Scene<Application>) field.getType().getConstructor().newInstance();
                     scene.setKeepState(sceneRef.keep());
                     scene.setParent(this);
                     field.set(this, scene);
-                    if(sceneRef.initial())
+                    if (sceneRef.initial())
                         init = scene;
                 }
             }
         }
-        if(init != null)
+        if (init != null)
             setScene(init);
     }
 
@@ -141,12 +140,12 @@ public abstract class Application implements Manageable
 
     public int getFps()
     {
-        return (int) (1/Time.getDt());
+        return (int) (1 / Time.getDt());
     }
 
     public void setScene(Scene<?> scene)
     {
-        if(this.scene != null)
+        if (this.scene != null)
         {
             this.scene.disactive();
         }
@@ -159,14 +158,14 @@ public abstract class Application implements Manageable
     @Override
     public final void update(float dt)
     {
-        if(scene != null)
+        if (scene != null)
             scene.update(dt);
     }
 
     @Override
     public final void destroy()
     {
-        if(scene != null)
+        if (scene != null)
         {
             scene.destroy();
         }

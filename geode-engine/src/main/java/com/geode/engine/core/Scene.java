@@ -23,7 +23,7 @@ public abstract class Scene<T extends Application> implements Manageable
 
     @Getter
     private final ArrayList<GameObject> gameObjects = new ArrayList<>();
-    private final ArrayList<GameObject> dirtiesDameObjects = new ArrayList<>();
+    private final ArrayList<GameObject> dirtiesGameObjects = new ArrayList<>();
 
     public abstract void resume();
     public abstract void pause();

@@ -10,4 +10,7 @@ public class MainResourceHolder
 
     @ResourceRef("bg.png")
     public Texture bg;
+
+    @ResourceRef("artorias.png")
+    public Texture artorias;
 }

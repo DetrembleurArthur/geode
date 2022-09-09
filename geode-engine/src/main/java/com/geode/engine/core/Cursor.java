@@ -14,7 +14,7 @@ public class Cursor
 
     public static final int PIXEL_SIZE = 4 * Byte.BYTES;
     public static final int ARROW = GLFW.GLFW_ARROW_CURSOR;
-    public static final int IBEAM =GLFW.GLFW_IBEAM_CURSOR;
+    public static final int IBEAM = GLFW.GLFW_IBEAM_CURSOR;
     public static final int CROSSHAIR = GLFW.GLFW_CROSSHAIR_CURSOR;
     public static final int HAND = GLFW.GLFW_HAND_CURSOR;
     public static final int HRESIZE = GLFW.GLFW_HRESIZE_CURSOR;
@@ -28,7 +28,7 @@ public class Cursor
     public Cursor(int width, int height, int[] pixels)
     {
         ByteBuffer buffer = BufferUtils.createByteBuffer(pixels.length * 4);
-        for(int px : pixels)
+        for (int px : pixels)
         {
             buffer.putInt(px);
         }

@@ -1,17 +1,28 @@
 package com.geode.engine.entity;
 
+import com.geode.engine.core.Application;
+import com.geode.engine.core.Window;
 import lombok.Getter;
 import lombok.Setter;
+import org.joml.Matrix2f;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class Transform
 {
-    @Getter @Setter private Vector3f position;
-    @Getter @Setter private Vector3f size;
-    @Getter @Setter private Vector3f rotation;
-    @Getter @Setter private Vector3f origin;
+    @Getter
+    @Setter
+    private Vector3f position;
+    @Getter
+    @Setter
+    private Vector3f size;
+    @Getter
+    @Setter
+    private Vector3f rotation;
+    @Getter
+    @Setter
+    private Vector3f origin;
 
     public Transform()
     {
@@ -23,14 +34,19 @@ public class Transform
 
     public final Matrix4f getModel()
     {
+
         return new Matrix4f().identity()
                 .translate(new Vector3f(position))
-                .rotateX(rotation.x).rotateY(rotation.y).rotateY(rotation.z)
+                .rotateX((float) Math.toRadians(rotation.x))
+                .rotateY((float) Math.toRadians(rotation.y))
+                .rotateZ((float) Math.toRadians(rotation.z))
+                .translate(getOrigin().negate()) //pour la rotation autour de l'origine
                 .scale(size);
     }
 
     public void setSize2D(float width, float height)
     {
+        origin.mul(new Vector3f(width, height, 0).div(size.x, size.y, 1));
         size.x = width;
         size.y = height;
     }
@@ -38,6 +54,19 @@ public class Transform
     public void setSize2D(Vector2f size2D)
     {
         setSize2D(size2D.x, size2D.y);
+    }
+
+    public void setSize(float width, float height, float depth)
+    {
+        origin.mul(new Vector3f(width, height, depth).div(size.x, size.y, size.z));
+        size.x = width;
+        size.y = height;
+        size.z = depth;
+    }
+
+    public void setSize(Vector3f size)
+    {
+        setSize(size.x, size.y, size.z);
     }
 
     public void setWidth(float width)
@@ -119,5 +148,169 @@ public class Transform
     public void addY(float y)
     {
         setY(getY() + y);
+    }
+
+    public Vector3f getOrigin()
+    {
+        return new Vector3f(origin.x, origin.y, origin.z);
+    }
+
+    public Vector2f getOrigin2D()
+    {
+        return new Vector2f(origin.x, origin.y);
+    }
+
+    public void setOrigin(Vector3f origin)
+    {
+        this.origin = new Vector3f(origin);
+    }
+
+    public void setOrigin(Vector2f origin)
+    {
+        this.origin = new Vector3f(origin.x, origin.y, 0);
+    }
+
+    public void setOrigin(float x, float y)
+    {
+        this.origin.x = x;
+        this.origin.y = y;
+        this.origin.z = 0;
+    }
+
+    public void setTopLeftOrigin()
+    {
+        setOrigin(0, 0);
+    }
+
+    public void setTopRightOrigin()
+    {
+        setOrigin(size.x, 0);
+    }
+
+    public void setBottomLeftOrigin()
+    {
+        setOrigin(0, size.y);
+    }
+
+    public void setBottomRightOrigin()
+    {
+        setOrigin(size.x, size.y);
+    }
+
+    public void setCenterOrigin()
+    {
+        setOrigin(size.x / 2, size.y / 2);
+    }
+
+
+    public void setOriginPosition(Vector2f origin, Vector2f position)
+    {
+        setPosition2D(new Vector2f(position).add(getOrigin2D().sub(origin)));
+    }
+
+    public Vector2f getOriginPosition(Vector2f origin)
+    {
+        return new Vector2f(getPosition2D()).sub(getOrigin2D().sub(origin));
+    }
+
+    public Vector2f getTopLeftPosition()
+    {
+        return getOriginPosition(new Vector2f(0, 0));
+    }
+
+    public Vector2f getCenterPosition()
+    {
+        return getOriginPosition(getSize2D().div(2f));
+    }
+
+    public Vector2f getTopRightPosition()
+    {
+        return getOriginPosition(new Vector2f(getWidth(), 0));
+    }
+
+    public Vector2f getBottomLeftPosition()
+    {
+        return getOriginPosition(new Vector2f(0, getHeight()));
+    }
+
+    public Vector2f getBottomRightPosition()
+    {
+        return getOriginPosition(new Vector2f(getWidth(), getHeight()));
+    }
+
+    public void setTopLeftPosition(Vector2f pos)
+    {
+        setOriginPosition(new Vector2f(0, 0), pos);
+    }
+
+    public void setCenterPosition(Vector2f pos)
+    {
+        setOriginPosition(getSize2D().div(2f), pos);
+    }
+
+    public void setTopRightPosition(Vector2f pos)
+    {
+        setOriginPosition(new Vector2f(getWidth(), 0), pos);
+    }
+
+    public void setBottomLeftPosition(Vector2f pos)
+    {
+        setOriginPosition(new Vector2f(0, getHeight()), pos);
+    }
+
+    public void setBottomRightPosition(Vector2f pos)
+    {
+        setOriginPosition(new Vector2f(getWidth(), getHeight()), pos);
+    }
+
+    public void center()
+    {
+        Vector2f pos = Application.getApplication().getScene().getCamera().getPosition().add(Window.getWindow().getCenter());
+        setPosition2D(pos);
+    }
+
+    public Vector3f getPosition()
+    {
+        return new Vector3f(position.x, position.y, position.z);
+    }
+
+    public Vector3f getSize()
+    {
+        return new Vector3f(size.x, size.y, size.z);
+    }
+
+    public Vector3f getRotation()
+    {
+        return new Vector3f(rotation.x, rotation.y, rotation.z);
+    }
+
+    public Vector3f getPositionRef()
+    {
+        return position;
+    }
+
+    public Vector3f getSizeRef()
+    {
+        return size;
+    }
+
+    public Vector3f getRotationRef()
+    {
+        return rotation;
+    }
+
+    public float getAngle(Vector2f target)
+    {
+        return (float) Math.toDegrees(Math.atan2(-(position.y - target.y), -(position.x - target.x)));
+    }
+
+    public Vector3f getOriginRef()
+    {
+        return origin;
+    }
+
+    public float getAngle()
+    {
+        return rotation.z;
     }
 }

@@ -19,13 +19,14 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-@Getter @Setter
+@Getter
+@Setter
 public class Window
 {
     public static final long NO_WINDOW = -1L;
     private static final Logger logger = LogManager.getLogger(Window.class);
     private static Window window;
-    public static final Vector2i DEFAULT_SIZE = new Vector2i(16*100, 9*100);
+    public static final Vector2i DEFAULT_SIZE = new Vector2i(16 * 100, 9 * 100);
     public static final String DEFAULT_TITLE = "Geode Application";
 
     private Long id = NO_WINDOW;
@@ -57,42 +58,39 @@ public class Window
 
     private void init(Vector2i size, String title, WindowHints hints) throws WindowException
     {
-        if(!isInitialized())
+        if (!isInitialized())
         {
             logger.info("glfw initialization");
-            if(GLFW.glfwInit())
+            if (GLFW.glfwInit())
             {
                 logger.info("glfw initialized");
                 GLFWErrorCallback.createPrint(System.err).set();
                 logger.info("glfw error callback set on error output");
                 hints.hint(GLFW_CONTEXT_VERSION_MAJOR, 2)
-                .hint(GLFW_CONTEXT_VERSION_MINOR, 0)
-                .apply();
+                        .hint(GLFW_CONTEXT_VERSION_MINOR, 0)
+                        .apply();
                 this.title = title;
                 setId(GLFW.glfwCreateWindow(size.x, size.y, title, NULL, NULL));
-                if(isInitialized())
+                if (isInitialized())
                 {
                     setEventsManager(new WindowEventsManager(this));
                     pollEventsPolicy();
-                    aspectRatio = (float)size.x / size.y;
+                    aspectRatio = (float) size.x / size.y;
                     setAspect(size.x, size.y);
                     logger.info("glfw window initialized");
                     Window.setWindow(this);
-                }
-                else
+                } else
                 {
                     logger.fatal("glfw window initialization failed");
                     throw new WindowException("glfw window initialization failed");
                 }
-            }
-            else
+            } else
             {
                 logger.fatal("glfw initialization failed");
                 throw new WindowException("GLFW can not be initialized");
             }
         }
     }
-
 
 
     public void makeCurrent()
@@ -113,7 +111,7 @@ public class Window
 
     private static void setWindow(Window window) throws WindowException
     {
-        if(Window.window != null)
+        if (Window.window != null)
             throw new WindowException("window object must be unique");
         Window.window = window;
     }
@@ -181,7 +179,7 @@ public class Window
     public void destroy()
     {
         logger.info("destroying glfw window");
-        if(cursor != null)
+        if (cursor != null)
             cursor.destroy();
         glfwFreeCallbacks(getId());
         GLFW.glfwDestroyWindow(getId());
@@ -212,7 +210,7 @@ public class Window
     public void setSize(int width, int height)
     {
         glfwSetWindowSize(getId(), width, height);
-        aspectRatio = (float)width / height;
+        aspectRatio = (float) width / height;
     }
 
     public void setSize(Vector2i size)
@@ -272,7 +270,7 @@ public class Window
 
     public void setAspect(int numer, int denom)
     {
-        if(aspect != null) return;
+        if (aspect != null) return;
         glfwSetWindowAspectRatio(getId(), numer, denom);
         aspect = new Vector2i(numer, denom);
     }
@@ -377,7 +375,7 @@ public class Window
 
     public void setOpacity(float opacity)
     {
-        if(opacity >= 0f && opacity <= 1f)
+        if (opacity >= 0f && opacity <= 1f)
         {
             glfwSetWindowOpacity(getId(), opacity);
         }
@@ -393,9 +391,14 @@ public class Window
         return glfwGetWindowAttrib(getId(), GLFW_HOVERED) == 1;
     }
 
+    public Vector2f getCenter()
+    {
+        return getSizef().div(2);
+    }
+
     public void setCursor(Cursor cursor)
     {
-        if(this.cursor != null)
+        if (this.cursor != null)
             this.cursor.destroy();
         glfwSetCursor(getId(), cursor.getId());
         this.cursor = cursor;
@@ -403,7 +406,7 @@ public class Window
 
     public void setDefaultCursor()
     {
-        if(this.cursor != null)
+        if (this.cursor != null)
             this.cursor.destroy();
         glfwSetCursor(getId(), NULL);
     }

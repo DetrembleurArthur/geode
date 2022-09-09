@@ -1,7 +1,5 @@
 package com.geode.engine.dispatchers;
 
-import com.geode.engine.conf.Configurations;
-import com.geode.engine.graphics.Texture;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,11 +25,10 @@ public class ResourcesDispatcher
             ArrayList<ResourcesHolder> resourcesHolders = new ArrayList<>();
             holdersMap.put(target, resourcesHolders);
             Field[] fields = target.getClass().getFields();
-            for(Field field : fields)
+            for (Field field : fields)
             {
-                if(field.isAnnotationPresent(Repository.class))
+                if (field.isAnnotationPresent(Repository.class))
                 {
-                    Repository resourceRef = field.getAnnotation(Repository.class);
                     ResourcesHolder holder = new ResourcesHolder();
                     resourcesHolders.add(holder);
                     Object repository = field.getType().getConstructor().newInstance();
@@ -39,13 +36,11 @@ public class ResourcesDispatcher
                     field.set(target, repository);
                 }
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
     }
-
 
 
     public void destroy(Object repository)

@@ -42,6 +42,7 @@ public class Texture implements Resource
             glTexImage2D(GL_TEXTURE_2D, 0, channels.get(0) == 4 ? GL_RGBA : GL_RGB, width.get(0), height.get(0), 0, channels.get(0) == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, image);
             initParameters();
             dimension = new Vector2f(width.get(0), height.get(0));
+            System.out.println(path + " " + dimension);
             stbi_image_free(image);
         } else
         {

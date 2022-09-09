@@ -85,4 +85,9 @@ public class Camera
     {
         return MouseManager.getMousePositionf(this);
     }
+
+    public Vector2f getPosition()
+    {
+        return new Vector2f(position);
+    }
 }

@@ -18,7 +18,7 @@ public class Monitor
 {
     private static final ArrayList<Monitor> monitors = new ArrayList<>();
 
-    private Long id;
+    private final Long id;
 
     private static Monitor SELECTED = getPrimary();
 

@@ -39,7 +39,7 @@ public class KeyManager implements WindowKeyI
 
     public static KeyManager get()
     {
-        if(keyManager == null)
+        if (keyManager == null)
             keyManager = new KeyManager();
         return keyManager;
     }
@@ -64,7 +64,7 @@ public class KeyManager implements WindowKeyI
     public boolean isKeyPressed(int key)
     {
         boolean state = isKeyAction(key, GLFW.GLFW_PRESS);
-        if(state)
+        if (state)
         {
             getKey(key).action = 0;
         }
@@ -74,7 +74,7 @@ public class KeyManager implements WindowKeyI
     public boolean isKeyReleased(int key)
     {
         boolean state = isKeyAction(key, GLFW.GLFW_RELEASE);
-        if(state)
+        if (state)
         {
             getKey(key).action = -1;
         }

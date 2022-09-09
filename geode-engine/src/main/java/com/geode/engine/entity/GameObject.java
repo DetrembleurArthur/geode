@@ -1,11 +1,13 @@
 package com.geode.engine.entity;
 
 import com.geode.engine.entity.components.Component;
+import com.geode.engine.entity.components.MovementsComponent;
 import com.geode.engine.graphics.Mesh;
 import com.geode.engine.graphics.Texture;
 import com.geode.engine.utils.Colors;
 import lombok.Getter;
 import lombok.Setter;
+import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
@@ -35,20 +37,38 @@ public class GameObject implements Updatable
         transform = new Transform();
     }
 
-    public void addComponent(Component component)
+    public Component addComponent(Component component)
     {
         for(Component c : components)
         {
             if(c.getClass().equals(component.getClass()))
-                return;
+                return component;
         }
         components.add(component);
         components.sort((o1, o2) -> o1.getPriority() < o2.getPriority() ? -1 : 1);
+        return component;
     }
 
     public void removeComponent(Class<? extends Component> componentClass)
     {
         components.removeIf(component -> component.getClass().equals(componentClass));
+    }
+
+    public <T extends Component> T getComponent(Class<T> componentClass)
+    {
+        for(Component component : components)
+        {
+            if(component.getClass().equals(componentClass))
+            {
+                return (T) component;
+            }
+        }
+        return null;
+    }
+
+    public MovementsComponent enableMovementsComponent()
+    {
+        return (MovementsComponent) addComponent(new MovementsComponent(this, Component.DEFAULT_PRIORITY));
     }
 
     @Override
@@ -75,9 +95,14 @@ public class GameObject implements Updatable
         this.texture = texture;
         if(texture != null)
         {
-            transform.getSize().x = texture.getWidth();
-            transform.getSize().y = texture.getHeight();
+            transform.setSize2D(texture.getDimension());
         }
+    }
+
+    public void fitAsTexture()
+    {
+        Vector2f dimensions = getTexture().getDimension();
+        getTransform().setSize2D(dimensions);
     }
 
     public void setColor(Vector4f color)
