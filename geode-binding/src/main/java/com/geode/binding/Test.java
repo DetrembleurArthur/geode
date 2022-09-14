@@ -39,8 +39,11 @@ public class Test
         Person person1 = new Person(22, "Arthur");
         Person person2 = new Person(25, "Jean");
 
-        NotifyProperty<Integer> ageProperty1 = NotifyProperty.createForField(person1, "age");
-        NotifyProperty<Integer> ageProperty2 = NotifyProperty.createForField(person2, "age");
+        FieldPropertiesScheme<Person> propertiesScheme = new FieldPropertiesScheme<>(Person.class);
+        var scheme = propertiesScheme.<Integer>get("age");
+
+        NotifyProperty<Integer> ageProperty1 = scheme.create(person1);
+        NotifyProperty<Integer> ageProperty2 = scheme.create(person2);
 
         ageProperty1.link(ageProperty2);
 
