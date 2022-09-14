@@ -71,12 +71,12 @@ public class Transform
 
     public void setWidth(float width)
     {
-        size.x = width;
+        setSize2D(width, size.y);
     }
 
     public void setHeight(float height)
     {
-        size.y = height;
+        setSize2D(size.x, height);
     }
 
     public Vector2f getSize2D()
