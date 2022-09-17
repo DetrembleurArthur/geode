@@ -12,10 +12,12 @@ public abstract class Scene<T extends Application> implements Manageable
     @Getter
     private Camera camera;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean keepState = false;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private T parent;
 
     @Getter
@@ -23,16 +25,17 @@ public abstract class Scene<T extends Application> implements Manageable
 
     @Getter
     private final ArrayList<GameObject> gameObjects = new ArrayList<>();
-    private final ArrayList<GameObject> dirtiesGameObjects = new ArrayList<>();
 
     public abstract void resume();
+
     public abstract void pause();
+
     public abstract void unload();
 
     public void disactive()
     {
         pause();
-        if(!keepState)
+        if (!keepState)
         {
             destroy();
         }
@@ -40,16 +43,15 @@ public abstract class Scene<T extends Application> implements Manageable
 
     public void active()
     {
-        if(!loaded)
+        if (!loaded)
         {
             camera = new Camera();
             getParent().getResourcesDispatcher().dispatch(this);
             load();
             loaded = true;
-        }
-        else
+        } else
         {
-            if(!keepState)
+            if (!keepState)
             {
                 camera = new Camera();
                 getParent().getResourcesDispatcher().dispatch(this);

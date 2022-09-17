@@ -1,7 +1,9 @@
 package com.geode.engine.entity;
 
+import com.geode.engine.entity.components.animation.AnimationComponent;
 import com.geode.engine.entity.components.Component;
 import com.geode.engine.entity.components.MovementsComponent;
+import com.geode.engine.entity.components.property.PropertyComponent;
 import com.geode.engine.graphics.Mesh;
 import com.geode.engine.graphics.Texture;
 import com.geode.engine.utils.Colors;
@@ -10,6 +12,7 @@ import lombok.Setter;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 public class GameObject implements Updatable
@@ -39,11 +42,6 @@ public class GameObject implements Updatable
 
     public Component addComponent(Component component)
     {
-        for(Component c : components)
-        {
-            if(c.getClass().equals(component.getClass()))
-                return component;
-        }
         components.add(component);
         components.sort((o1, o2) -> o1.getPriority() < o2.getPriority() ? -1 : 1);
         return component;
@@ -66,9 +64,35 @@ public class GameObject implements Updatable
         return null;
     }
 
-    public MovementsComponent enableMovementsComponent()
+    public <T extends Component> T getOrCreateComponent(Class<T> _class)
     {
-        return (MovementsComponent) addComponent(new MovementsComponent(this, Component.DEFAULT_PRIORITY));
+        T component = getComponent(_class);
+        try
+        {
+            component = component != null ? component :
+                    (T) addComponent(
+                            _class.getConstructor(GameObject.class, Integer.class)
+                                    .newInstance(this, Component.DEFAULT_PRIORITY));
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e)
+        {
+            e.printStackTrace();
+        }
+        return component;
+    }
+
+    public MovementsComponent move_c()
+    {
+        return getOrCreateComponent(MovementsComponent.class);
+    }
+
+    public AnimationComponent anim_c()
+    {
+        return getOrCreateComponent(AnimationComponent.class);
+    }
+
+    public PropertyComponent properties_c()
+    {
+        return getOrCreateComponent(PropertyComponent.class);
     }
 
     @Override

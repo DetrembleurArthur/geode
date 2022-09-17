@@ -12,7 +12,7 @@ public class MovementsComponent extends Component
 {
     private final Transform transform;
 
-    public MovementsComponent(GameObject parent, int priority)
+    public MovementsComponent(GameObject parent, Integer priority)
     {
         super(parent, priority);
         transform = parent.getTransform();

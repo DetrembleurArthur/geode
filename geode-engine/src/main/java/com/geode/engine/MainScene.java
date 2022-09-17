@@ -1,15 +1,10 @@
 package com.geode.engine;
 
-import com.geode.binding.FieldPropertiesScheme;
-import com.geode.binding.FieldPropertyScheme;
-import com.geode.binding.NotifyProperty;
-import com.geode.binding.Property;
 import com.geode.engine.core.MouseManager;
 import com.geode.engine.core.Scene;
 import com.geode.engine.dispatchers.Repository;
 import com.geode.engine.entity.Square;
-import com.geode.engine.entity.Transform;
-import com.geode.engine.entity.components.MovementsComponent;
+import com.geode.engine.entity.components.property.PropertyComponent;
 import org.joml.Vector4f;
 
 
@@ -17,33 +12,35 @@ public class MainScene extends Scene<Main>
 {
     @Repository
     public MainResourceHolder resourceHolder;
-    public Square object;
-    public MovementsComponent move_c;
-
-    public FieldPropertiesScheme<Transform> propertiesScheme = new FieldPropertiesScheme<>(Transform.class);
-    public FieldPropertyScheme<Float> xScheme = propertiesScheme.get("width");
-    public FieldPropertyScheme<Float> yScheme = propertiesScheme.get("height");
-    public NotifyProperty<Float> xProperty;
-    public NotifyProperty<Float> yProperty;
-
+    public Square obj1;
+    public Square obj2;
 
 
     @Override
     public void load()
     {
         System.out.println("load scene");
-        object = new Square(resourceHolder.blob);
-        object.getTransform().setSize2D(100, 100);
-        object.getTransform().setCenterOrigin();
-        object.getTransform().center();
-        move_c = object.enableMovementsComponent();
-        add(object);
+        obj1 = new Square(resourceHolder.blob);
+        obj1.getTransform().setSize2D(100, 100);
+        obj1.getTransform().setCenterOrigin();
+        obj1.getTransform().center();
+        add(obj1);
 
-        xProperty = xScheme.create(object.getTransform());
-        yProperty = yScheme.create(object.getTransform());
-        System.out.println(xProperty.get() + " " + yProperty.get());
+        /*obj1.anim_c().toXProperty()
+                .from(100)
+                .to(1000)
+                .delay(3000f)
+                .getAction().start();*/
 
-        xProperty.bind(yProperty, aFloat -> aFloat * 0.5f);
+        obj2 = new Square(resourceHolder.blob);
+        obj2.getTransform().setSize2D(100, 100);
+        obj2.getTransform().setCenterOrigin();
+        obj2.getTransform().setPosition2D(50, 50);
+        add(obj2);
+
+
+        obj1.properties_c().x().bind(obj2.properties_c().x(), integer -> integer/2);
+        //obj1.properties_c().x().update();
 
     }
 
@@ -78,8 +75,9 @@ public class MainScene extends Scene<Main>
             //move_c.placeAround(getCamera().getMousePositionf(), 150, 270);
             //move_c.rotateToward(getCamera().getMousePositionf(), 360);
             //move_c.lookAt(getCamera().getMousePositionf());
-            xProperty.set(getCamera().getMousePositionf().x);
-            object.getTransform().setPosition2D(getCamera().getMousePositionf());
+            //xProperty.set(getCamera().getMousePositionf().x);
+            //obj1.properties_c().width().set(obj1.getTransform().getWidth() + 1);
+            obj1.move_c().move(10, 0);
         }
         updateGameObjects();
     }

@@ -3,6 +3,7 @@ package com.geode.engine.core;
 import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.GL_TRUE;
 
 public class WindowHints
 {
@@ -23,6 +24,15 @@ public class WindowHints
     {
         for(Runnable runnable : setupHintsCallbacks)
             runnable.run();
+        String osName = System.getProperty("os.name");
+        System.out.println("OS: " + osName);
+        if (osName.toUpperCase().contains("MAC"))
+        {
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        }
         setupHintsCallbacks.clear();
     }
 
