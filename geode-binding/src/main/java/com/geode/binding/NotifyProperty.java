@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-public class NotifyProperty <T> extends Property<T>
+public class NotifyProperty<T> extends Property<T>
 {
     private final ArrayList<Trigger> triggers = new ArrayList<>();
     private boolean triggered = false;
@@ -83,6 +83,11 @@ public class NotifyProperty <T> extends Property<T>
         }
     }
 
+    public void modify(Converter<T, T> converter)
+    {
+        set(converter.convert(get()));
+    }
+
     public void update()
     {
         triggered = true;
@@ -100,11 +105,6 @@ public class NotifyProperty <T> extends Property<T>
         return property;
     }
 
-    public void run(Runnable runnable)
-    {
-        runnable.run();
-        update();
-    }
 
     public static <U> NotifyProperty<U> create(U value)
     {
