@@ -77,12 +77,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.geode.binding</groupId>
-            <artifactId>geode-binding</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>

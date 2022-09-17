@@ -1,7 +1,8 @@
 package com.geode.engine.entity.components.property;
 
-import com.geode.binding.FieldPropertiesScheme;
-import com.geode.binding.NotifyProperty;
+import com.geode.engine.binding.Converter;
+import com.geode.engine.binding.FieldPropertiesScheme;
+import com.geode.engine.binding.NotifyProperty;
 import com.geode.engine.entity.GameObject;
 import com.geode.engine.entity.Transform;
 import com.geode.engine.entity.components.Component;
@@ -25,6 +26,7 @@ public class PropertyComponent extends Component
     }
 
     private final HashMap<String, NotifyProperty<?>> properties = new HashMap<>();
+    private boolean isNew = false;
 
     public PropertyComponent(GameObject parent, Integer priority)
     {
@@ -34,7 +36,7 @@ public class PropertyComponent extends Component
     public NotifyProperty<?> enableProperty(String name)
     {
         var schemes = propertiesSchemeHashMap.get(Transform.class);
-        var property = schemes.get(name).create(getParent().getTransform());
+        NotifyProperty<?> property = schemes.get(name).create(getParent().getTransform());
         properties.put(name, property);
         return property;
     }
@@ -43,18 +45,37 @@ public class PropertyComponent extends Component
     {
         var property = properties.get(name);
         if(property == null)
+        {
             property = enableProperty(name);
+            toggleNew();
+        }
         return (NotifyProperty<T>) property;
     }
 
     public NotifyProperty<Float> x()
     {
-        return _Property(PropertiesName.X);
+        NotifyProperty<Float> prop = _Property(PropertiesName.X);
+        if(isNew)
+        {
+            toggleNew();
+            Converter<Vector2f, Float> converter1 = value -> value.x;
+            Converter<Float, Vector2f> converter2 = value -> new Vector2f(value, position2D().get().y);
+            prop.link(position2D(), converter2, converter1);
+        }
+        return prop;
     }
 
     public NotifyProperty<Float> y()
     {
-        return _Property(PropertiesName.Y);
+        NotifyProperty<Float> prop = _Property(PropertiesName.Y);
+        if(isNew)
+        {
+            toggleNew();
+            Converter<Vector2f, Float> converter1 = value -> value.y;
+            Converter<Float, Vector2f> converter2 = value -> new Vector2f(position2D().get().x, value);
+            prop.link(position2D(), converter2, converter1);
+        }
+        return prop;
     }
 
     public NotifyProperty<Float> width()
@@ -69,7 +90,20 @@ public class PropertyComponent extends Component
 
     public NotifyProperty<Vector2f> position2D()
     {
-        return _Property(PropertiesName.POSITION2D);
+        NotifyProperty<Vector2f> prop = _Property(PropertiesName.POSITION2D);
+        if(isNew)
+        {
+            toggleNew();
+            Converter<Vector2f, Float> converter1 = value -> value.x;
+            Converter<Float, Vector2f> converter2 = value -> new Vector2f(value, prop.get().y);
+            prop.link(x(), converter1, converter2);
+        }
+        return prop;
+    }
+
+    private void toggleNew()
+    {
+        isNew = !isNew;
     }
 
 

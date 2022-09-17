@@ -1,7 +1,7 @@
 package com.geode.engine.entity.components.animation;
 
-import com.geode.binding.NotifyProperty;
-import com.geode.binding.Property;
+
+import com.geode.engine.binding.NotifyProperty;
 import com.geode.engine.tweening.TFunc;
 import com.geode.engine.tweening.TimedTweenAction;
 import com.geode.engine.tweening.TweenFunction;

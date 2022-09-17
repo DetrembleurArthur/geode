@@ -41,7 +41,7 @@ public class MainScene extends Scene<Main>
 
 
         obj1.properties_c().x().bind(obj2.properties_c().x(), integer -> integer/2);
-        //obj1.properties_c().x().update();
+        obj1.properties_c().y().bind(obj2.properties_c().y(), value -> value/2);
 
     }
 
@@ -82,7 +82,7 @@ public class MainScene extends Scene<Main>
             /*obj1.move_c().move(10, 0);
             obj1.properties_c().x().set(obj1.getTransform().getX());*/
 
-            obj1.move_c().moveProp(50, 0);
+            obj1.move_c().moveProp(50, 50);
         }
         updateGameObjects();
     }
