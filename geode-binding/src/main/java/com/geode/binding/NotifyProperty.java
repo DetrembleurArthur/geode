@@ -100,10 +100,17 @@ public class NotifyProperty <T> extends Property<T>
         return property;
     }
 
+    public void run(Runnable runnable)
+    {
+        runnable.run();
+        update();
+    }
+
     public static <U> NotifyProperty<U> create(U value)
     {
         return new NotifyProperty<>(value);
     }
+
     public static <U> NotifyProperty<U> createForField(Object obj, String fieldName)
     {
         try
