@@ -5,6 +5,7 @@ import com.geode.binding.NotifyProperty;
 import com.geode.engine.entity.GameObject;
 import com.geode.engine.entity.Transform;
 import com.geode.engine.entity.components.Component;
+import org.joml.Vector2f;
 
 import java.util.HashMap;
 
@@ -64,6 +65,11 @@ public class PropertyComponent extends Component
     public NotifyProperty<Float> height()
     {
         return _Property(PropertiesName.HEIGHT);
+    }
+
+    public NotifyProperty<Vector2f> position2D()
+    {
+        return _Property(PropertiesName.POSITION2D);
     }
 
 

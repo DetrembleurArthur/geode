@@ -30,6 +30,13 @@ public class MovementsComponent extends Component
         transform.addPosition2D(translationX * dt, translationY * dt);
     }
 
+    public void moveProp(float translationX, float translationY)
+    {
+        float dt = Time.getDt();
+        var properties = getParent().properties_c();
+        properties.position2D().modify(pos -> pos.add(translationX * dt, translationY * dt));
+    }
+
     public void move(Vector2f translation)
     {
         move(translation.x, translation.y);

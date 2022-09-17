@@ -2,6 +2,7 @@ package com.geode.engine;
 
 import com.geode.engine.core.MouseManager;
 import com.geode.engine.core.Scene;
+import com.geode.engine.core.Time;
 import com.geode.engine.dispatchers.Repository;
 import com.geode.engine.entity.Square;
 import com.geode.engine.entity.components.property.PropertyComponent;
@@ -77,7 +78,11 @@ public class MainScene extends Scene<Main>
             //move_c.lookAt(getCamera().getMousePositionf());
             //xProperty.set(getCamera().getMousePositionf().x);
             //obj1.properties_c().width().set(obj1.getTransform().getWidth() + 1);
-            obj1.move_c().move(10, 0);
+
+            /*obj1.move_c().move(10, 0);
+            obj1.properties_c().x().set(obj1.getTransform().getX());*/
+
+            obj1.move_c().moveProp(50, 0);
         }
         updateGameObjects();
     }
