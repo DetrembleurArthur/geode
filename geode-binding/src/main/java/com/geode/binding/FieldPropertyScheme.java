@@ -10,7 +10,7 @@ public class FieldPropertyScheme<T>
 
     public FieldPropertyScheme(Class<?> class_, String fieldName)
     {
-            String field = fieldName.substring(0,1).toUpperCase() + fieldName.substring(1).toLowerCase();
+            String field = fieldName.substring(0,1).toUpperCase() + fieldName.substring(1);
         try
         {
             getter = class_.getDeclaredMethod("get" + field);
