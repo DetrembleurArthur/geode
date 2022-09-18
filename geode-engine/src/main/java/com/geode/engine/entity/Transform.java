@@ -11,17 +11,11 @@ import org.joml.Vector3f;
 
 public class Transform
 {
-    @Getter
     @Setter
     private Vector3f position;
-    @Getter
-    @Setter
     private Vector3f size;
-    @Getter
     @Setter
     private Vector3f rotation;
-    @Getter
-    @Setter
     private Vector3f origin;
 
     public Transform()
@@ -312,5 +306,15 @@ public class Transform
     public float getAngle()
     {
         return rotation.z;
+    }
+
+    public void setAngle(float angle)
+    {
+        rotation.z = angle;
+    }
+    
+    public float getDistance(Vector2f position)
+    {
+        return getPosition2D().distance(position);
     }
 }

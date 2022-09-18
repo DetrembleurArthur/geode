@@ -7,55 +7,66 @@ import com.geode.engine.tweening.TimedTweenAction;
 import com.geode.engine.tweening.TweenFunction;
 import lombok.Getter;
 
-public class TimedAnimationBuilder
+public abstract class TimedAnimationBuilder<T>
 {
     @Getter
-    private final TimedTweenAction action;
+    protected TimedTweenAction[] actions = null;
 
-    public TimedAnimationBuilder()
+    public TimedAnimationBuilder(int n)
     {
-        action = new TimedTweenAction(0f, 0f, TFunc.LINEAR, null, 1000f, 1, false);
+        actions = new TimedTweenAction[n];
+        for(int i = 0; i < n; i++)
+            actions[i] = new TimedTweenAction(0f, 0f, TFunc.LINEAR, null, 1000f, 1, false);
     }
 
-    public TimedAnimationBuilder from(float value)
+    public abstract TimedAnimationBuilder<T> from(T value);
+
+    public abstract TimedAnimationBuilder<T> to(T value);
+
+    public TimedAnimationBuilder<T> func(TweenFunction value)
     {
-        action.setStartValue(value);
+        for(TimedTweenAction action : actions)
+            action.setFunc(value);
         return this;
     }
 
-    public TimedAnimationBuilder to(float value)
+    public TimedAnimationBuilder<T> delay(float value)
     {
-        action.setEndValue(value);
+        for(TimedTweenAction action : actions)
+            action.setMaxDelay(value);
         return this;
     }
 
-    public TimedAnimationBuilder func(TweenFunction value)
+    public TimedAnimationBuilder<T> cycle(int value)
     {
-        action.setFunc(value);
+        for(TimedTweenAction action : actions)
+            action.setMaxCycle(value);
         return this;
     }
 
-    public TimedAnimationBuilder delay(float value)
+    public TimedAnimationBuilder<T> back(boolean value)
     {
-        action.setMaxDelay(value);
+        for(TimedTweenAction action : actions)
+            action.setBack(value);
         return this;
     }
 
-    public TimedAnimationBuilder cycle(int value)
+    public TimedAnimationBuilder<T> property(NotifyProperty<Float>[] properties)
     {
-        action.setMaxCycle(value);
+        for(int i = 0; i < actions.length; i++)
+            actions[i].setBinder(properties[i]::set);
         return this;
     }
 
-    public TimedAnimationBuilder back(boolean value)
+    public TimedAnimationBuilder<T> whenFinished(Runnable runnable)
     {
-        action.setBack(value);
+        actions[0].setWhenFinished(runnable);
         return this;
     }
 
-    public TimedAnimationBuilder property(NotifyProperty<Float> property)
+    public void start()
     {
-        action.setBinder(property::set);
-        return this;
+        for(TimedTweenAction action : actions)
+            action.start();
     }
 }

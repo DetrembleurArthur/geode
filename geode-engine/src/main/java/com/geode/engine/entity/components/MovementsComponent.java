@@ -1,16 +1,23 @@
 package com.geode.engine.entity.components;
 
-import com.geode.engine.core.Application;
 import com.geode.engine.core.Time;
 import com.geode.engine.entity.GameObject;
 import com.geode.engine.entity.Transform;
 import com.geode.engine.utils.MathUtils;
+import lombok.Getter;
+import lombok.Setter;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class MovementsComponent extends Component
 {
     private final Transform transform;
+
+    private boolean useProperties = false;
+    @Getter @Setter
+    private Vector2f speedMax = new Vector2f(Float.MAX_VALUE, Float.MAX_VALUE);
+    private final Vector2f speed = new Vector2f();
+    private Vector2f acceleration = new Vector2f();
 
     public MovementsComponent(GameObject parent, Integer priority)
     {
@@ -22,6 +29,98 @@ public class MovementsComponent extends Component
     public void update()
     {
 
+        if (useProperties)
+        {
+            getParent().properties_c().speed().modify(value -> value.add(getAcceleration().mul(Time.getDt())));
+            moveProp(speed);
+        } else
+        {
+            speed.add(getAcceleration().mul(Time.getDt()));
+            move(speed);
+        }
+    }
+
+    public boolean isUseProperties()
+    {
+        return useProperties;
+    }
+
+    public void setUseProperties(boolean useProperties)
+    {
+        this.useProperties = useProperties;
+    }
+
+    public void setAcceleration(Vector2f acceleration)
+    {
+        this.acceleration = acceleration;
+    }
+
+    public Vector2f getAcceleration()
+    {
+        return new Vector2f(acceleration);
+    }
+
+    public Vector2f getAccelerationRef()
+    {
+        return acceleration;
+    }
+
+    public void setSpeed(Vector2f speed)
+    {
+        setSpeedX(speed.x);
+        setSpeedY(speed.y);
+    }
+
+    public Vector2f getSpeed()
+    {
+        return new Vector2f(speed);
+    }
+
+    public Vector2f getSpeedRef()
+    {
+        return speed;
+    }
+
+    public void setSpeedX(float x)
+    {
+        if(x <= speedMax.x)
+            speed.x = x;
+    }
+
+    public float getSpeedX()
+    {
+        return speed.x;
+    }
+
+    public void setSpeedY(float y)
+    {
+        if(speed.y <= speedMax.y)
+            speed.y = y;
+    }
+
+    public float getSpeedY()
+    {
+        return speed.y;
+    }
+
+    public void moveX(float translationX)
+    {
+        transform.addX(translationX * Time.getDt());
+    }
+
+    public void moveY(float translationY)
+    {
+        transform.addY(translationY * Time.getDt());
+    }
+
+    public void moveXProp(float translationX)
+    {
+        getParent().properties_c().x().modify(x -> x + translationX * Time.getDt());
+    }
+
+    public void moveYProp(float translationY)
+    {
+        getParent().properties_c().y().modify(y -> y + translationY * Time.getDt());
     }
 
     public void move(float translationX, float translationY)
@@ -42,10 +141,15 @@ public class MovementsComponent extends Component
         move(translation.x, translation.y);
     }
 
+    public void moveProp(Vector2f translation)
+    {
+        moveProp(translation.x, translation.y);
+    }
+
     public Vector2f getVectorComponent(Vector2f pos)
     {
         Vector2f position = transform.getPosition2D();
-        if(pos.x == position.x && pos.y == position.y) return new Vector2f();
+        if (pos.x == position.x && pos.y == position.y) return new Vector2f();
         return pos.sub(position).normalize();
     }
 
@@ -79,7 +183,7 @@ public class MovementsComponent extends Component
         move(getVectorComponent(pos, speed));
     }
 
-    public void moveToward(float x, float y,  float sx, float sy)
+    public void moveToward(float x, float y, float sx, float sy)
     {
         move(getVectorComponent(x, y, sx, sy));
     }
@@ -94,9 +198,34 @@ public class MovementsComponent extends Component
         move(getVectorComponent(x, y, speed));
     }
 
+    public void moveTowardProp(Vector2f pos, Vector2f speed)
+    {
+        moveProp(getVectorComponent(pos, speed));
+    }
+
+    public void moveTowardProp(float x, float y, float sx, float sy)
+    {
+        moveProp(getVectorComponent(x, y, sx, sy));
+    }
+
+    public void moveTowardProp(Vector2f pos, float speed)
+    {
+        moveProp(getVectorComponent(pos, speed));
+    }
+
+    public void moveTowardProp(float x, float y, float speed)
+    {
+        moveProp(getVectorComponent(x, y, speed));
+    }
+
     public void rotate(float angle)
     {
         transform.getRotationRef().z += angle * Time.getDt();
+    }
+
+    public void rotateProp(float angle)
+    {
+        getParent().properties_c().angle().modify(value -> value + angle * Time.getDt());
     }
 
     public void rotate(Vector3f rotation)
@@ -115,6 +244,22 @@ public class MovementsComponent extends Component
     public void rotateAround(Vector2f aroundPoint, Vector2f angles)
     {
         transform.setPosition2D(MathUtils.rotateAround(
+                transform.getPosition2D(),
+                aroundPoint,
+                new Vector2f(angles).mul(Time.getDt())));
+    }
+
+    public void rotateAroundProp(Vector2f aroundPoint, float angle)
+    {
+        getParent().properties_c().position2D().set(MathUtils.rotateAround(
+                transform.getPosition2D(),
+                aroundPoint,
+                angle * Time.getDt()));
+    }
+
+    public void rotateAroundProp(Vector2f aroundPoint, Vector2f angles)
+    {
+        getParent().properties_c().position2D().set(MathUtils.rotateAround(
                 transform.getPosition2D(),
                 aroundPoint,
                 new Vector2f(angles).mul(Time.getDt())));
@@ -145,6 +290,16 @@ public class MovementsComponent extends Component
         rotateToward(new Vector2f(x, y), speed);
     }
 
+    public void rotateTowardProp(Vector2f target, float speed)
+    {
+        rotateProp(getTowardRotationComponent(target, speed * Time.getDt()));
+    }
+
+    public void rotateTowardProp(float x, float y, float speed)
+    {
+        rotateTowardProp(new Vector2f(x, y), speed);
+    }
+
     public void placeAround(Vector2f position, float distance, Vector2f radComponent)
     {
         transform.setPosition2D(new Vector2f(position).add(new Vector2f(distance).mul(radComponent)));
@@ -155,6 +310,16 @@ public class MovementsComponent extends Component
         placeAround(position, distance, MathUtils.degreeAngleToRadianVector(angleDegree));
     }
 
+    public void placeAroundProp(Vector2f position, float distance, Vector2f radComponent)
+    {
+        getParent().properties_c().position2D().set(new Vector2f(position).add(new Vector2f(distance).mul(radComponent)));
+    }
+
+    public void placeAroundProp(Vector2f position, float distance, float angleDegree)
+    {
+        placeAroundProp(position, distance, MathUtils.degreeAngleToRadianVector(angleDegree));
+    }
+
     public void lookAt(Vector2f target)
     {
         transform.getRotationRef().z = transform.getAngle(target);
@@ -163,5 +328,15 @@ public class MovementsComponent extends Component
     public void lookAt(float targetX, float targetY)
     {
         lookAt(new Vector2f(targetX, targetY));
+    }
+
+    public void lookAtProp(Vector2f target)
+    {
+        getParent().properties_c().angle().set(transform.getAngle(target));
+    }
+
+    public void lookAtProp(float targetX, float targetY)
+    {
+        lookAtProp(new Vector2f(targetX, targetY));
     }
 }

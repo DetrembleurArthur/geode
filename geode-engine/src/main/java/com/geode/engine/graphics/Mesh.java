@@ -33,6 +33,14 @@ public class Mesh
         init(indices, dataDrawPolicy);
     }
 
+    public void updateVertex(int dataDrawPolicy)
+    {
+        FloatBuffer vertexBuffer = context.buildVertices();
+
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexBuffer, dataDrawPolicy);
+    }
+
     private void init(int[] indices, int dataDrawPolicy)
     {
         elementLen = indices.length;
@@ -41,10 +49,7 @@ public class Mesh
         vbo = GL15.glGenBuffers();
         ebo = GL15.glGenBuffers();
 
-        FloatBuffer vertexBuffer = context.buildVertices();
-
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexBuffer, dataDrawPolicy);
+        updateVertex(dataDrawPolicy);
 
         IntBuffer elementBuffer = BufferUtils.createIntBuffer(indices.length);
         elementBuffer.put(indices).flip();

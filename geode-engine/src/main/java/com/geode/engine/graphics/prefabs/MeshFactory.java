@@ -74,4 +74,21 @@ public class MeshFactory
         }
         return new Mesh(context, indexes, dynamic ? GL15.GL_DYNAMIC_DRAW : GL15.GL_STATIC_DRAW);
     }
+
+    public static Mesh line(Vector2f ... points)
+    {
+        int[] indexes = new int[points.length];
+        float[] vertex = new float[points.length * 2];
+        for(int i = 0; i < points.length; i++)
+        {
+            indexes[i] = i;
+            vertex[i * 2] = points[i].x;
+            vertex[i * 2 + 1] = points[i].y;
+        }
+        MeshStructure context = new MeshStructure();
+        MeshStructure.Attribute positionAttr = MeshStructure.Attribute.builder().data(vertex).size(2).build();
+        context.addAttribute(positionAttr);
+
+        return new Mesh(context, indexes, GL15.GL_DYNAMIC_DRAW);
+    }
 }

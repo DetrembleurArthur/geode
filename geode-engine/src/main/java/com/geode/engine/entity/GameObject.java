@@ -31,7 +31,6 @@ public class GameObject implements Updatable
     @Getter
     private Texture texture;
 
-    @Getter @Setter
     private Vector4f color = new Vector4f(Colors.WHITE);
 
     public GameObject()
@@ -132,6 +131,56 @@ public class GameObject implements Updatable
     public void setColor(Vector4f color)
     {
         this.color = new Vector4f(color);
+    }
+
+    public Vector4f getColor()
+    {
+        return new Vector4f(color);
+    }
+
+    public Vector4f getColorRef()
+    {
+        return color;
+    }
+
+    public float getRed()
+    {
+        return color.x;
+    }
+
+    public void setRed(float red)
+    {
+        color.x = red;
+    }
+
+    public float getGreen()
+    {
+        return color.y;
+    }
+
+    public void setGreen(float green)
+    {
+        color.y = green;
+    }
+
+    public float getBlue()
+    {
+        return color.z;
+    }
+
+    public void setBlue(float blue)
+    {
+        color.z = blue;
+    }
+
+    public float getAlpha()
+    {
+        return color.w;
+    }
+
+    public void setAlpha(float alpha)
+    {
+        color.w = alpha;
     }
 
     public static boolean destroyIfDirty(GameObject gameObject)

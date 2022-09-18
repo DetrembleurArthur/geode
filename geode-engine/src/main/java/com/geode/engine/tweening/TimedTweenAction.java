@@ -1,6 +1,8 @@
 package com.geode.engine.tweening;
 
 import com.geode.engine.core.Time;
+import lombok.Getter;
+import lombok.Setter;
 
 public class TimedTweenAction extends TweenAction
 {
@@ -11,6 +13,8 @@ public class TimedTweenAction extends TweenAction
     private int maxCycle = 0;
     private boolean back = true;
     private boolean backFlag = false;
+    @Getter @Setter
+    private Runnable whenFinished;
 
     public TimedTweenAction(float startValue, float endValue, TweenFunction func, TweenSetter binder, float maxDelay, int maxCycle, boolean back)
     {
