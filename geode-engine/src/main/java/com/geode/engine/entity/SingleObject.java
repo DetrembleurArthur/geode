@@ -5,7 +5,7 @@ import com.geode.engine.graphics.Texture;
 import com.geode.engine.graphics.renderers.DefaultRenderer;
 import com.geode.engine.graphics.renderers.DefaultTextureRenderer;
 
-public class SingleObject extends GameObject
+public abstract class SingleObject extends GameObject
 {
     public SingleObject(Texture texture)
     {

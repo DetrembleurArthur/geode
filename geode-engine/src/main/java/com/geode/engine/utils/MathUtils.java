@@ -8,6 +8,18 @@ import org.joml.Vector4f;
 
 public class MathUtils
 {
+    public static boolean boxContains(Vector2f boxPosition, Vector2f boxSize, Vector2f point)
+    {
+        return point.x >= boxPosition.x && point.x <= boxPosition.x + boxSize.x && point.y >= boxPosition.y && point.y <= boxPosition.y + boxSize.y;
+    }
+
+    public static Vector2f getPoint(Vector2f center, float radius, float angleDegree)
+    {
+        return new Vector2f(
+                center.x + radius * (float)Math.sin(Math.toRadians(angleDegree)),
+                center.y + -radius * (float)Math.cos(Math.toRadians(angleDegree)));
+    }
+
     public static Vector2f screenToWorld(Vector2f screen, Camera camera)
     {
         screen.sub(Window.getWindow().getViewportPos());

@@ -315,6 +315,6 @@ public class Transform
     
     public float getDistance(Vector2f position)
     {
-        return getPosition2D().distance(position);
+        return getCenterPosition().distance(position);
     }
 }

@@ -3,10 +3,13 @@ package com.geode.engine.entity;
 import com.geode.engine.entity.components.animation.AnimationComponent;
 import com.geode.engine.entity.components.Component;
 import com.geode.engine.entity.components.MovementsComponent;
+import com.geode.engine.entity.components.collision.CollisionComponent;
+import com.geode.engine.entity.components.event.EventComponent;
 import com.geode.engine.entity.components.property.PropertyComponent;
 import com.geode.engine.graphics.Mesh;
 import com.geode.engine.graphics.Texture;
 import com.geode.engine.utils.Colors;
+import com.geode.engine.utils.LaterList;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector2f;
@@ -17,7 +20,7 @@ import java.util.ArrayList;
 
 public class GameObject implements Updatable
 {
-    private final ArrayList<Component> components;
+    private final LaterList<Component> components;
 
     @Getter
     private final Transform transform;
@@ -35,16 +38,17 @@ public class GameObject implements Updatable
 
     public GameObject()
     {
-        components = new ArrayList<>();
+        components = new LaterList<>();
         transform = new Transform();
     }
 
     public Component addComponent(Component component)
     {
-        components.add(component);
-        components.sort((o1, o2) -> o1.getPriority() < o2.getPriority() ? -1 : 1);
+        components.addLater(component);
         return component;
     }
+
+
 
     public void removeComponent(Class<? extends Component> componentClass)
     {
@@ -54,6 +58,13 @@ public class GameObject implements Updatable
     public <T extends Component> T getComponent(Class<T> componentClass)
     {
         for(Component component : components)
+        {
+            if(component.getClass().equals(componentClass))
+            {
+                return (T) component;
+            }
+        }
+        for(Component component : components.getAddLaterList())
         {
             if(component.getClass().equals(componentClass))
             {
@@ -94,12 +105,27 @@ public class GameObject implements Updatable
         return getOrCreateComponent(PropertyComponent.class);
     }
 
+    public CollisionComponent collision_c()
+    {
+        return getOrCreateComponent(CollisionComponent.class);
+    }
+
+    public EventComponent event_c()
+    {
+        return getOrCreateComponent(EventComponent.class);
+    }
+
     @Override
     public final void update()
     {
         for(Component component : components)
         {
             component.update();
+        }
+        if(components.isMustBeUpdated())
+        {
+            components.sync();
+            components.sort((o1, o2) -> o1.getPriority() < o2.getPriority() ? -1 : 1);
         }
     }
 

@@ -83,6 +83,11 @@ public class MouseManager implements WindowMouseButtonI
         return isPressed(GLFW_MOUSE_BUTTON_MIDDLE);
     }
 
+    public boolean isButtonPressed()
+    {
+        return isLeftButtonPressed() || isRightButtonPressed() || isMiddleButtonPressed();
+    }
+
     public boolean isLeftButtonReleased()
     {
         return isReleased(GLFW_MOUSE_BUTTON_LEFT);

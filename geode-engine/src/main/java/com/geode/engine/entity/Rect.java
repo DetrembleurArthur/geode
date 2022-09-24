@@ -3,15 +3,15 @@ package com.geode.engine.entity;
 import com.geode.engine.graphics.Texture;
 import com.geode.engine.graphics.prefabs.MeshFactory;
 
-public class Square extends SingleObject
+public class Rect extends SingleObject
 {
-    public Square(Texture texture)
+    public Rect(Texture texture)
     {
         super(texture);
         setMesh(MeshFactory.rect(isTextured(), isTextured()));
     }
 
-    public Square()
+    public Rect()
     {
         this(null);
     }
