@@ -75,6 +75,19 @@ public class MeshFactory
         return new Mesh(context, indexes, dynamic ? GL15.GL_DYNAMIC_DRAW : GL15.GL_STATIC_DRAW);
     }
 
+    public static Mesh generic(float[] positions, float[] uvs, int[] indexes, boolean textured)
+    {
+        MeshStructure context = new MeshStructure();
+        MeshStructure.Attribute positionsAttr = MeshStructure.Attribute.builder().data(positions).size(2).build();
+        context.addAttribute(positionsAttr);
+        if(textured)
+        {
+            MeshStructure.Attribute uvsAttr = MeshStructure.Attribute.builder().data(uvs).size(2).build();
+            context.addAttribute(uvsAttr);
+        }
+        return new Mesh(context, indexes, GL15.GL_DYNAMIC_DRAW);
+    }
+
     public static Mesh line(Vector2f ... points)
     {
         int[] indexes = new int[points.length];

@@ -2,6 +2,7 @@ package com.geode.engine;
 
 import com.geode.engine.dispatchers.ResourceRef;
 import com.geode.engine.graphics.Texture;
+import com.geode.engine.graphics.ui.text.Font;
 
 public class MainResourceHolder
 {
@@ -16,4 +17,7 @@ public class MainResourceHolder
 
     @ResourceRef("icon.png")
     public Texture icon;
+
+    /*@ResourceRef("t.fnt")
+    public Font font;*/
 }

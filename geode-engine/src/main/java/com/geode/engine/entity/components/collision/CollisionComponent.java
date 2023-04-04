@@ -4,6 +4,7 @@ import com.geode.engine.entity.Circle;
 import com.geode.engine.entity.GameObject;
 import com.geode.engine.entity.Rect;
 import com.geode.engine.entity.components.Component;
+import com.geode.engine.graphics.ui.text.Text;
 import com.geode.engine.utils.MathUtils;
 import org.joml.Vector2f;
 
@@ -43,7 +44,7 @@ public class CollisionComponent extends Component
     public boolean contains(Vector2f pos)
     {
         var tr = getParent().getTransform();
-        if (getParent() instanceof Rect)
+        if (getParent() instanceof Rect || getParent() instanceof Text)
             return getBoundingBox().isCollision(MathUtils.rotateAround(pos, tr.getPosition2D(), -tr.getAngle()));
         else if (getParent() instanceof Circle)
         {

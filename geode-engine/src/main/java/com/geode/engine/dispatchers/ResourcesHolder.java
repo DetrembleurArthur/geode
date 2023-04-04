@@ -2,6 +2,7 @@ package com.geode.engine.dispatchers;
 
 import com.geode.engine.graphics.Shader;
 import com.geode.engine.graphics.Texture;
+import com.geode.engine.graphics.ui.text.Font;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,6 +52,8 @@ public class ResourcesHolder
             return new Texture(name);
         else if(Shader.class.isAssignableFrom(field.getType()))
             return new Shader(name + ".vertex.glsl", name + ".fragment.glsl", true);
+        else if(Font.class.isAssignableFrom(field.getType()))
+            return new Font(name);
         return null;
     }
     

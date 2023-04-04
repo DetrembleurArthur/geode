@@ -4,6 +4,7 @@ import com.geode.engine.conf.Configurations;
 import com.geode.engine.dispatchers.ResourcesDispatcher;
 import com.geode.engine.exceptions.WindowException;
 import com.geode.engine.graphics.Shader;
+import com.geode.engine.graphics.ui.text.Font;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL;
@@ -34,6 +35,8 @@ public abstract class Application implements Manageable
 
     @Getter
     private ResourcesDispatcher resourcesDispatcher;
+
+    public Font engineFont;
 
     public static void setApplication(Application application)
     {
@@ -66,6 +69,7 @@ public abstract class Application implements Manageable
     {
         resourcesDispatcher = new ResourcesDispatcher();
         resourcesDispatcher.dispatch(this);
+        engineFont = new Font("sys.fnt");
         Scene<?> init = null;
         for (Field field : getClass().getFields())
         {
@@ -176,6 +180,7 @@ public abstract class Application implements Manageable
     private void freeResources()
     {
         resourcesDispatcher.destroy(this);
+        engineFont.destroy();
     }
 
 }
