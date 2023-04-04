@@ -13,11 +13,22 @@ import org.joml.Vector4i;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.system.MemoryUtil;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.sql.Date;
+import java.time.Instant;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.system.MemoryUtil.memFree;
 
 @Getter
 @Setter
@@ -434,5 +445,42 @@ public class Window
     public void setIcon(String iconFilepath)
     {
         //glfwSetWindowIcon(getId(), new GLFWImage.Buffer(ByteBuffer.wrap(pixels)));
+    }
+
+    public void takeScreenShot(String dst)
+    {
+        var size = getSize();
+        ByteBuffer buffer = MemoryUtil.memAlloc(size.x * size.y * 4);
+        GL11.glReadPixels(0, 0, size.x, size.y, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+        BufferedImage image = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_ARGB);
+        for(int i = 0; i < size.x; i++)
+        {
+            for(int j = 0; j < size.y; j++)
+            {
+                int pos = (j * size.x + i) * 4;
+                int r = buffer.get(pos) & 0xff;
+                int g = buffer.get(pos + 1) & 0xff;
+                int b = buffer.get(pos + 2) & 0xff;
+                int a = buffer.get(pos + 3) & 0xff;
+                image.setRGB(i, size.y - 1 - j, (a << 24) | (r << 16) | (g << 8) | b);
+            }
+        }
+        try
+        {
+            ImageIO.write(image, "PNG", new File(dst));
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        memFree(buffer);
+    }
+
+    public void takeScreenShot()
+    {
+        takeScreenShot(("demo_screenshots/" +
+                Date.from(Instant.now()) + ".png")
+                .replace(" ", "_")
+                .replace(":", "-"));
     }
 }

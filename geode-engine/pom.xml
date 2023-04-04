@@ -10,7 +10,7 @@
 
     <properties>
         <lwjgl.version>3.3.0</lwjgl.version>
-        <joml.version>1.10.3</joml.version>
+        <joml.version>1.10.5</joml.version>
         <steamworks4j.version>1.8.0</steamworks4j.version>
         <steamworks4j-server.version>1.8.0</steamworks4j-server.version>
         <maven.compiler.source>13</maven.compiler.source>

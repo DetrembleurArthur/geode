@@ -13,4 +13,7 @@ public class MainResourceHolder
 
     @ResourceRef("artorias.png")
     public Texture artorias;
+
+    @ResourceRef("icon.png")
+    public Texture icon;
 }

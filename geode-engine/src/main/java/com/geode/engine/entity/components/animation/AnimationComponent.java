@@ -5,12 +5,9 @@ import com.geode.engine.entity.GameObject;
 import com.geode.engine.entity.Line;
 import com.geode.engine.entity.components.Component;
 import com.geode.engine.tweening.TimedTweenAction;
-import com.geode.engine.tweening.TweenAction;
-import com.geode.engine.tweening.TweenFunction;
 import com.geode.engine.tweening.TweenSetter;
 import com.geode.engine.utils.LaterList;
 import lombok.Getter;
-import org.joml.Vector2f;
 
 import java.util.Arrays;
 
@@ -27,12 +24,12 @@ public class AnimationComponent extends Component
     @Override
     public void update()
     {
-        for(TimedTweenAction action : tweenActions)
+        for (TimedTweenAction action : tweenActions)
         {
             action.run();
-            if(action.isFinished())
+            if (action.isFinished())
             {
-                if(action.getWhenFinished() != null)
+                if (action.getWhenFinished() != null)
                     action.getWhenFinished().run();
                 System.out.println("remove " + action);
                 tweenActions.removeLater(action);
@@ -63,7 +60,7 @@ public class AnimationComponent extends Component
     {
         Vector2fTimedAnimationBuilder builder = new Vector2fTimedAnimationBuilder();
         TimedTweenAction[] actions = builder.getActions();
-        for(int i = 0; i < 2; i++)
+        for (int i = 0; i < 2; i++)
         {
             actions[i].setBinder(setters[i]);
             tweenActions.add(actions[i]);
@@ -84,7 +81,7 @@ public class AnimationComponent extends Component
     {
         Vector4fTimedAnimationBuilder builder = new Vector4fTimedAnimationBuilder();
         TimedTweenAction[] actions = builder.getActions();
-        for(int i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++)
         {
             actions[i].setBinder(setters[i]);
             tweenActions.add(actions[i]);
@@ -248,10 +245,10 @@ public class AnimationComponent extends Component
         var builder = toPosition2D().from(getParent().getTransform().getPosition2D())
                 .to(line.getPoint(0)).delay(delay);
         var origin = builder;
-        for(int i = 1; i < linesize; i++)
+        for (int i = 1; i < linesize; i++)
         {
             var builder2 = toPosition2D()
-                    .from(line.getPoint(i-1))
+                    .from(line.getPoint(i - 1))
                     .to(line.getPoint(i)).delay(delay);
             builder.whenFinished(builder2::start);
             builder = builder2;
@@ -266,10 +263,10 @@ public class AnimationComponent extends Component
         var builder = toPosition2DProperty().from(getParent().getTransform().getPosition2D())
                 .to(line.getPoint(0)).delay(delay);
         var origin = builder;
-        for(int i = 1; i < linesize; i++)
+        for (int i = 1; i < linesize; i++)
         {
             var builder2 = toPosition2DProperty()
-                    .from(line.getPoint(i-1))
+                    .from(line.getPoint(i - 1))
                     .to(line.getPoint(i)).delay(delay);
             builder.whenFinished(builder2::start);
             builder = builder2;

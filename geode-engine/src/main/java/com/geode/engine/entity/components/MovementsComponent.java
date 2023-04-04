@@ -3,6 +3,7 @@ package com.geode.engine.entity.components;
 import com.geode.engine.core.Time;
 import com.geode.engine.entity.GameObject;
 import com.geode.engine.entity.Transform;
+import com.geode.engine.entity.Updatable;
 import com.geode.engine.utils.MathUtils;
 import lombok.Getter;
 import lombok.Setter;

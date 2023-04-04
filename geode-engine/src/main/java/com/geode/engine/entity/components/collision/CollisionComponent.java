@@ -17,11 +17,6 @@ public class CollisionComponent extends Component
         super(parent, priority);
     }
 
-    @Override
-    public void update()
-    {
-
-    }
 
     public boolean isDynamic()
     {
@@ -61,7 +56,7 @@ public class CollisionComponent extends Component
     {
         if (getParent() instanceof Circle)
         {
-            if(object instanceof Circle)
+            if (object instanceof Circle)
             {
                 return getParent().getTransform().getDistance(object.getTransform().getCenterPosition()) <= ((Circle) getParent()).getRadius();
             }

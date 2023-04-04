@@ -1,43 +1,53 @@
 package com.geode.engine;
 
-import com.geode.engine.core.MouseManager;
+import com.geode.engine.core.Application;
 import com.geode.engine.core.Scene;
+import com.geode.engine.core.Time;
 import com.geode.engine.dispatchers.Repository;
 import com.geode.engine.entity.Rect;
-import com.geode.engine.entity.components.event.MouseEnteredEvent;
+import com.geode.engine.entity.components.script.Script;
 import com.geode.engine.utils.Colors;
 import org.joml.Vector4f;
+
+import java.awt.*;
 
 
 public class MainScene extends Scene<Main>
 {
     @Repository
     public MainResourceHolder resourceHolder;
-    public Rect obj1;
-    public Rect obj2;
+
+    public Rect rect1;
+    public Rect rect2;
 
 
     @Override
     public void load()
     {
         System.out.println("load scene");
-        obj1 = new Rect(resourceHolder.blob);
-        obj1.getTransform().setSize2D(100, 100);
-        obj1.getTransform().setCenterOrigin();
-        obj1.getTransform().center();
-        obj1.setColor(Colors.GREEN);
-       // obj1.collision_c().setDynamic(false);
-        add(obj1);
-        obj2 = new Rect(resourceHolder.blob);
-        obj2.getTransform().setSize2D(100, 100);
-        obj2.getTransform().setCenterOrigin();
-        obj2.getTransform().setPosition2D(100, 50);
-        obj2.setColor(Colors.BLUE);
-        add(obj2);
 
-        obj1.event_c().onCollision(sender -> System.out.println("collision"), obj2);
+        rect1 = new Rect(resourceHolder.blob);
+        rect1.getTransform().setSize2D(100, 100);
+        rect1.setColor(Colors.RED);
+        rect1.event_c().enableMouseDragging(getCamera());
+        add(rect1);
+
+        rect2 = new Rect(resourceHolder.blob);
+        rect2.getTransform().setCenterOrigin();
+        rect2.getTransform().setSize2D(100, 100);
+        rect2.setColor(Colors.BLUE);
+        rect2.event_c().enableMouseDragging(getCamera());
+        rect2.properties_c().angle().set(45.0f);
+        add(rect2);
 
 
+        rect1.script_c().addScript(new Script<Void>()
+                .setAction(param -> {
+                    if(rect1.collision_c().contains(rect2))
+                    {
+                        System.out.println("COLLISION");
+                    }
+                }));
 
     }
 
@@ -46,7 +56,6 @@ public class MainScene extends Scene<Main>
     public void update(float dt)
     {
         updateGameObjects();
-        obj1.properties_c().position2D().set(MouseManager.getMousePositionf(getCamera()));
     }
 
     @Override

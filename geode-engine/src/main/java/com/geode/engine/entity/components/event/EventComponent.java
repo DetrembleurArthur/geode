@@ -2,6 +2,7 @@ package com.geode.engine.entity.components.event;
 
 import com.geode.engine.debug.Log;
 import com.geode.engine.entity.GameObject;
+import com.geode.engine.entity.Updatable;
 import com.geode.engine.entity.components.Component;
 import com.geode.engine.graphics.Camera;
 

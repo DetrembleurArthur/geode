@@ -300,11 +300,4 @@ public class PropertyComponent extends Component
     {
         isNew = !isNew;
     }
-
-
-    @Override
-    public void update()
-    {
-
-    }
 }

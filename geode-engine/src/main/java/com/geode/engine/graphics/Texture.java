@@ -30,6 +30,23 @@ public class Texture implements Resource
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    public Texture(Vector2i size)
+    {
+        this.id = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, id);
+
+        init(size, 0);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    public void init(Vector2i size, int image)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+        initParameters();
+        dimension = new Vector2f(size.x, size.y);
+    }
+
 
     public void init(String path)
     {

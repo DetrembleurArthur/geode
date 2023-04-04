@@ -1,22 +1,26 @@
 package com.geode.engine.entity;
 
+import com.geode.engine.entity.components.*;
 import com.geode.engine.entity.components.animation.AnimationComponent;
-import com.geode.engine.entity.components.Component;
-import com.geode.engine.entity.components.MovementsComponent;
 import com.geode.engine.entity.components.collision.CollisionComponent;
 import com.geode.engine.entity.components.event.EventComponent;
 import com.geode.engine.entity.components.property.PropertyComponent;
+import com.geode.engine.entity.components.script.ScriptComponent;
 import com.geode.engine.graphics.Mesh;
+import com.geode.engine.graphics.MeshStructure;
 import com.geode.engine.graphics.Texture;
+import com.geode.engine.graphics.prefabs.MeshFactory;
+import com.geode.engine.graphics.renderers.DefaultTextureRenderer;
+import com.geode.engine.sprites.Sprite;
 import com.geode.engine.utils.Colors;
 import com.geode.engine.utils.LaterList;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
+import org.lwjgl.opengl.GL15;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 
 public class GameObject implements Updatable
 {
@@ -115,6 +119,20 @@ public class GameObject implements Updatable
         return getOrCreateComponent(EventComponent.class);
     }
 
+    public TimerComponent time_c()
+    {
+        return getOrCreateComponent(TimerComponent.class);
+    }
+
+    public SpritesComponent sprite_c()
+    {
+        return getOrCreateComponent(SpritesComponent.class);
+    }
+
+    public ScriptComponent script_c() {
+        return getOrCreateComponent(ScriptComponent.class);
+    }
+
     @Override
     public final void update()
     {
@@ -122,7 +140,7 @@ public class GameObject implements Updatable
         {
             component.update();
         }
-        if(components.isMustBeUpdated())
+        if(components.mustBeUpdated())
         {
             components.sync();
             components.sort((o1, o2) -> o1.getPriority() < o2.getPriority() ? -1 : 1);
@@ -139,13 +157,18 @@ public class GameObject implements Updatable
         return texture != null;
     }
 
-    public void setTexture(Texture texture)
+    public void setTexture(Texture texture, boolean fit)
     {
         this.texture = texture;
-        if(texture != null)
+        if(fit && texture != null)
         {
             transform.setSize2D(texture.getDimension());
         }
+    }
+
+    public void setTexture(Texture texture)
+    {
+        setTexture(texture, true);
     }
 
     public void fitAsTexture()
@@ -214,5 +237,32 @@ public class GameObject implements Updatable
         if(gameObject.isDirty())
             gameObject.destroy();
         return gameObject.isDirty();
+    }
+
+    public void setSprite(Sprite sprite)
+    {
+        MeshStructure context = getMesh().getContext();
+        float[] uvs;
+        if(context.getAttributes().size() >= 2)
+        {
+            uvs = context.getAttributes().get(1).data;
+        }
+        else
+        {
+            mesh.destroy();
+            setMesh(MeshFactory.rect(true, true));
+            context = mesh.getContext();
+            uvs = context.getAttributes().get(1).data;
+            setTexture(sprite.getTexture(), false);
+            getOrCreateComponent(RenderComponent.class).setRenderer(new DefaultTextureRenderer());
+        }
+        for(int i = 0; i < sprite.getTextCoords().length; i++)
+        {
+            Vector2f coord = sprite.getTextCoords()[i];
+            uvs[i * 2] = coord.x;
+            uvs[i * 2 + 1] = coord.y;
+        }
+        getMesh().updateVertex(GL15.GL_DYNAMIC_DRAW);
+        mesh.show();
     }
 }

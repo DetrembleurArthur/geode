@@ -26,7 +26,8 @@ public class Circle extends SingleObject
 
     public void setPoints(int points)
     {
-        setMesh(MeshFactory.circle(isTextured(), isTextured(), points));
+        setMesh(MeshFactory.circle(true, isTextured(), points));
+        this.points = points;
     }
 
     public void setRadius(float radius)

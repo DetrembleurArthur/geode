@@ -64,7 +64,7 @@ public abstract class DynamicTimer extends StaticTimer implements Runnable
 
 	protected void tryNextPeriod()
 	{
-		if(periodCounter + 1 <= maxPeriod || maxPeriod == INFINITE)
+		if(periodCounter + 1 < maxPeriod || maxPeriod == INFINITE)
 		{
 			periodCounter++;
 			resetTime();

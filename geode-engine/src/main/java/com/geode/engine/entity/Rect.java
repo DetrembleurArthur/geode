@@ -8,7 +8,7 @@ public class Rect extends SingleObject
     public Rect(Texture texture)
     {
         super(texture);
-        setMesh(MeshFactory.rect(isTextured(), isTextured()));
+        setMesh(MeshFactory.rect(true, isTextured()));
     }
 
     public Rect()

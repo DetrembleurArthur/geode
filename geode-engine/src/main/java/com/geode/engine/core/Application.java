@@ -177,4 +177,5 @@ public abstract class Application implements Manageable
     {
         resourcesDispatcher.destroy(this);
     }
+
 }

@@ -1,11 +1,11 @@
 package com.geode.engine.core;
 
 import com.geode.engine.entity.GameObject;
+import com.geode.engine.entity.GameObjectPack;
 import com.geode.engine.graphics.Camera;
+import com.geode.engine.utils.LaterList;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
 
 public abstract class Scene<T extends Application> implements Manageable
 {
@@ -24,7 +24,7 @@ public abstract class Scene<T extends Application> implements Manageable
     private boolean loaded = false;
 
     @Getter
-    private final ArrayList<GameObject> gameObjects = new ArrayList<>();
+    private final LaterList<GameObject> gameObjects = new LaterList<>();
 
     public abstract void resume();
 
@@ -76,11 +76,17 @@ public abstract class Scene<T extends Application> implements Manageable
 
     public void add(GameObject gameObject)
     {
-        gameObjects.add(gameObject);
+        gameObjects.addLater(gameObject);
+        if(gameObject instanceof GameObjectPack)
+        {
+            for(GameObject o : ((GameObjectPack)gameObject).getObjects())
+                gameObjects.addLater(o);
+        }
     }
 
     public void updateGameObjects()
     {
+        gameObjects.sync();
         gameObjects.forEach(GameObject::update);
         gameObjects.removeIf(GameObject::destroyIfDirty);
     }

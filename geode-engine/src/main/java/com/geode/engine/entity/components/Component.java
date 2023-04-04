@@ -26,4 +26,10 @@ public abstract class Component implements Updatable
         this.parent = parent;
         this.priority = priority;
     }
+
+    @Override
+    public void update()
+    {
+
+    }
 }

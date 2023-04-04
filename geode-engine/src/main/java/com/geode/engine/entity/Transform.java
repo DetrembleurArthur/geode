@@ -40,6 +40,10 @@ public class Transform
 
     public void setSize2D(float width, float height)
     {
+        if(width == 0f)
+            width = (float) 1e-10;
+        if(height == 0f)
+            height = (float) 1e-10;
         origin.mul(new Vector3f(width, height, 0).div(size.x, size.y, 1));
         size.x = width;
         size.y = height;
