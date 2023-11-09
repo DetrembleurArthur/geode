@@ -1,8 +1,5 @@
 package com.geode.crypto;
 
-import org.bouncycastle.jcajce.provider.drbg.DRBG;
-
-import javax.crypto.SecretKey;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -123,5 +120,17 @@ public class Store
             e.printStackTrace();
         }
         return this;
+    }
+
+    public KeyStore getKeyStore() {
+        return keyStore;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

@@ -16,7 +16,6 @@ public class TcpJsonDataTransfert
         TcpJsonPipe clientPipe = new TcpJsonPipe(client);
         TcpJsonPipe clientHandlerPipe = new TcpJsonPipe(clientHandler);
 
-
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", "Arthur");
         jsonObject.put("age", 23);

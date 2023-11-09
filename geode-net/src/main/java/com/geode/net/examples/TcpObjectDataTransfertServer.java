@@ -1,5 +1,6 @@
 package com.geode.net.examples;
 
+import com.geode.crypto.Store;
 import com.geode.net.communications.TcpJsonPipe;
 import com.geode.net.communications.TcpObjectPipe;
 import com.geode.net.connections.TcpConnection;
@@ -33,7 +34,7 @@ public class TcpObjectDataTransfertServer
 
     public static void main(String[] args) throws Exception
     {
-        TcpStickyConnection server = TcpStickyConnection.internal(5000, 5);
+        TcpStickyConnection server = TcpStickyConnection.internal(5005, 5);
         TcpConnection clientHandler = server.accept();
 
         TcpObjectPipe clientHandlerPipe = new TcpObjectPipe(clientHandler);
