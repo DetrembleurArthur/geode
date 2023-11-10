@@ -8,5 +8,6 @@ import java.io.IOException;
 public interface Pipe<T> extends Closeable
 {
     void send(T data) throws IOException;
-    T recv() throws IOException, ParseException, ClassNotFoundException;
+    T recv() throws Exception;
+    boolean available();
 }

@@ -1,7 +1,5 @@
 package com.geode.net.communications;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geode.net.connections.TcpConnection;
 import org.json.simple.JSONObject;
@@ -46,23 +44,5 @@ public class TcpJsonPipe extends TcpPipe<JSONObject, BufferedReader, BufferedWri
         String buffer = inputStream.readLine();
         System.out.println("receive JSON: " + buffer);
         return (JSONObject) parser.parse(buffer);
-    }
-
-    public void send(Serializable data) throws IOException
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        String value = mapper.writeValueAsString(data);
-        outputStream.write(value);
-        outputStream.newLine();
-        outputStream.flush();
-    }
-
-    public <T> T recv(Class<T> _class) throws IOException
-    {
-        ObjectMapper mapper = new ObjectMapper();
-        System.out.println("wait JSON");
-        String buffer = inputStream.readLine();
-        System.out.println("receive JSON: " + buffer);
-        return (T) mapper.readValue(buffer, _class);
     }
 }

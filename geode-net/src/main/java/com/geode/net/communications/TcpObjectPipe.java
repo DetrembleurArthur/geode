@@ -6,7 +6,6 @@ import java.io.*;
 
 public class TcpObjectPipe extends TcpPipe<Serializable, ObjectInputStream, ObjectOutputStream>
 {
-
     public TcpObjectPipe(TcpConnection connection) throws IOException
     {
         super(connection);

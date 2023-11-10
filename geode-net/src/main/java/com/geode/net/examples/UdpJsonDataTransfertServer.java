@@ -1,7 +1,6 @@
 package com.geode.net.examples;
 
 import com.geode.net.communications.UdpJsonPipe;
-import com.geode.net.connections.UdpConnection;
 import com.geode.net.connections.UdpSimpleConnection;
 import org.json.simple.JSONObject;
 

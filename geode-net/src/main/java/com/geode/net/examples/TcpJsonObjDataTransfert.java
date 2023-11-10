@@ -1,6 +1,7 @@
 package com.geode.net.examples;
 
 import com.geode.net.communications.TcpJsonPipe;
+import com.geode.net.communications.TcpOJsonPipe;
 import com.geode.net.connections.TcpConnection;
 import com.geode.net.connections.TcpStickyConnection;
 
@@ -68,13 +69,15 @@ public class TcpJsonObjDataTransfert
         TcpConnection client = TcpConnection.internal(5000);
         TcpConnection clientHandler = server.accept();
 
-        TcpJsonPipe clientPipe = new TcpJsonPipe(client);
-        TcpJsonPipe clientHandlerPipe = new TcpJsonPipe(clientHandler);
-
+        TcpOJsonPipe clientPipe = new TcpOJsonPipe(client);
+        TcpOJsonPipe clientHandlerPipe = new TcpOJsonPipe(clientHandler);
+        clientPipe.prepareRecv(Person.class);
+        clientHandlerPipe.prepareRecv(Person.class);
+        
         Person jsonObject = new Person("Arthur", 24);
 
         clientPipe.send(jsonObject);
-        jsonObject = clientHandlerPipe.recv(Person.class);
+        jsonObject = (Person) clientHandlerPipe.recv();
         System.out.println(jsonObject);
 
         clientPipe.close();

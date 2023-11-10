@@ -47,4 +47,9 @@ public abstract class UdpPipe<T> implements Pipe<T>
     {
         this.resendMode = resendMode;
     }
+
+    @Override
+    public boolean available() {
+        return connection.getSocket().isConnected() || !connection.getSocket().isClosed();
+    }
 }

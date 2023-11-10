@@ -27,4 +27,9 @@ public abstract class TcpPipe<T, I, O> implements Pipe<T>
         connection.close();
         System.out.println("close TCP pipe");
     }
+
+    @Override
+    public boolean available() {
+        return connection.getSocket().isConnected() || !connection.getSocket().isClosed();
+    }
 }
