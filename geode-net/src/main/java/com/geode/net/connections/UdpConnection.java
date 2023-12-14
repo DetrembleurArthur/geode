@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
 
-public class UdpConnection<T extends DatagramSocket> implements Closeable
+public class UdpConnection<T extends DatagramSocket> implements Closeable, Connection
 {
     protected final T socket;
     protected String ip;

@@ -8,7 +8,7 @@ import java.net.ServerSocket;
 import com.geode.crypto.Store;
 import com.geode.crypto.Tls;
 
-public class TcpStickyConnection implements Closeable
+public class TcpStickyConnection implements Closeable, Connection
 {
     private final ServerSocket socket;
 

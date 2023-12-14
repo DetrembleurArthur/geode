@@ -9,7 +9,7 @@ import com.geode.crypto.Tls;
 
 import javax.net.ssl.SSLSocket;
 
-public class TcpConnection implements Closeable
+public class TcpConnection implements Closeable, Connection
 {
     private final Socket socket;
 
