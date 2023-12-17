@@ -4,6 +4,11 @@ public class Property<T>
 {
     private T value;
 
+    public Property()
+    {
+
+    }
+
     public Property(T value)
     {
         this.value = value;
@@ -22,5 +27,10 @@ public class Property<T>
     public static <U> Property<U> create(U value)
     {
         return new Property<>(value);
+    }
+
+    @Override
+    public String toString() {
+        return "Property [value=" + value + "]";
     }
 }
