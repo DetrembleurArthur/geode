@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public abstract class TcpPipe<T, I, O> implements Pipe<T>
+public abstract class TcpPipe<I, O> implements Pipe
 {
     private final TcpConnection connection;
     protected I inputStream;

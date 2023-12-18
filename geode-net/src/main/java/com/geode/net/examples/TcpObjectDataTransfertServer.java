@@ -1,11 +1,8 @@
 package com.geode.net.examples;
 
-import com.geode.crypto.Store;
-import com.geode.net.communications.TcpJsonPipe;
 import com.geode.net.communications.TcpObjectPipe;
 import com.geode.net.connections.TcpConnection;
 import com.geode.net.connections.TcpStickyConnection;
-import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 

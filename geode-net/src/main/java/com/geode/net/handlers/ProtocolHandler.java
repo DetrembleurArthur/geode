@@ -4,29 +4,27 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.geode.net.communications.Pipe;
 import com.geode.net.protocols.Protocol;
+import com.geode.net.protocols.ProtocolsLoader;
 import com.geode.net.protocols.Target;
 import com.geode.net.query.Query;
 
 public class ProtocolHandler implements Runnable {
 
-    private Pipe<Serializable> pipe;
+    private Pipe pipe;
     private List<Class<?>> protocols;
     private HashMap<String, HashMap<String, ArrayList<Method>>> protocolsMap = new HashMap<>();
     private HashMap<String, Object> protocolInstancesMap = new HashMap<>();
     private HashMap<String, ArrayList<Method>> currentProtocolMap;
     private Object currentProtocol;
 
-    public ProtocolHandler(Pipe<Serializable> pipe, ArrayList<Class<?>> protocols) throws Exception {
+    public ProtocolHandler(Pipe pipe, String ... protocolNames) throws Exception {
         this.pipe = pipe;
-        this.protocols = protocols.stream().filter(aClass -> aClass.isAnnotationPresent(Protocol.class)).collect(Collectors.toList());
+        this.protocols = ProtocolsLoader.getProtocols(protocolNames);
         initProtocolsTriggers();
     }
 

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import com.geode.net.communications.*;
 import com.geode.net.connections.TcpConnection;
 import com.geode.net.connections.UdpSimpleConnection;
-import org.json.simple.JSONObject;
 
 public class Query implements Serializable {
     private String type = "UNKNOWN";
@@ -74,78 +73,62 @@ public class Query implements Serializable {
         return this;
     }
 
-    public Query send(Pipe<Serializable> pipe) throws IOException {
+    public Query send(Pipe pipe) throws IOException {
         pipe.send(this);
         return this;
     }
 
-    public Query sendAndWait(Pipe<Serializable> pipe) throws Exception {
+    public Query sendAndWait(Pipe pipe) throws Exception {
         pipe.send(this);
         return (Query) pipe.recv();
     }
 
-    public Query sendTCP(String ip, int port, Mode mode) throws IOException {
+    public void sendTCP(String ip, int port, Mode mode) throws IOException {
         TcpConnection connection = TcpConnection.on(ip, port);
-        TcpPipe<?, ?, ?> pipe = null;
+        TcpPipe<?, ?> pipe = null;
         switch (mode) {
             case OBJ:
                 pipe = new TcpObjectPipe(connection);
-                ((TcpObjectPipe)pipe).send(this);
+                ((TcpObjectPipe) pipe).send(this);
                 break;
+
             case JSON:
                 pipe = new TcpJsonPipe(connection);
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("type", type);
-                jsonObject.put("data", data);
-                ((TcpJsonPipe)pipe).send(jsonObject);
-                break;
-            case OJSON:
-                pipe = new TcpOJsonPipe(connection);
-                ((TcpOJsonPipe)pipe).send(this);
+                ((TcpJsonPipe) pipe).send(this);
                 break;
             case STR:
                 pipe = new TcpStringPipe(connection);
-                ((TcpStringPipe)pipe).send(this.toString());
+                ((TcpStringPipe) pipe).send(this.toString());
                 break;
         }
-        if(pipe != null)
-        {
+        if (pipe != null) {
             pipe.close();
             connection.close();
         }
-        return null;
     }
 
-    public Query sendUDP(String ip, int port, Mode mode) throws IOException {
+    public void sendUDP(String ip, int port, Mode mode) throws IOException {
         UdpSimpleConnection connection = UdpSimpleConnection.on(ip, port);
-        UdpPipe<?> pipe = null;
+        UdpPipe pipe = null;
         switch (mode) {
             case OBJ:
                 pipe = new UdpObjectPipe(connection, false);
-                ((UdpObjectPipe)pipe).send(this);
+                ((UdpObjectPipe) pipe).send(this);
                 break;
+
             case JSON:
                 pipe = new UdpJsonPipe(connection, false);
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("type", type);
-                jsonObject.put("data", data);
-                ((UdpJsonPipe)pipe).send(jsonObject);
-                break;
-            case OJSON:
-                pipe = new UdpOJsonPipe(connection, false);
-                ((UdpOJsonPipe)pipe).send(this);
+                ((UdpJsonPipe) pipe).send(this);
                 break;
             case STR:
                 pipe = new UdpStringPipe(connection, false);
-                ((UdpStringPipe)pipe).send(this.toString());
+                ((UdpStringPipe) pipe).send(this.toString());
                 break;
         }
-        if(pipe != null)
-        {
+        if (pipe != null) {
             pipe.close();
             connection.close();
         }
-        return null;
     }
 
     @Override

@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 
-public class UdpStringPipe extends UdpPipe<String>
+public class UdpStringPipe extends UdpPipe
 {
 
     public UdpStringPipe(UdpConnection<?> gateway, boolean serverMode)
@@ -18,10 +18,10 @@ public class UdpStringPipe extends UdpPipe<String>
     }
 
     @Override
-    public void send(String data) throws IOException
+    public void send(Serializable data) throws IOException
     {
-        byte[] jsonBytes = data.getBytes(StandardCharsets.UTF_8);
-        connection.sendBytes(jsonBytes);
+        byte[] jsonBytes = data.toString().getBytes(StandardCharsets.UTF_8);
+        super.send(jsonBytes);
         System.out.println("send String: " + data);
     }
 
@@ -30,13 +30,8 @@ public class UdpStringPipe extends UdpPipe<String>
     {
         System.out.println("wait String");
         byte[] bytes = connection.recvBytes(resendInfos);
-        if(bytes != null)
-        {
-            resend();
-            String s = new String(bytes, StandardCharsets.UTF_8);
-            return s;
-        }
-        System.err.println("error at String reception");
-        return "";
+        String string = new String(bytes, StandardCharsets.UTF_8);
+        System.out.println("receive STRING: " + string);
+        return string;
     }
 }

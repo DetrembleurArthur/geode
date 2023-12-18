@@ -4,7 +4,7 @@ import com.geode.net.connections.TcpConnection;
 
 import java.io.*;
 
-public class TcpObjectPipe extends TcpPipe<Serializable, ObjectInputStream, ObjectOutputStream>
+public class TcpObjectPipe extends TcpPipe<ObjectInputStream, ObjectOutputStream>
 {
     public TcpObjectPipe(TcpConnection connection) throws IOException
     {

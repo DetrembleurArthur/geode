@@ -6,7 +6,7 @@ import com.geode.net.connections.TcpConnection;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-public class TcpStringPipe extends TcpPipe<String, BufferedReader, BufferedWriter>
+public class TcpStringPipe extends TcpPipe<BufferedReader, BufferedWriter>
 {
 
     public TcpStringPipe(TcpConnection connection) throws IOException
@@ -24,9 +24,9 @@ public class TcpStringPipe extends TcpPipe<String, BufferedReader, BufferedWrite
     }
 
     @Override
-    public void send(String data) throws IOException
+    public void send(Serializable data) throws IOException
     {
-        String value = data;
+        String value = data.toString();
         System.out.println("send String: " + value);
         outputStream.write(value);
         outputStream.newLine();

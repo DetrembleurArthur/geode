@@ -1,10 +1,13 @@
 package com.geode.net.communications;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geode.net.connections.UdpConnection;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 
-public abstract class UdpPipe<T> implements Pipe<T>
+public abstract class UdpPipe implements Pipe
 {
     protected final UdpConnection<?> connection;
     protected boolean resendMode;
@@ -27,6 +30,23 @@ public abstract class UdpPipe<T> implements Pipe<T>
             connection.setIp((String) resendInfos[0]);
             connection.setPort((Integer) resendInfos[1]);
         }
+    }
+
+    @Override
+    public void send(Serializable data) throws IOException {
+        connection.sendBytes((byte[]) data);
+    }
+
+    @Override
+    public Serializable recv() throws Exception {
+        byte[] bytes = connection.recvBytes(resendInfos);
+        if(bytes != null)
+        {
+            resend();
+            return bytes;
+        }
+        System.err.println("error at OBJECT reception");
+        return null;
     }
 
     @Override

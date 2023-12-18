@@ -2,22 +2,21 @@ package com.geode.net.communications;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geode.net.connections.TcpConnection;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import com.geode.net.query.Query;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-public class TcpJsonPipe extends TcpPipe<JSONObject, BufferedReader, BufferedWriter>
+public class TcpJsonPipe extends TcpPipe<BufferedReader, BufferedWriter>
 {
-    private final JSONParser parser;
+    private final ObjectMapper mapper;
+    private Class<?> _class = Query.class;
 
     public TcpJsonPipe(TcpConnection connection) throws IOException
     {
         super(connection);
-        parser = new JSONParser();
-        System.out.println("create TCP JSON pipe");
+        mapper = new ObjectMapper();
+        System.out.println("create TCP OJSON pipe");
     }
 
     @Override
@@ -25,24 +24,31 @@ public class TcpJsonPipe extends TcpPipe<JSONObject, BufferedReader, BufferedWri
     {
         this.inputStream = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         this.outputStream = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
-        System.out.println("create TCP JSON streams");
+        System.out.println("create TCP OJSON streams");
     }
 
     @Override
-    public void send(JSONObject data) throws IOException
+    public void send(Serializable data) throws IOException
     {
-        data.writeJSONString(outputStream);
+        String value = mapper.writeValueAsString(data);
+        System.out.println("send OJSON: " + value);
+        outputStream.write(value);
         outputStream.newLine();
         outputStream.flush();
-        System.out.println("send JSON: " + data);
     }
 
     @Override
-    public JSONObject recv() throws IOException, ParseException
+    public Serializable recv() throws IOException
     {
-        System.out.println("wait JSON");
+        System.out.println("wait OJSON");
         String buffer = inputStream.readLine();
-        System.out.println("receive JSON: " + buffer);
-        return (JSONObject) parser.parse(buffer);
+        System.out.println("receive OJSON: " + buffer);
+        return (Serializable) mapper.readValue(buffer, _class);
+    }
+
+    public <T> TcpJsonPipe prepareRecv(Class<T> _class)
+    {
+        this._class = _class;
+        return this;
     }
 }

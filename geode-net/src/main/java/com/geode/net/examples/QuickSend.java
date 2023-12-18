@@ -9,6 +9,6 @@ import java.util.Date;
 
 public class QuickSend {
     public static void main(String[] args) throws IOException {
-        Query.Simple("hello").add(Date.from(Instant.now()).toString()).sendUDP("127.0.0.1", 5000, Mode.OJSON);
+        Query.Simple("hello").add(Date.from(Instant.now()).toString()).sendUDP("127.0.0.1", 5000, Mode.JSON);
     }
 }

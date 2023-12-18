@@ -1,49 +1,47 @@
 package com.geode.net.communications;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.geode.crypto.Serializer;
 import com.geode.net.connections.UdpConnection;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import com.geode.net.query.Query;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 
-public class UdpJsonPipe extends UdpPipe<JSONObject>
+public class UdpJsonPipe extends UdpPipe
 {
-    private final JSONParser parser;
+    private Class<?> _class = Query.class;
 
     public UdpJsonPipe(UdpConnection<?> gateway, boolean serverMode)
     {
         super(gateway, serverMode);
-        parser = new JSONParser();
         System.out.println("create UDP JSON pipe");
     }
 
     @Override
-    public void send(JSONObject data) throws IOException
+    public void send(Serializable data) throws IOException
     {
-        byte[] jsonBytes = data.toJSONString().getBytes(StandardCharsets.UTF_8);
-        connection.sendBytes(jsonBytes);
+        ObjectMapper mapper = new ObjectMapper();
+        byte[] jsonBytes = mapper.writeValueAsString(data).getBytes(StandardCharsets.UTF_8);
+        super.send(jsonBytes);
         System.out.println("send JSON: " + data);
     }
 
     @Override
-    public JSONObject recv() throws IOException, ParseException
+    public Serializable recv() throws Exception
     {
         System.out.println("wait JSON");
-        byte[] bytes = connection.recvBytes(resendInfos);
-        if(bytes != null)
-        {
-            resend();
-            String jsonString = new String(bytes, StandardCharsets.UTF_8);
-            JSONObject jsonObject = (JSONObject) parser.parse(jsonString);
-            System.out.println("receive JSON: " + jsonObject);
-            return jsonObject;
-        }
-        System.err.println("error at OBJECT reception");
-        return new JSONObject();
+        byte[] bytes = (byte[]) super.recv();
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = new String(bytes, StandardCharsets.UTF_8);
+        System.out.println("receive JSON: " + jsonString);
+        return (Serializable) mapper.readValue(jsonString, _class);
+    }
+
+    public <T> UdpJsonPipe prepareRecv(Class<T> _class)
+    {
+        this._class = _class;
+        return this;
     }
 }
