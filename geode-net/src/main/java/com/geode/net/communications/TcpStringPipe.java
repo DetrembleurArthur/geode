@@ -5,6 +5,7 @@ import com.geode.net.connections.TcpConnection;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class TcpStringPipe extends TcpPipe<BufferedReader, BufferedWriter>
 {
@@ -34,11 +35,16 @@ public class TcpStringPipe extends TcpPipe<BufferedReader, BufferedWriter>
     }
 
     @Override
-    public String recv() throws IOException
+    public ArrayList<String> recv() throws IOException
     {
         System.out.println("wait String");
-        String buffer = inputStream.readLine();
-        System.out.println("receive String: " + buffer);
-        return buffer;
+        String buffer;
+        ArrayList<String> lines = new ArrayList<>();
+        while(!(buffer = inputStream.readLine()).isBlank())
+        {
+            lines.add(buffer);
+            System.out.println("receive line: " + buffer);
+        }
+        return lines;
     }
 }
