@@ -9,11 +9,16 @@ import java.io.IOException;
 
 public class PipeFactory {
     public static Pipe create(Mode mode, boolean tcp, Connection connection) throws IOException {
+        return create(mode, tcp, connection, false);
+    }
+
+    public static Pipe create(Mode mode, boolean tcp, Connection connection, boolean udpServer) throws IOException {
         switch (mode)
         {
-            case JSON: return tcp ? new TcpJsonPipe((TcpConnection) connection) : new UdpJsonPipe((UdpConnection<?>) connection, false);
-            case OBJ: return tcp ? new TcpObjectPipe((TcpConnection) connection) : new UdpObjectPipe((UdpConnection<?>) connection, false);
-            case STR: return tcp ? new TcpStringPipe((TcpConnection) connection) : new UdpStringPipe((UdpConnection<?>) connection, false);
+            case JSON: return tcp ? new TcpJsonPipe((TcpConnection) connection) : new UdpJsonPipe((UdpConnection<?>) connection, udpServer);
+            case OBJ: return tcp ? new TcpObjectPipe((TcpConnection) connection) : new UdpObjectPipe((UdpConnection<?>) connection, udpServer);
+            case STR: return tcp ? new TcpStringPipe((TcpConnection) connection) : new UdpStringPipe((UdpConnection<?>) connection, udpServer);
+            case DATA: return tcp ? new TcpDataPipe((TcpConnection) connection) : new UdpDataPipe((UdpConnection<?>) connection, udpServer);
         }
         return null;
     }

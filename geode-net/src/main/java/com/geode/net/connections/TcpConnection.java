@@ -19,6 +19,11 @@ public class TcpConnection implements Closeable, Connection
         System.out.println("create TCP connection: " + socket);
     }
 
+    public static TcpConnection from(Socket socket)
+    {
+        return new TcpConnection(socket);
+    }
+
     public static TcpConnection on(String ip, int port) throws IOException
     {
         Socket socket = new Socket(ip, port);

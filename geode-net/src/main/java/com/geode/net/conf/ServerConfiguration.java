@@ -1,10 +1,14 @@
 package com.geode.net.conf;
 
+import com.geode.net.communications.Mode;
+
 public class ServerConfiguration {
     private boolean connectivity = true;
     private String host = "127.0.0.1";
     private int port = 50000;
     private int backlog = 5;
+    private Mode mode;
+    private String[] protocols = new String[]{"echo"};
 
     public ServerConfiguration() {
     }
@@ -42,6 +46,25 @@ public class ServerConfiguration {
 
     public ServerConfiguration setBacklog(int backlog) {
         this.backlog = backlog;
+        return this;
+    }
+
+    public ServerConfiguration setMode(Mode mode)
+    {
+        this.mode = mode;
+        return this;
+    }
+
+    public Mode getMode() {
+        return mode;
+    }
+
+    public String[] getProtocols() {
+        return protocols;
+    }
+
+    public ServerConfiguration setProtocols(String[] protocols) {
+        this.protocols = protocols;
         return this;
     }
 }

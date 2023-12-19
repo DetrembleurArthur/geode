@@ -19,10 +19,8 @@ public class ProtocolsLoader {
                 .filter(line -> line.endsWith(".class"))
                 .map(line -> {
                     try {
-                        System.out.println(packageName + "." + line.replace(".class", ""));
                         return Class.forName(packageName + "." + line.replace(".class", ""));
                     } catch (ClassNotFoundException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                     return null;

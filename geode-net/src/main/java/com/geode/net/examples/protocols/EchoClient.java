@@ -11,15 +11,6 @@ public class EchoClient {
         {
             n--;
             if(n > 0)
-                return Query.Simple("echo").add(n).add(n.toString() + ":hi");
-            return null;
-        }
-        
-        @Target("echo")
-        public Query echo2(Integer n, String message)
-        {
-            n--;
-            if(n > 0)
                 return Query.Simple("echo").add(n);
             return null;
         }

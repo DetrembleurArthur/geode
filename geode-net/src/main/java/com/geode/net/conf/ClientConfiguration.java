@@ -7,6 +7,7 @@ public class ClientConfiguration {
     private String host = "127.0.0.1";
     private int port = 50000;
     private Mode mode = Mode.JSON;
+    private String[] protocols = new String[]{"echo"};
 
     public ClientConfiguration() {
     }
@@ -44,6 +45,15 @@ public class ClientConfiguration {
 
     public ClientConfiguration setMode(Mode mode) {
         this.mode = mode;
+        return this;
+    }
+
+    public String[] getProtocols() {
+        return protocols;
+    }
+
+    public ClientConfiguration setProtocols(String[] protocols) {
+        this.protocols = protocols;
         return this;
     }
 }
