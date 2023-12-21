@@ -6,8 +6,10 @@ import com.geode.net.connections.UdpSimpleConnection;
 
 public class Receiver {
     public static void main(String[] args) throws Exception {
-        UdpSimpleConnection udpSimpleConnection = UdpSimpleConnection.on("127.0.0.1", 6000);
-        UdpDataPipe dataPipe = new UdpDataPipe(udpSimpleConnection, true);
+        String host = "127.0.0.1";
+        int port = 6000;
+        UdpSimpleConnection udpSimpleConnection = UdpSimpleConnection.on(host, port);
+        UdpDataPipe dataPipe = new UdpDataPipe(udpSimpleConnection, false);
         MicroReceiver receiver = new MicroReceiver(dataPipe);
         receiver.start();
     }

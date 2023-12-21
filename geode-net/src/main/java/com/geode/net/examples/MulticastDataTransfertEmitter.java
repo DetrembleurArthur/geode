@@ -2,7 +2,6 @@ package com.geode.net.examples;
 
 import com.geode.net.communications.UdpJsonPipe;
 import com.geode.net.connections.MulticastGroupConnection;
-import org.json.simple.JSONObject;
 
 import java.io.IOException;
 

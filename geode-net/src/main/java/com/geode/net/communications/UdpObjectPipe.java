@@ -2,7 +2,6 @@ package com.geode.net.communications;
 
 import com.geode.crypto.Serializer;
 import com.geode.net.connections.UdpConnection;
-import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.io.Serializable;

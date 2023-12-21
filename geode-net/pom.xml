@@ -10,7 +10,7 @@
 
     <properties>
         <java.version>1.13</java.version>
-        <app.name>geode</app.name>
+        <app.name>geode-micro-test</app.name>
     </properties>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
@@ -21,11 +21,6 @@
         </dependency>
 
        <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
-        <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
-        </dependency>
 
 
 
@@ -88,6 +83,32 @@
                 <!--configuration>
                     <mainClass>com.geode.test.Server</mainClass>
                 </configuration-->
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.geode.net.examples.audio.Bidirectional</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/${app.name}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
