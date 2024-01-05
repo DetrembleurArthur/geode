@@ -3,10 +3,7 @@ package com.geode.net.arch;
 import com.geode.net.communications.Pipe;
 import com.geode.net.communications.PipeFactory;
 import com.geode.net.conf.ServerConfiguration;
-import com.geode.net.connections.TcpConnection;
 import com.geode.net.connections.UdpSimpleConnection;
-
-import java.io.IOException;
 
 public class UdpServer extends AbstractServer<UdpSimpleConnection> {
 
